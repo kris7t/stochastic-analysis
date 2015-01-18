@@ -1,0 +1,136 @@
+\documentclass[a4paper,10pt,twoside,openright]{memoir}
+\semiisopage
+\checkandfixthelayout
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+
+\usepackage{array,booktabs}
+\renewcommand*{\arraystretch}{1.2}
+
+\usepackage{amsmath,amssymb,amsthm,mathtools,relsize,stackengine}
+
+\newcommand*{\PN}{\textit{PN}}
+\newcommand*{\LN}{\textit{LN}}
+\newcommand*{\HN}{\textit{HN}}
+\newcommand*{\PI}{\textit{PI}}
+\newcommand*{\xto}{}\let\xto\xrightarrow
+\newcommand*{\vecarrow}{}\let\vecarrow\vec\let\vec\mathbf
+\newcommand*{\EffC}[1]{\mathop{\textnormal{EC}\mathnormal{(#1)}}}
+\DeclareMathOperator{\EME}{EME}
+\DeclareMathOperator{\SME}{SME}
+\DeclareMathOperator{\PriME}{\Pi ME}
+\DeclareMathOperator{\HME}{HME}
+\DeclareMathOperator{\MME}{MME}
+\newcommand*{\MInv}[1]{\tau\vec{#1}}
+\DeclareMathOperator{\StrC}{SC}
+\DeclareMathOperator{\CasC}{CC}
+\DeclareMathOperator{\SCC}{SCC}
+\newcommand*{\CCS}{\textit{CCS}}
+\newcommand*{\ECS}{\textit{ECS}}
+
+\usepackage{xparse}
+
+\usepackage{microtype}
+
+\usepackage{tikz}
+\usetikzlibrary{arrows,calc,positioning,matrix}
+\usepackage[compactlambda]{petriTikz}
+
+\pgfdeclarelayer{bg}
+\pgfdeclarelayer{connections}
+\pgfsetlayers{bg,connections,main}
+
+\tikzset{>=latex'}
+
+\newsubfloat{figure}
+
+\usepackage{hyperref}
+
+\begin{document}
+
+\mainmatter
+
+\chapter{Example Petri Net}
+
+We will now consider the Generalized Stochastic Petri Net $\PN$ in
+Figure~\ref{fig:example:pn}~(a). The net contain seven eight places,
+two immediate transitions $t_1$ and $t_2$ and five timed transitions.
+
+\begin{figure}
+  \hspace*{\fill}
+  \parbox[c]{0.55\linewidth}{\centering \input{example_net}}
+  \hfill
+  \parbox[c]{0.4\linewidth}{\centering \input{example_net_hl}}
+  \hspace*{\fill}
+  \par\vspace{0.5\onelineskip}
+  \hspace*{\fill}
+  \parbox[t]{0.55\linewidth}{\subcaption{%
+      Partition consisting of regions $\LN_1$ and $\LN_2$}}
+  \hfill
+  \parbox[t]{0.4\linewidth}{\subcaption{High level structure}}
+  \hspace*{\fill}
+  \caption{Exaple Generalized Stochastic Petri Net $\PN$ with its
+    initial marking $M_0$}
+  \label{fig:example:pn}
+\end{figure}
+
+\section{Decomposition into High Level and Low Level Nets}
+
+\subsection{Partitioning Into Minimal Regions}
+
+To facilitate Kronecker analysis we partition the net into
+\emph{minimal regions}. A set of transitions $T_r \subset T$ defines a
+region if $({}^{\bullet, \circ}T_r)^{\bullet, \circ} = T_r$, where
+${}^{\bullet,\circ}T_r = {}^{\bullet}T_r \cup {}^{\circ}T_r$ is set
+set of places connected to transitions in $T_r$ by input or inhibitor
+edges, and $P_r^{\bullet, \circ} = P_r^{\bullet} \cup P_r^{\circ}$ is
+the set of transitions connected to places in $P_r$ by input or
+inhibitor edges. In other words, the minimum regions partition the set
+of transitions $T$ such that no place is shared by two transitions for
+different regions as input on inhibitor.
+
+We first partition $T$ into singleton sets $(\{p_i\})_{i = 1}^7$, then
+iterate over the places. In the $i$th iteration, all the sets which
+share $p_i$ as input (or inhibitor) are merged. We only need to merge
+regions in iterations when $p_i$ has at least two adjacent input (or
+inhibitor) edges.
+
+
+\begin{table}
+  {\centering
+    \begin{tabular}{@{}lll@{}}
+      \toprule
+      & Action & Regions \\
+      \midrule
+      & Initialize & $\{t_1\}, \{t_2\}, \{t_3\}, \{t_4\}, \{t_5\},
+                     \{t_6\}, \{t_7\}$ \\[1.5ex]
+      $p_1$ & Merge $t_1 - t_2$ & $\{t_1, t_2\}, \{t_3\}, \{t_4\}, \{t_5\},
+                     \{t_6\}, \{t_7\}$ \\
+      $p_2$ & & $\{t_1, t_2\}, \{t_3\}, \{t_4\}, \{t_5\},
+                     \{t_6\}, \{t_7\}$ \\
+      $p_3$ & & $\{t_1, t_2\}, \{t_3\}, \{t_4\}, \{t_5\},
+                     \{t_6\}, \{t_7\}$ \\
+      $p_4$ & & $\{t_1, t_2\}, \{t_3\}, \{t_4\}, \{t_5\},
+                     \{t_6\}, \{t_7\}$ \\
+      $p_5$ & Merge $t_3 - t_5$ & $\{t_1, t_2\}, \{t_3, t_5\}, \{t_4\},
+                     \{t_6\}, \{t_7\}$ \\
+      $p_6$ & & $\{t_1, t_2\}, \{t_3, t_5\}, \{t_4\},
+                     \{t_6\}, \{t_7\}$ \\
+      $p_7$ & & $\{t_1, t_2\}, \{t_3, t_5\}, \{t_4\},
+                     \{t_6\}, \{t_7\}$ \\[1.5ex]
+      $t_1$ & Merge $t_1 - t_4$ & $\{t_1, t_2, t_4\}, \{t_3, t_5\},
+                     \{t_6\}, \{t_7\}$ \\
+      $t_2$ & Merge $t_2 - t_5$ & $\{t_1, t_2, t_3, t_4, t_5\},
+                     \{t_6\}, \{t_7\}$ \\[1.5ex]
+      $t_6$ & Merge $t_6 - t_7$ & $\{t_1, t_2, t_3, t_4, t_5\},
+                     \{t_6, t_7\}$ \\
+      \bottomrule
+    \end{tabular}
+    \par}
+  \caption{Paritioning the set of transitions into regions.}
+  \label{tbl:example:partition}
+\end{table}
+
+\end{document}
