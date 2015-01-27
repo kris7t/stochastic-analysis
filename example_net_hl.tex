@@ -1,17 +1,17 @@
 \begin{tikzpicture}
   \petriP(pi1)(0,0){$\PI_1$}<1>
-  \petriT(t4)(1.5,-1){$t_4$}
-  \petriT(t5)(-1.5,-1){$t_5$}
+  \petriT(t5)(1.5,-1){$t_5$}
+  \petriT(t6)(-1.5,-1){$t_6$}
   \petriP(pi2)(0,-2){$\PI_2$}
-  \petriT(t7)(-1.5,-3){$t_7$}
+  \petriT(t8)(-1.5,-3){$t_8$}
 
   \begin{pgfonlayer}{connections}
     \draw [->]
-    (pi1) edge (t4)
-    (t4) edge (pi2)
     (pi1) edge (t5)
     (t5) edge (pi2)
-    (pi2) edge (t7)
-    (t7) to ++(-0.5,0) |- (pi1);
+    (pi1) edge (t6)
+    (t6) edge (pi2)
+    (pi2) edge (t8)
+    (t8) to ++(-0.5,0) |- (pi1);
   \end{pgfonlayer}
 \end{tikzpicture}

@@ -1,39 +1,44 @@
 \begin{tikzpicture}
   \petriP(p1)(0,0){$p_1$}<1>
-  \petriT(t1)(2,-0.8){$t_1$}<1>{2}
-  \petriT(t2)(-2,-0.8){$t_2$}<1>{1}
-  \petriP(p2)(3,-1.5){$p_2$}
+  \petriT(t1)(2.2,-0.8){$t_1$}<1>{1}
+  \petriT(t2)(1.2,-0.8){$t_2$}{2}
+  \petriT(t3)(-1.2,-0.8){$t_3$}<1>{2}
+  \petriT(t4)(-2.2,-0.8){$t_4$}{1}
+  \petriP(p2)(3,-2.4){$p_2$}
   \petriP(p4)(1,-2.4){$p_4$}
-  \petriT(t3)(0,-2.4){$t_3$}{1}
-  \petriP(p5)(-1,-1.5){$p_5$}<1>
-  \petriP(p3)(-3,-1.5){$p_3$}
-  \petriT(t4)(2,-2.4){$t_4$}{0.1}
-  \petriT(t5)(-2,-2.4){$t_5$}{0.1}
+  \petriP(p5)(-1,-2.4){$p_5$}<1>
+  \petriP(p3)(-3,-2.4){$p_3$}
+  \petriT(t5)(2,-2.4){$t_5$}{0.1}
+  \petriT(t6)(-2,-2.4){$t_6$}{0.1}
   \petriP(p6)(1,-4.3){$p_6$}
-  \petriT(t6)(0,-4.3){$t_6$}{1}
+  \petriT(t7)(0,-4.3){$t_7$}{1}
   \petriP(p7)(-1,-4.3){$p_7$}
-  \petriT(t7)(-2,-4.3){$t_7$}{2}
+  \petriT(t8)(-2,-4.3){$t_8$}{0.5}
 
   \begin{pgfonlayer}{connections}
     \draw [->]
     (p1) edge (t1)
-    (p5) edge (t1)
-    (t1) edge (p2)
     (p1) edge (t2)
-    (p5) edge (t2)
-    (t2) edge (p3)
+    (p1) edge (t3)
+    (p1) edge (t4)
+    (t1) edge (p2)
+    (t2) edge (p2)
+    (t3) edge (p3)
+    (t4) edge (p3)
+    (p4) edge (t1)
     (p4) edge (t3)
-    (t3) edge (p5)
-    (p2) edge (t4)
-    (t4) edge (p4)
-    (t4) edge (p6)
-    (p3) edge (t5)
-    (t5) edge (p5)
-    (t5) edge (p7)
-    (p6) edge (t6)
+    (p5) edge (t2)
+    (p5) edge (t4)
+    (p2) edge (t5)
+    (t5) edge (p4)
+    (t5) edge (p6)
+    (p3) edge (t6)
+    (t6) edge (p5)
     (t6) edge (p7)
-    (p7) edge (t7)
-    (t7) to ++(-1.5,0) |- (p1);
+    (p6) edge (t7)
+    (t7) edge (p7)
+    (p7) edge (t8)
+    (t8) to ++(-1.5,0) |- (p1);
   \end{pgfonlayer}
 
   \begin{pgfonlayer}{bg}
