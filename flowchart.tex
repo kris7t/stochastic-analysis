@@ -1,0 +1,38 @@
+\begin{tikzpicture}[
+  process/.style={
+    text width=2.5cm,
+    align=center,
+    draw
+  }
+  ]
+  \matrix [column sep=20pt,row sep=15pt] {
+    \node (start) [fill=black,circle,inner sep=5pt] {}; \\[-7pt]
+    \node (decompose) [process] {Decomposition}; &
+    \node (matrix) [process] {Matrix\\Inventory}; &
+    \node (init) [process] {Initialize $\vec{\pi}$, $\vec{y}$}; \\
+    \node (aggregate) [process] {Aggregate\\Subproblems}; &
+    \node (factorize) [process] {Construct and\\Factorize $Q^{(j)}$}; &
+    \node (solve) [process] {Solve for $\vec{\pi}^{(j)}$}; \\
+    \node (disaggregate) [process] {Disaggregate\\into
+      $\vec{\pi}$}; &
+    \node (correct) [process] {Solve for $\vec{y}$}; &
+    \node (converged) [draw,diamond,aspect=2,inner sep=2pt]
+    {Converged?}; \\
+    & & \node (end) [draw,double,double distance=2pt,fill=black,circle,inner sep=5pt] {}; \\
+  };
+  \node (beforeaggregate) [diamond,inner sep=3pt,draw] at
+  ($(init.south)+(0,-13pt)$) {};
+  \draw [->] (start) edge (decompose);
+  \draw [->] (decompose) edge (matrix);
+  \draw [->] (matrix) edge (init);
+  \draw [->] (init) edge (beforeaggregate);
+  \draw [->] (beforeaggregate) -| (aggregate);
+  \draw [->] (aggregate) edge (factorize);
+  \draw [->] (factorize) edge (solve);
+  \draw [->] (solve.south) to ++(0,-13pt) -| (disaggregate);
+  \draw [->] (disaggregate) edge (correct);
+  \draw [->] (correct) edge (converged);
+  \draw [->] (converged.east) to ++(0.75cm,0) |- node [near
+  start,right] {No} (beforeaggregate);
+  \draw [->] (converged) edge node [right] {Yes} (end);
+\end{tikzpicture}
