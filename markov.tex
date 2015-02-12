@@ -9,7 +9,9 @@
 \usepackage{array,booktabs,mdwlist}
 \renewcommand*{\arraystretch}{1.2}
 
-\usepackage{amsmath,amssymb,amsthm,mathtools,relsize,stackengine}
+\usepackage{amsmath,amssymb,relsize,stackengine}
+\usepackage[ntheorem]{empheq}
+\usepackage{upgreek}
 
 \newcommand*{\PN}{\textnormal{\emph{PN}}}
 \newcommand*{\LN}{\textnormal{\emph{LN}}}
@@ -58,6 +60,11 @@
   pdfpagelabels=true,
   hidelinks
 ]{hyperref}
+
+\usepackage[amsthm,thmmarks,thref,hyperref]{ntheorem}
+\newtheorem{thm}{Theorem}[chapter]
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem{lem}[thm]{Lemma}
 
 \usepackage[
   style=authoryear-comp,
@@ -402,9 +409,9 @@ Rough outline for figuring out the exact decomposition algorithm
 
 \section{Construction of Initial Probability Vector}
 
-Due to the reducibility of $Q$, the initial choice of $\vec{\pi}$ will
+Due to the reducibility of $Q$, the initial choice of $\vec{\uppi}$ will
 determine the steady-state solution. Therefore, we need to choose
-$\vec{\pi}$ such that it is only nonzero at the states reachable from
+$\vec{\uppi}$ such that it is only nonzero at the states reachable from
 $M_0$,
 \begin{equation}
   \pi_i = \begin{cases}
@@ -437,10 +444,91 @@ transitions, we obtain local probability vectors $\pi^{(j)}$ for each
 local net $\LN_j$. Due to the reducibility of $Q$, the
 vector Kronecker product
 \begin{equation}
-  \vec{pi}' = \bigotimes_{j = 1}^J \vec{\pi}^{(j)}
+  \vec{\uppi}' = \bigotimes_{j = 1}^J \vec{\uppi}^{(j)}
 \end{equation}
 cannot be used as input for the GS correction step, because it can
 have support at states unreachable from $M_0$.
+
+\begin{prop}
+  Let $S = \{1, 2, \ldots, n\}$ and $S^{(j)} = \{1, 2, \ldots, n_j\}$
+  for all $j = 1, 2, \ldots, J$ be state spaces, $\TRS \subseteq S$,
+  $f^{(j)}: S \to S^{(j)}$ be surjective mappings and
+  $\vec{\uprho}^{(j)}$ be positive probability vectors (that is,
+  $\sum_{s^{(j)} \in S^{(j)}} \rho^{(j)}(s^{(j)}) = 1$ and
+  $\rho^{(j)}(s^{(j)}) > 0$ for all
+  $s^{(j)} \in S^{(j)}$). The system of equations
+  \begin{empheq}[left=\empheqlbrace]{gather}
+    \sum_{s \in S} \pi(s) = 1 \text, \qquad
+    \pi(s) \ge 0 \text{ for all $s \in S$,}
+    \label{eq:kronecker:disaggregate-cond1} \\
+    \sum_{f^{(j)}(s) = s^{(j)}} \pi(s) = \rho^{(j)}(s^{(j)}) \text{
+      for all $j = 1, 2, \ldots, j$ and $s^{(j)} \in S^{(j)}$,}
+    \label{eq:kronecker:disaggregate-cond2} \\
+    \pi(s) = 0 \text{ for all $s \notin \TRS$}
+    \label{eq:kronecker:disaggregate-cond3}
+  \end{empheq}
+  has a solution of the form
+  \begin{align}
+    \pi(s) = a \prod_{j = 1}^{J} p^{(j)}(f^{(j)}(s))
+    \text, \label{eq:kronecker:disaggregated-pi}
+  \end{align}
+  where $\vec{p}^{(j)}$ are nonnegative vectors and a is a positive
+  constant. Solutions of this form have maximum entropy
+  \begin{align}
+    H(\vec{\uppi}) = \sum_{s \in \TRS} - \pi(s) \log \pi(s) \text.
+  \end{align}
+
+  Conversely, any probability vector $\vec{\uppi}$ of the form
+  \eqref{eq:kronecker:disaggregated-pi} that satisfies
+  \eqref{eq:kronecker:disaggregate-cond2} and
+  \eqref{eq:kronecker:disaggregate-cond3} also satisfies
+  \eqref{eq:kronecker:disaggregate-cond1} and has maximum entropy the
+  entropy $H(\vec{\uppi})$.
+\end{prop}
+
+\begin{proof}
+  Consider the Lagrange function associated with the optimization
+  problem $\max_{\vec{\uppi}} H(\vec{\uppi})$ subject to
+  \eqref{eq:kronecker:disaggregate-cond1}--%
+  \eqref{eq:kronecker:disaggregate-cond3} by introducing Lagrange
+  multiplicators $\alpha, \vec{\upbeta}, \vec{\upgamma}^{(j)}$ and
+  $\vec{\updelta}$,
+  \begin{equation}
+    \begin{aligned}
+      & \Lambda(\vec{\pi}, \alpha, \vec{\upbeta},
+      \vec{\upgamma}^{(1)}, \vec{\upgamma}^{(2)}, \ldots,
+      \vec{\upgamma}^{(J)},
+      \vec{\updelta}) =\\
+      &\qquad - \sum_{s \in \TRS} - \pi(s) \log \pi(s) + \alpha
+      \Biggl( \sum_{s \in S} \pi(s) - 1 \Biggr) + \sum_{s \in S}
+      \beta(s) \pi(s) \\
+      &\qquad + \sum_{j = 1}^{J} \, \sum_{s' \in S^{(j)}}
+      \gamma^{(j)}(s') \Biggl( \sum_{s \in F^{(j)}(s')} \pi(s) -
+      \rho^{(j)}(s') \Biggr) + \sum_{s \notin \TRS} \delta(s) \pi(s)
+      \text,
+    \end{aligned}
+  \end{equation}
+  where we have written $F^{(j)}(s') = \{ s \in S \mid f^{(j)}(s) = s'
+  \}$ for brevity.
+
+  Suppose that the optimal solution has $\pi(s) > 0$ for all
+  $s \in \TRS$. Hence, the gradient $\nabla \Lambda$ exists and the
+  optimal solution satisfies the Karush--Kuhn--Tucker conditions
+  \begin{gather}
+    \frac{\partial \Lambda}{\partial \pi(s)}
+    = \log \pi(s) + 1 + \alpha + \beta(s) + \sum_{j = 1}^{J}
+    \gamma^{(j)}(f^{(j)}(s)) = 0 \text{ for all $s \in \TRS$,} \\
+    \beta(s) \ge 0 \text{ and } \beta(s) \pi(s) = 0 \text{ for all $s
+      \in S$.}
+  \end{gather}
+  We can conclude from $\pi(\TRS) > 0$ that $\beta(s) = 0$ for all
+  $s \in \TRS$ and
+  \begin{equation}
+    \pi(s) = \exp (-1 - \alpha) \prod_{j = 1}^J \exp
+    [ -\gamma^{(j)}(f^{(j)}(s)) ]
+    = a \prod_{j = 1}^J p^{(j)}(f^{(j)}(s)) \text.
+  \end{equation}
+\end{proof}
 
 \section{Correction Vector Calculation}
 
@@ -455,6 +543,10 @@ Could (Block) Jacobi or (Block) power iteration \citep[Section
 backward substitution is used for the diagonal block, but the
 off-diagonal blocks are zero in the matrix we need to ``invert'' in
 matrix splitting.
+
+\citet[Equation~(16)]{DBLP:journals/questa/Buchholz94} gives a
+modified form of block Gauss--Seidel iteration for block structured
+matrices. Does it respect the unreachable global states?
 
 \section{TODO}
 
