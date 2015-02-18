@@ -34,7 +34,12 @@
 \newcommand*{\CCS}{\textnormal{\emph{CCS}}}
 \newcommand*{\ECS}{\textnormal{\emph{ECS}}}
 \newcommand*{\TRS}{\textnormal{\emph{TRS}}}
+\newcommand*{\PS}{\textnormal{\emph{PS}}}
+\newcommand*{\macroS}{}\let\macroS\tilde
+\newcommand*{\macroStates}{}\let\macroStates\widetilde
+\newcommand*{\macroTRS}{\macroStates{\TRS}}
 \DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator{\level}{level}
 
 \usepackage{xparse}
 
@@ -547,6 +552,114 @@ matrix splitting.
 \citet[Equation~(16)]{DBLP:journals/questa/Buchholz94} gives a
 modified form of block Gauss--Seidel iteration for block structured
 matrices. Does it respect the unreachable global states?
+
+\section{Exact Hierarchical Decomposition}
+
+\subsection{Basic Algorithm}
+
+Let $\LN_1, \LN_2, \ldots, \LN_J$ be a decomposition of $\PN$ into
+subnets, i.e.~$P = P_1 \coprod P_2 \coprod \cdots \coprod P_j$ a
+disjoint partition of the places $P$ in $\PN$ into subsets $P_j$,
+which are the places of $\LN_j$, respectively.
+
+Let $\TRS_j$ denote the tangible reachability set of $\LN_j$. The set
+$\TRS$ of tangible states of $\PN$ is a subset of the \emph{potential}
+reachability set $\PS$,
+\begin{equation}
+  \TRS \subseteq \PS = \TRS_1 \times \TRS_2 \times \cdots \times
+  \TRS_J\text.
+\end{equation}
+
+Let us define the equivalence relation $\sim_j$ over $\TRS_j$ as
+\begin{equation}\label{eq:kronecker:state-equivalence}
+  s^{(j)} \sim_j s'^{(j)} \Longleftrightarrow \{ s \in \TRS : s[j] =
+  s^{(j)} \} = \{ s' \in \TRS : s'[j] = s'^{(j)} \} \text,
+\end{equation}
+where $s[j] \in \TRS_j$ denotes the local state of $\LN_j$ in the
+global state $s \in \TRS$, i.e.~the $j$th component of $s$. The set of
+macro-states $\macroTRS_j$ is the set of equivalence classes $\TRS_j /
+{\sim_j}$.
+
+The set of reachable macro-state combinations
+$\macroTRS \subset \macroStates{\PS} = \macroTRS_1 \times \macroTRS_2
+\times \cdots \times \macroTRS_j$
+is used as a set os block indices to the block-Kronecker infinitesimal
+generatior matrix:
+\begin{gather}
+  Q = Q_O - Q_D \text, \\
+  Q_O[\macroS{s}, \macroS{s}'] = \begin{cases} \displaystyle
+    \bigoplus_{j = 1}^J Q_L^{(j)}[\macroS{s}, \macroS{s}] + \sum_{i =
+      1}^{k_{\macroS{s}, \macroS{s}}} \bigotimes_{j = 1}^J
+    Q_{i}^{j}[\macroS{s},
+    \macroS{s}] & \text{if $\macroS{s} = \macroS{s}'$,} \\
+    \displaystyle \sum_{i = 1}^{k_{\macroS{s}, \macroS{s}'}}
+    \bigotimes_{j = 1}^J Q_{i}^{j}[\macroS{s}, \macroS{s}'] & \text{if
+      $\macroS{s} = \macroS{s}'$,}
+  \end{cases} \\
+  Q_D = \diag (Q_O \vec{e}^T) \text,
+\end{gather}
+where $Q_L^{(j)}[\macroS{s}, \macroS{s}]$ corresponds to the local
+transitions in $\LN_j$ and the macro-state $\macroS{s}$, while
+$Q_{i}^{j}[\macroS{s}, \macroS{s}']$ corresponds to the effects of
+$i$th synchronized transition that brings the system from global
+macro-state $\macroS{s}$ to $\macroS{s}'$ in $\LN_j$.
+
+In the original algorithm of \citet{DBLP:journals/tse/Buchholz99},
+$\TRS$ is represented with a bit vector of length $\lvert \PS
+\rvert$.
+After the generation of macro-states $\macroTRS_1$, only a bit vector
+of length
+$\lvert \macroTRS_1 \times \TRS_2 \times \TRS_3 \times \cdots \times
+\TRS_J \rvert$
+is needed, because states in the macro-states of $\LN_1$ have
+identical external behaviour. Likewise, the first $j - 1$ subnets may
+be represented by their macro-states when we calculate $\macroTRS_j$.
+
+\subsection{Reducing Storage Requirements by Preprocessing}
+
+TODO Section~5 in \citet{DBLP:journals/tse/Buchholz99}.
+
+\subsection{Efficient Macro-state Generation with MDDs}
+
+Let $r$ be the root node of the quasi-reduced MDD that describes
+$\TRS$ and suppose that nodes on the $j$th level correspond to the
+subnet $\LN_j$.
+
+Consider the equivalence relation ${\sim}$ over $\TRS_J$
+$s^{(J)} \sim s'^{(j)} \Longleftrightarrow r[s^{(J)}] = r[s'^{(J)}]$.
+This relation $\sim$ is the same as $\sim_J$ defined in
+\eqref{eq:kronecker:state-equivalence}, because the level-$(j - 1)$
+nodes describe the reachable states of $\PN \setminus \LN_J$. Let
+$\macroTRS_J = \TRS_J /{\sim}$ and replace $r$ with $\macroS{r}$,
+where
+\begin{equation}
+  \macroS{r}[\macroS{s}^{(J)}] = r[s^{(J)}] \text{ for all
+    $\macroS{s}^{(J)} \in \macroTRS_J$}
+\end{equation}
+and $s^{(J)}$ is an arbitrary representant of $\macroS{s}^{(J)}$.
+
+Now swap the upper two levels of the MDD $\macroS{r}$ so that the root
+corresponds to the subnet $\LN_{J - 1}$ and apply the same procedure
+as above to generate $\TRS_{J - 1}$. In the $i$th iteration, the
+subsystem $\LN_{J - i + 1}$ is brought to the root by level swapping
+and $\LN_{J - i + 1}$ is generated and then traversed. After
+completing $J$ iteration, the resulting MDD describes the set of
+reachable macro-state combinations $\macroTRS$ and $\macroTRS_j$ is
+generated for each subnet $\LN_j$.
+
+Swapping levels with domains $D$ and $D'$ take both
+$O(\lvert D \rvert^2 \lvert D' \rvert)$ time and memory, because
+$\lvert D \rvert$ matrices of size
+$\lvert D \rvert \times \lvert D' \rvert$ must be
+generated. Therefore, the procedure described above can be carried out
+in $O(J^2 m^2 M)$ time and $O(m^2 M)$ memory (only a single set of
+matrices need to be stored at a time), where
+\begin{align}
+  m &= \max_{j = 1}^J \lvert \macroTRS_j \rvert \text,
+  & M &= \max_{j = 1}^J \lvert TRS_j \rvert \text.
+\end{align}
+The memory requirements are significantly better than the $O(\lvert
+\PS \rvert) = O(m^J)$ memory needed for the original algorithm.
 
 \section{TODO}
 
