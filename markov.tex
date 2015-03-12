@@ -40,6 +40,8 @@
 \newcommand*{\macroTRS}{\macroStates{\TRS}}
 \DeclareMathOperator{\diag}{diag}
 \DeclareMathOperator{\level}{level}
+\DeclareMathOperator{\Env}{Env}
+\DeclareMathOperator{\Above}{Above}
 
 \usepackage{xparse}
 
@@ -69,7 +71,7 @@
 \usepackage[amsthm,thmmarks,thref,hyperref]{ntheorem}
 \newtheorem{thm}{Theorem}[chapter]
 \newtheorem{prop}[thm]{Proposition}
-\newtheorem{lem}[thm]{Lemma}
+\newtheorem{dfn}[thm]{Definition}
 
 \usepackage[
   style=authoryear-comp,
@@ -621,45 +623,74 @@ TODO Section~5 in \citet{DBLP:journals/tse/Buchholz99}.
 
 \subsection{Efficient Macro-state Generation with MDDs}
 
-Let $r$ be the root node of the quasi-reduced MDD that describes
-$\TRS$ and suppose that nodes on the $j$th level correspond to the
-subnet $\LN_j$.
-
-Consider the equivalence relation ${\sim}$ over $\TRS_J$
-$s^{(J)} \sim s'^{(j)} \Longleftrightarrow r[s^{(J)}] = r[s'^{(J)}]$.
-This relation $\sim$ is the same as $\sim_J$ defined in
-\eqref{eq:kronecker:state-equivalence}, because the level-$(j - 1)$
-nodes describe the reachable states of $\PN \setminus \LN_J$. Let
-$\macroTRS_J = \TRS_J /{\sim}$ and replace $r$ with $\macroS{r}$,
-where
+Consider the quasi-reduced ordered MDD that describes $\TRS$ and
+suppose that nodes on the $j$th level correspond to the subnet
+$\LN_j$. Let
 \begin{equation}
-  \macroS{r}[\macroS{s}^{(J)}] = r[s^{(J)}] \text{ for all
-    $\macroS{s}^{(J)} \in \macroTRS_J$}
+  \Env_j(s^{(j)}) = \bigcup_{\level(a) = j} \Above(a) \times a[s^{(j)}]
 \end{equation}
-and $s^{(J)}$ is an arbitrary representant of $\macroS{s}^{(J)}$.
+be the \emph{environment} of the local state $s^{(j)} \in S^{(j)}$,
+where $\Above(a)$ is the MDD of the upper $J - j$ levels of $r$
+leading to $a$.
 
-Now swap the upper two levels of the MDD $\macroS{r}$ so that the root
-corresponds to the subnet $\LN_{J - 1}$ and apply the same procedure
-as above to generate $\TRS_{J - 1}$. In the $i$th iteration, the
-subsystem $\LN_{J - i + 1}$ is brought to the root by level swapping
-and $\LN_{J - i + 1}$ is generated and then traversed. After
-completing $J$ iteration, the resulting MDD describes the set of
-reachable macro-state combinations $\macroTRS$ and $\macroTRS_j$ is
-generated for each subnet $\LN_j$.
+Local macro states consist of local states with the same
+(quasi-reduced) environment, that is,
+\begin{gather}
+  s^{(j)}_1 \sim_j s^{(j)}_2 \Longleftrightarrow \Env_j(s^{(j)}_1) =
+  \Env_j(s^{(j)}) \text, \\
+  \macroS{S}^{(j)} = S^{(j)} / {\sim}_j \text.
+\end{gather}
 
-Swapping levels with domains $D$ and $D'$ take both
-$O(\lvert D \rvert^2 \lvert D' \rvert)$ time and memory, because
-$\lvert D \rvert$ matrices of size
-$\lvert D \rvert \times \lvert D' \rvert$ must be
-generated. Therefore, the procedure described above can be carried out
-in $O(J^2 m^2 M)$ time and $O(m^2 M)$ memory (only a single set of
-matrices need to be stored at a time), where
-\begin{align}
-  m &= \max_{j = 1}^J \lvert \macroTRS_j \rvert \text,
-  & M &= \max_{j = 1}^J \lvert TRS_j \rvert \text.
-\end{align}
-The memory requirements are significantly better than the $O(\lvert
-\PS \rvert) = O(m^J)$ memory needed for the original algorithm.
+We can obtain the MDD representation of $\macroTRS$ by replacing the
+local states with the corresponding local macro-states in $r$.
+
+\subsection{Block iteration}
+
+The block iteration technique \citep{DBLP:journals/tse/Buchholz99}
+attempts to find the steady-state solution by iterating
+\begin{gather}
+  \vec{p}_k[\macroS{x}] Q[\macroS{x}, \macroS{x}] =
+  \vec{b}_k[\macroS{x}] \text, \label{eq:kronecker:block:solve} \\
+  \vec{b}_k = \sum_{\macroS{y} < \macroS{x}} \vec{p}_k[\macroS{y}]
+  Q[\macroS{y}, \macroS{x}] + \sum_{\macroS{y} > \macroS{x}}
+  \vec{p}_{k - 1}[\macroS{y}] Q[\macroS{y}, \macroS{x}] \text,
+\end{gather}
+which corresponds to \emph{grouped GS iteration} from 
+
+The main complication comes from the fact that, even in the case of an
+irreducible $Q[\macroS{x}, \macroS{x}]$,
+\eqref{eq:kronecker:block:solve} may have infinitely many solutions.
+
+\begin{dfn}[\citet{young1971iterative}, Chapter~2, Definition~6.1.]
+  The $n \times n$ matrix $A$ has \emph{Property A} if there exists a
+  permutation matrix $P$ such that
+  \begin{align}
+    P^{-1} A P = \begin{pmatrix}
+      D_1 & H \\ K & D_2
+    \end{pmatrix} \text,
+  \end{align}
+  where $D_1$ and $D_2$ are square diagonal matrices.
+\end{dfn}
+
+\begin{dfn}[\citet{young1971iterative}, Chapter~5, Definition~3.1.]
+  Given a matrix $A = (a_{ij})$, the integers $i$ and $j$ are
+  associated with respect to $A$ if $a_{ij} \ne 0$ or $a_{ji} \ne 0$.
+\end{dfn}
+
+\begin{dfn}[\citet{young1971iterative}, Chapter~5, Definition~3.2.]
+  The $n \times n$ matrix $A$ is \emph{consistently ordered} if there
+  exists a partition
+  $S_1 \coprod S_2 \coprod \cdots \coprod S_t = \{1, 2, \ldots, n\}$
+  such that if $i$ and $j$ are associated with respect to $A$ and
+  $i \in S_k$, then $j \in S_{k + 1}$ if $j > i$ and $j \in S_{k - 1}$
+  if $j < i$.
+\end{dfn}
+
+\begin{thm}[\citet{young1971iterative}, Chapter~5]
+  If $A$ is consistently ordered, then $A$ has Property A. Moreover,
+  if $A$ has Property A, there exists a permutation matrix $P$ such
+  that $P^{-1} A P$ is consistently ordered.
+\end{thm}
 
 \section{TODO}
 
@@ -669,9 +700,18 @@ The memory requirements are significantly better than the $O(\lvert
 \item TODO articles and workflow
 \item Navigable activity diagram
 \item More examples\ldots
-\item February~4.~13.00 next meeting
-\item Move to shared VCS
 \end{itemize}
+
+\begin{gather}
+  Q[\macroS{x}, \macroS{y}] = \sum_{t \in T(\macroS{x}, \macroS{y})}
+  w(t) \bigotimes_{j = 1}^J Q_{t}^{(j)}[\macroS{x}^{(j)},
+  \macroS{y}^{(j)}]
+  - \delta(\macroS{x}, \macroS{y}) \sum_{\macroS{z} \in \macroS{S}} \sum_{t \in T(\macroS{x}, \macroS{z})}
+  w(t) \bigotimes_{j = 1}^J D_{t}^{(j)}[\macroS{x}^{(j)},
+  \macroS{z}^{(j)}] \text, \\
+  D_{t}^{(j)}[\macroS{x}^{(j)}, \macroS{z}^{(j)}] = \diag
+  Q_{t}^{(j)}[\macroS{x}^{(j)}, \macroS{z}^{(j)}] \vec{e}^T \text.
+\end{gather}
 
 \backmatter
 
