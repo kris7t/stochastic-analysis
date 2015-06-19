@@ -107,28 +107,42 @@ greekuppercase=italicized,greeklowercase=italicized]{mathdesign}
 \renewcommand*{\chapnamefont}{\normalfont\huge\textit}
 \renewcommand*{\chapnumfont}{\normalfont\huge\textit}
 \renewcommand*{\chaptitlefont}{\normalfont\Huge\sffamily\bfseries}
+\renewcommand*{\cftchapterfont}{\normalfont\sffamily\bfseries\large}
+\renewcommand*{\cftchapterpagefont}{\normalfont\sffamily\bfseries\large}
+
+\setsecnumdepth{subsection}
+\settocdepth{subsection}
+
+\renewcommand*{\pfbreakdisplay}{\ensuremath{\bullet\quad\bullet\quad\bullet}}
+\newcommand*{\fbreak}{\fancybreak{\pfbreakdisplay}}
 
 \usepackage{array,booktabs,mdwlist}
 \renewcommand*{\arraystretch}{1.2}
 \usepackage{xspace}
 
-\usepackage{amsmath,relsize,stackengine,mleftright}
+\usepackage{amsmath,relsize,stackengine,mleftright,mathtools}
+\allowdisplaybreaks
 \usepackage[ntheorem]{empheq}
 \usepackage{upgreek}
+\usepackage{nicefrac}
 
 %% http://tex.stackexchange.com/a/100151/8744
 \makeatletter
-\def\tagform@#1{\maketag@@@{\footnotesize(#1)\@@italiccorr}}
+\def\tagform@#1{\maketag@@@{\small(#1)\@@italiccorr}}
 \makeatother
 
+\newcommand*{\mathabbrev}[1]{\textit{\textls[45]{#1}}}
 \DeclareMathOperator{\E}{\mathbb{E}}
-\newcommand*{\PN}{\textit{PN}}
-\newcommand*{\SPN}{\textit{SPN}}
-\newcommand*{\GSPN}{\textit{GSPN}}
-\newcommand*{\LN}{\textit{LN}}
-\newcommand*{\HN}{\textit{HN}}
-\newcommand*{\EN}{\textit{EN}}
-\newcommand*{\PI}{\textit{PI}}
+\newcommand*{\PN}{\mathabbrev{PN}}
+\newcommand*{\SPN}{\mathabbrev{SPN}}
+\newcommand*{\GSPN}{\mathabbrev{GSPN}}
+\newcommand*{\SGSPN}{\mathabbrev{SGSPN}}
+\newcommand*{\TL}{\mathabbrev{TL}}
+\newcommand*{\TS}{\mathabbrev{TS}}
+\newcommand*{\LN}{\mathabbrev{LN}}
+\newcommand*{\HN}{\mathabbrev{HN}}
+\newcommand*{\EN}{\mathabbrev{EN}}
+\newcommand*{\PI}{\mathabbrev{PI}}
 \newcommand*{\xto}{}\let\xto\xrightarrow
 \newcommand*{\vecarrow}{}\let\vecarrow\vec
 \renewcommand*{\vec}[1]{\boldsymbol{\mathrm{#1}}}
@@ -142,11 +156,12 @@ greekuppercase=italicized,greeklowercase=italicized]{mathdesign}
 \DeclareMathOperator{\StrC}{SC}
 \DeclareMathOperator{\CasC}{CC}
 \DeclareMathOperator{\SCC}{SCC}
-\newcommand*{\CCS}{\textit{CCS}}
-\newcommand*{\ECS}{\textit{ECS}}
-\newcommand*{\RS}{\textit{RS}}
-\newcommand*{\TRS}{\textit{TRS}}
-\newcommand*{\PS}{\textit{PS}}
+\newcommand*{\CCS}{\mathabbrev{CCS}}
+\newcommand*{\ECS}{\mathabbrev{ECS}}
+\newcommand*{\RS}{\mathabbrev{RS}}
+\newcommand*{\TRS}{\mathabbrev{TRS}}
+\newcommand*{\PS}{\mathabbrev{PS}}
+\newcommand*{\PSS}{\mathabbrev{PSS}}
 \newcommand*{\lS}[1]{S^{(#1)}}
 \newcommand*{\macroS}{}\let\macroS\tilde
 \newcommand*{\macroStates}{}\let\macroStates\widetilde
@@ -161,46 +176,51 @@ greekuppercase=italicized,greeklowercase=italicized]{mathdesign}
 \newcommand*{\leftTok}[1]{{}^\bullet #1}
 \newcommand*{\leftInh}[1]{{}^\circ #1}
 \newcommand*{\rightTok}[1]{#1{}^\bullet}
-\newcommand*{\rightInhk}[1]{#1{}^\circ}
+\newcommand*{\rightInh}[1]{#1{}^\circ}
+\newcommand*{\sumprime}{\sideset{}{'}\sum}
+
+\newcommand*{\loc}[1]{^{(#1)}}
 
 %% http://tex.stackexchange.com/a/13035/8744
-\newcommand*{\textabbrev}[1]{\textls[50]{\textsc{#1}}}
+\newcommand*{\textabbrev}[1]{\textls[35]{\textsc{#1}}}
 \newcommand*{\Ctmc}{\textabbrev{Ctmc}}
 \newcommand*{\ctmc}{\textabbrev{ctmc}}
 \newcommand*{\Gspn}{\textabbrev{Gspn}}
 \newcommand*{\gspn}{\textabbrev{gspn}}
 \newcommand*{\Spn}{\textabbrev{Spn}}
 \newcommand*{\spn}{\textabbrev{spn}}
+\newcommand*{\Sgspn}{\textabbrev{Sgspn}}
+\newcommand*{\sgspn}{\textabbrev{sgspn}}
+\newcommand{\paren}[1]{\textup(#1\textup)}
 
 \usepackage{xparse}
 
-\usepackage{microtype}
+\usepackage[final]{microtype}
 
 \usepackage{tikz}
-\usetikzlibrary{arrows,calc,positioning,shapes,matrix}
+\usetikzlibrary{arrows.meta,calc,positioning,shapes,matrix}
+\usepackage{tikz-timing}
 \usepackage[compactlambda]{petriTikz}
 
 \pgfdeclarelayer{bg}
 \pgfdeclarelayer{connections}
 \pgfsetlayers{bg,connections,main}
 
-\tikzset{>=latex'}
-
-\newsubfloat{figure}
+\usepackage{varioref}
+\renewcommand*{\reftextfacebefore}{}
+\renewcommand*{\reftextfaceafter}{}
 
 \usepackage[
   hyperfootnotes=false,
   breaklinks=true,
-  hypertexnames=true,
+  hypertexnames=false,
   plainpages=false,
   pdfpagelabels=true,
   hidelinks
 ]{hyperref}
 
-\newcommand{\paren}[1]{\textup(#1\textup)}
-
 \let\openbox\relax
-\usepackage[amsmath,thmmarks,thref,hyperref]{ntheorem}
+\usepackage[amsmath,thmmarks,hyperref]{ntheorem}
 \theoremheaderfont{\normalfont\sffamily\bfseries}
 \makeatletter
 % Lifted from ntheorem.sty
@@ -219,7 +239,7 @@ greekuppercase=italicized,greeklowercase=italicized]{mathdesign}
   \def\theorem@headerfont{\itshape}%
   \normalfont
   \theoremsymbol{\ensuremath{_\blacksquare}}%
-  \@thm{proof}{proof}{#1}%
+  \@thm{proof}{proof}{#1.}%
 }{\@endtheorem}
 \newtheoremstyle{my}%
 {\item[\hskip\labelsep \theorem@headerfont ##1~##2\theorem@separator]}%
@@ -227,11 +247,44 @@ greekuppercase=italicized,greeklowercase=italicized]{mathdesign}
 \makeatother
 \theoremstyle{my}
 \theoremseparator{.}
+
+\usepackage[capitalise,noabbrev]{cleveref}
+\crefname{section}{\S}{\SS}
+% Protect pages and equations from capitalization
+\crefname{page}{{p}age}{{p}ages}
+\crefname{equation}{{e}q.}{{e}qs.}
+
+\makeatletter
+\DeclareRobustCommand{\labelvref}{\cref@vref{labelcref}}
+\DeclareRobustCommand{\labelfullref}{\cref@fullref{labelcref}}
+\makeatother
+
 \newtheorem{thm}{Theorem}[chapter]
 \newtheorem{prop}[thm]{Proposition}
 \newtheorem{dfn}[thm]{Definition}
+\newtheorem{restr}[thm]{Restriction}
+\newtheorem{obs}[thm]{Observation}
+
+\usepackage{autonum}
+% Patch varioref commands for autonum
+\makeatletter
+\autonum@generatePatchedReferenceCSL{Cref}
+\autonum@generatePatchedReferenceCSL{labelcref}
+\autonum@generatePatchedReferenceCSL{vref}
+\autonum@generatePatchedReferenceCSL{Vref}
+\autonum@generatePatchedReferenceCSL{labelvref}
+\autonum@generatePatchedReferenceCSL{fullref}
+\autonum@generatePatchedReferenceCSL{Fullref}
+\autonum@generatePatchedReferenceCSL{labelfullref}
+\makeatother
+
+\renewcommand*{\reftextfaraway}[1]{on~\cpageref{#1}}
 
 \usepackage{algorithm,algpseudocode}
+\makeatletter
+\@addtoreset{algorithm}{chapter}
+\makeatother
+\renewcommand{\thealgorithm}{\thechapter.\arabic{algorithm}} 
 
 \usepackage[
   style=authoryear-comp,
@@ -240,9 +293,9 @@ greekuppercase=italicized,greeklowercase=italicized]{mathdesign}
   uniquename=init,
   uniquelist=false,
   backref=false,
-  doi=false,
-  isbn=false,
-  eprint=false,
+  doi=true,
+  isbn=true,
+  eprint=true,
   natbib=true,
   hyperref=true,
   autolang=hyphen,
@@ -252,20 +305,25 @@ greekuppercase=italicized,greeklowercase=italicized]{mathdesign}
 \AtEveryBibitem{% Clean up the bibtex rather than editing it
   \clearlist{address}
   \clearfield{date}
-  \clearfield{issn}
   \clearlist{location}
   \clearfield{month}
-  \clearfield{series}
-  \ifentrytype{book}{}{% Remove publisher and editor except for books
+  \ifentrytype{book}{}{% Remove editor except for books
     \ifentrytype{inbook}{}{
-      \clearlist{publisher}
       \clearname{editor}
     }
   }
-  \ifentrytype{article}{
-    \clearfield{url}}{}
-  \ifentrytype{inproceedings}{
-    \clearfield{url}}{}
+  \iffieldundef{doi}{}{
+    \clearfield{url}
+    \clearfield{isbn}
+    \clearfield{issn}
+    \clearfield{eprint}
+  }
+  \iffieldundef{eprint}{}{
+    \clearfield{url}
+    \clearfield{isbn}
+    \clearfield{issn}
+  }
+  %  \clearfield{url}}{}
 }
 \DefineBibliographyStrings{english}{%
   bibliography = {References}
@@ -275,1208 +333,19 @@ greekuppercase=italicized,greeklowercase=italicized]{mathdesign}
 
 \begin{document}
 
+\frontmatter
+
+\include{titlepage-onlab}
+
+\begin{KeepFromToc}
+  \tableofcontents
+\end{KeepFromToc}
+
 \mainmatter
 
-\chapter{Background}
+\include{intro}
 
-\section{Continous-time Markov chains}
-
-\begin{dfn}
-  A \emph{continous-time Markov chain} \paren{\emph{\ctmc}}
-  $\{X(t) \in S : t \ge 0\}$ over the finite or countably infinite
-  state space $S = \{s_1, s_2, \ldots\}$ is a stochastic process which
-  satisfies the Markovian property
-  \begin{equation}
-    \Pr \{ X(t') = s_{j} \mid X(t) = s_{i}, \forall u \in U : X(u) \}
-    = \Pr \{ X(t') = s_{j} \mid X(t) = s_{i} \}
-  \end{equation}
-  for all $t' > t$ and $U \subseteq [0, t)$.
-\end{dfn}
-
-\begin{dfn}
-  A continous-time Markov chain is \emph{(time-)homogenous} if its
-  transition probabilities are invariant with respect to time, i.e.
-  \begin{equation}
-    \Pr \{ X(t') = s_{j} \mid X(t) = s_{i} \} = p(t' - t)[i, j] \text.
-  \end{equation}
-\end{dfn}
-
-We will assume that the \ctmc s we consider are homogenous and have a
-finite state space, unless otherwise indicated.
-
-Let us introduce to shorthand $\vec{\uppi}(t)$ to denote the vector of
-probabilities
-\begin{equation}
-  \pi(t)[i] = \Pr\{X(t) = s_i\} \text,
-\end{equation}
-which will be called the \emph{probablity vector} at time $t$.
-
-The row-stochastic matrix
-\begin{equation}
-  P(\tau) = \bigl(p(\tau)[i, j]\bigr)_{i, j = 1}^{\lvert S \rvert}
-  \label{eq:intro:p_tau}
-\end{equation}
-describes the state transitions of the \ctmc\ over a time period
-$\tau$. More concretely,
-\begin{equation}
-  \vec{\uppi}(t') = \vec{\uppi}(t) P(t' - t) \text.
-\end{equation}
-
-If $X(t)$ is a homogenous \ctmc\ over a finite state space, there exists
-an \emph{infinitesimal generator matrix}
-$Q \in \mathbb{R}^{\lvert S \rvert \times \lvert S \rvert}$ such that
-\begin{equation}
-  P(\tau) = \exp(\tau Q) = \sum_{k = 1}^\infty \frac{\tau^k Q^k}{k!} =
-  I + \tau Q + o(\tau) \text,
-\end{equation}
-where $\exp(\cdot)$ denotes the matrix exponential function. This
-matrix satisfies
-\begin{enumerate}
-\item If $i \ne j$, $q[i, j] \ge 0$;
-\item
-  $q[i, i] = -\bigl( q[i, 1] + q[i, 2] + \cdots + q[i, i - 1] + q[i, i + 1] +
-  \cdots + q[i, \lvert S \rvert] \bigr)$
-  for all $0 \ge i \ge \lvert S \rvert$, that is,
-  $Q \vec{e}^T = \vec{0}^T$.
-\end{enumerate}
-Matricies having these two properties are called Q-matrices.
-
-The \emph{sojourn time} from state $s_j$
-\begin{equation}
-  T(i) = \inf_{t > 0} \{ X(t) \ne s_i \mid X(0) = s_i \}
-\end{equation}
-has the memoryless property
-\begin{equation}
-  \Pr\{T(i) > t + \epsilon \mid T(i) > t\} = \Pr\{T(i) > \epsilon\} \text.
-\end{equation}
-and is exponentially distributed with rate $1 / \E[T(i)] = -q(i,
-i)$.
-
-Moreover, if a state change occurs at time $t$, that is,
-$X(t-) \ne X(t+)$, then $X(t+) = s_j$ given $X(t-) = s_i$ with
-probability $-q[i, j] / q[i, i]$. Thus we can use the matrix $Q$ to
-visualize the behaviour of the \ctmc\ in state $s_i$ as a sojourn in
-$s_i$ with exponentially distributed duration followed by a random
-jump to some state $s_j \ne s_i$.
-
-The configuration above is equivalent to a ``race'' between $n - 1$
-exponentially distributed delays with rates
-$q[i, 1], q[i, 2], \ldots, q[i, i - 1], q[i, i + 1], \ldots, q[i,
-\lvert S \rvert]$, respectively, where the
-first delay to complete causes the \ctmc\ to shift to the destination
-state associated with the delay. The latter characterization turns out
-to be the key intution for modelling asynchronous distributed systems
-with continous-time Markov chains.
-
-The time evolution of the probability vector satisfies the
-differential equation
-\begin{equation}
-  \frac{d \vec{\uppi}(t)}{dt} = \vec{\uppi}(t) Q \text.
-  \label{eq:intro:diffeq}
-\end{equation}
-This gives us a third way of understanding the structure of the
-infintesimal generator matrix: the value $q[i, j]$ corresponds to a
-``flow amount'' of probability mass from the state $s_i$ to
-$s_j$. Off-diagonal entries $q[i, j]$ of $Q$ have positive flow amount
-if the \ctmc\ can eventually leave $s_i$ towards $s_j$ and zero
-otherwise, while negative entries $q[i, i]$ along a diagonal
-correspond to ``leaking'' of probability mass from $s_i$ to other
-states. A zero diagonal entry represents a final state which cannot be
-left.
-
-\begin{dfn}
-  The state $s_j \in S$ of the \ctmc\ $X(t)$ is \emph{accessible} from
-  $s_i \in S$ \paren{written as $s_i \to s_j$} if $p(\tau)[i, j] > 0$ for
-  some $\tau > 0$.
-\end{dfn}
-
-\begin{dfn}
-  The states $s_i, s_j \in S$ of the \ctmc\ $X(t)$ \emph{communicate}
-  \paren{written as $s_i \leftrightarrow s_j$} if $s_i \to s_j$ and
-  $s_j \to s_i$.
-\end{dfn}
-
-\begin{dfn}
-  The \ctmc\ $X(t)$ is \emph{irreducible} if all of its states pairwise
-  communicate.
-\end{dfn}
-
-If $X(t)$ is irreducible, then its infinitesimal generator matrix $Q$
-has rank $\lvert S \rvert - 1$.
-
-\subsection{Analysis tasks}
-
-The two tasks most frequently associated with continous-time Markov
-chains are \emph{transient} and \emph{steady-state} analysis.
-
-In transient problems, the probability distribution vector
-$\vec{\uppi}(t)$ at time $t$ is sought given the initial probability
-distribution vector $\vec{\uppi}(0) = \vec{\uppi}_0$. In practice,
-instead of directly calculating the matrix exponential
-\eqref{eq:intro:p_tau}, either the initial value problem based on
-\eqref{eq:intro:diffeq}
-\begin{equation}
-  \frac{d \vec{\uppi}(t)}{dt} = \vec{\uppi}(t) Q \text{ subject
-    to } \vec{\uppi}(0) = \vec{\uppi}_0
-\end{equation}
-is solved, or the \emph{uniformization algorithm}
-\begin{equation}
-  \vec{\uppi}(t) = \sum_{k = 1}^{\infty} \vec{\uppi}_0 \mleft( I +
-  \frac{1}{\gamma} Q \mright)^k \frac{(\gamma t)^k}{k!} e^{-\gamma t}
-\end{equation}
-is used with some appropriately chosen $\gamma > 0$.
-
-In steady-state analysis, the limit
-\begin{equation}
-  \vec{\uppi}_{\infty} = \lim_{t \to \infty} \vec{\uppi}(t)
-\end{equation}
-is computed. If the \ctmc\ is irreducible, this limit is well-defined
-and independent of the choice of the initial probability distribution
-$\vec{\uppi}(0)$.
-
-The equlibirium condition
-\begin{equation}
-  \frac{d \vec{\uppi}}{dt} = 0
-\end{equation}
-together with \eqref{eq:intro:p_tau} yields the homogenous system of
-linear equations
-\begin{equation}
-  \label{eq:into:steadystate}
-  \vec{\uppi}_\infty Q = \vec{0} \text{ subject to } \sum_{i =
-    0}^{\lvert S \rvert} \pi_\infty[i] = 1 \text{ and } \forall 1 \le
-  i \le \lvert S \rvert :  \pi_\infty[i] > 0
-\end{equation}
-for finding the steady-state probability distribution vector. In other
-words, $\vec{\uppi}_\infty$ is the (unique) vector in the null space
-of $Q$ which is a valid probability distribution vector, that is,
-whose components are all nonnegative and sum to $1$.
-
-Transient analysis is further discussed in Chapter~TODO, while
-steady-state analysis is further discussed in Chapter~TODO.
-
-While these two task primitives are often useful on their own, more
-complicated inquiries, such as model checking for stochastic temporal
-logical formulae also use them as subroutines. Such analysis methods
-are discussed in Chapter~TODO.
-
-\section{Petri nets}
-
-\begin{dfn}
-  A \emph{Petri net} is a tuple
-  \begin{equation}
-    \PN = (P, T, \Pi, W^{-}, W^{+}, W^{H}, M_0) \text,
-  \end{equation}
-  where
-  \begin{itemize}
-  \item $P$ and $T$ are finite set of \emph{places} and
-    \emph{transitions}, respectively;
-  \item $\Pi: P \to \mathbb{N}$ is the \emph{priority function}, which
-    map places to nonnegative integer priorities;
-  \item $W^{-}, W^{+}, W^{H} : T \to \Bag(P)$ are the \emph{input,
-      output} and \emph{inhibitor arc functions}, which map
-    transitions to ``bags'' \paren{multisets} of places;
-  \item $M_0 \in \Bag(P)$ is the \emph{initial marking}.
-  \end{itemize}
-\end{dfn}
-
-For convenience, we will write $w^-[j, i]$, $w^+[j, i]$ and
-$w^H[j, i]$ for the multiplicity of the place $p_i \in P$ in
-$W^-(t_j)$, $W^+(t_j)$ and $W^H(t_j)$, respectively, where $t_j \in T$
-is a transition. A \emph{marking} is a multiset of places
-$M \in \Bag(P)$. We write $m(i)$ for the multiplicity of $p_i$ in the
-marking $M$. The set of \emph{input places} $\leftTok{t_j}$,
-\emph{output places} $\rightTok{t_j}$ and \emph{inhibitor places}
-$\leftInh{t_j}$ of a transition $t_j$ are defined as
-\begin{equation}
-  \begin{gathered}
-    \begin{aligned}
-      \leftTok{t_j} &= \{ p_i \in P : w^-[j, i] > 0 \}\text, &
-      \rightTok{t_j} &= \{ p_i \in P : w^+[j, i] > 0 \}\text,
-    \end{aligned} \\
-    \leftInh{t_j} = \{ p_i \in P : w^H[j, i] > 0 \}\text,
-  \end{gathered}
-\end{equation}
-respectively.
-
-\subsection{Token game}
-
-\begin{dfn}
-  The transition $t_j$ has \emph{concession} in the marking $M$ if
-  \begin{equation}
-    \forall p_i \in \leftTok{t_j} : m(i) \ge w^-[j, i] \text{ and }
-    \forall p_i \in \leftInh{t_j} : m(i) < w^H[j, i] \text.
-  \end{equation}
-\end{dfn}
-
-\begin{dfn}
-  The transition $t_j$ is \emph{enabled} in the marking $M$ if it has
-  concession in $M$ and no transition $t_{k}$ has concession in $M$
-  such that $\Pi(t_{k}) > \Pi(t_j)$.
-\end{dfn}
-
-If the transition $t_j$ is enabled in $M$, it can \emph{fire} to yield
-another marking
-\begin{equation}
-  M' = M - W^-(T_j) + W^+(T_j)
-\end{equation}
-which is written as $M \xrightarrow{t_j} M'$. We can visualize the
-marking $M$ as a bag of ``tokens'' located on some of the places
-$P$. The firing of $t_j$ removes $W^-(t_j)$ tokens from
-$\leftTok{t_j}$ and places $W^{+}(t_j)$ tokens to $\rightTok{t_j}$,
-but only if there are less than $W^H(t_j)$ tokens on $\leftInh{t_j}$
-and no higher priority transition has concession.
-
-\begin{dfn}
-  The marking $M'$ is \emph{reachable} from the marking $M$ if there
-  exists a \paren{possibly empty} sequence of transitions
-  $t_{i_1}, t_{i_2}, \ldots, t_{i_n}$ such that
-  \begin{equation}
-    M \xrightarrow{t_{i_1}} M_1 \xrightarrow{t_{i_2}} M_2
-    \xrightarrow{t_{i_3}} \cdots \xrightarrow{t_{i_{n - 1}}} M_{n - 1}
-    \xrightarrow{t_{i_n}} M_n = M'\text.
-  \end{equation}
-\end{dfn}
-
-\begin{dfn}
-  The \emph{reachability set} $\RS$ of a Petri net is the set of all
-  markings reachable from the initial marking $M_0$.
-\end{dfn}
-
-The rechability set may contain an enormous amount of markings even if
-the Petri net is of modest size. This phenomenon is called \emph{state
-  space explosition} \textbf{TODO citation?}, which is a significant
-obstacle in the analysis of Petri nets. The maximum size of the models
-which can be analyzed using a given pool of resources may be incresead
-by chosing an efficient representation of the reachability set instead
-of explicit storage of all reachable markings. \textbf{TODO citation!}
-
-\section{Stochastic Petri nets}
-
-\begin{dfn}
-  A \emph{Generalized Stochastic Petri Net} \paren{\emph{\gspn}} is a
-  tuple
-  \begin{equation}
-    \GSPN = (P, T, \Pi, \Lambda, W^-, W^+, W^H, M_0) \text,
-  \end{equation}
-  where $(P, T, \Pi, W^-, W^+, W^H, M_0)$ is a Petri net and $\Lambda:
-  T \to \mathbb{R}^{+}$ is called the \emph{rate} or \emph{weight}
-  function.
-\end{dfn}
-
-Transitions with $\Pi = 0$ are called \emph{timed} transitions, while
-transitions with $\Pi \ge 1$ are called \emph{immediate}
-transitions. The value $\Lambda(t_j)$, abbreviated as $\lambda_j$, is
-referred to as the \emph{rate} associated with $t_j$ if $t_j$ is
-timed or the \emph{weight} of $t_j$ if $t_j$ is immediate.
-
-\begin{dfn}
-  A marking $M$ is \emph{vanishing} if there exists an immediate
-  transition with concession. Non-vanishing markings are called
-  \emph{tangible}.
-\end{dfn}
-
-The \emph{tangible reachability set} $\TRS \subseteq \RS$ is the set
-of all reachable tangible states. The dynamics of a \gspn\ are
-described with by continous-time Markov chain $X(t)$ whose set of
-states $S$ is the tangible reachability set $\TRS$ and the initial
-state $X(0)$ is the initial marking $M_0$. The states
-$S = \{s_0, s_1, s_2, \ldots\}$ and tangible reachable markings
-$\TRS = \{M_0, M_1, M_2, \ldots\}$ will be used interchangeably in the
-rest of this report, specifically, we will assume that the state $s_0$
-represents the initial marking $M_0$ in the \ctmc.
-
-In tangible states, timed transitions that are enabled fire with
-delays exponentially distributed according to their $\lambda$
-rates. If the resulting marking is vanishing, the enabled immediate
-transitions fire until a tangible marking is reached, which will
-become the next state of the \ctmc. If multiple immediate transitions
-are enabled in a vanishing marking, one is selected and fired randomly
-with probability proportional to its $\lambda$ weight. Thus, state
-changes of the \ctmc\ corresponding to the \gspn\ consist of the
-firing of a timed transition followed by a -- possibly empty, if the
-output marking of the timed transition is tangible -- random sequence
-of immiditate transition firings. \textbf{TODO Example trace of a
-  timed and immediate firing.}
-
-Let $p_{\text{immediate}}(M_i, M_j)$ denote the probabilty that the
-\gspn\ reaches the tangible marking $M_j$ starting from the tangible
-or transient marking $M_i$ by a possible empty sequence of immediate
-transition firings. Observe that when $M_i$ is tangible,
-$p_{\text{immediate}}(M_i, M_j) = 1$ if $i = j$ and $0$ otherwise.
-
-The behaviour of the \gspn\ is well-defined if
-$p_{\text{immediate}}(M, M')$ is well-defined for all $M \in \RS$,
-$M' \in \TRS$ \citep{DBLP:journals/tse/TeruelFP03} and the net is free
-of \emph{confusion}. We also require the length of immediate firing
-sequences from vanishing to tangible markings be bounded, i.e.~no
-limits are needed to be evaluated to calculate
-$p_{\text{immediate}}$. \textbf{TODO Example of a non-well-defined
-  net.}
-
-The infinitesimal generator of a \gspn\ can be written as
-\begin{gather}
-  q_{O}[i, j] = \sideset{}{'}\sum_{M_i \xrightarrow{t_k} M'} \lambda_k
-  p_{\text{immedidate}}(M', M_j)
-  \text, \\
-  Q = Q_{O} + Q_{D} = Q_{O} - \diag Q_o \vec{e}^T \text,
-\end{gather}
-where the summation is performed over all transitions $t_k$ enabled in
-the state $M_i$, while $Q_O$ and $Q_D$ stand for the off-diagonal and
-diagonal parts of $Q$, respectively.
-
-The storage of $Q$ for \gspn\ is particularly challenging due to state
-space explosition, because the number of entries, therefore the amount
-of memory required for the explicit storage of the inifinitesimal
-generator matrix, grows quadratically in the number of tangible
-reachable markings. This behaviour is opposed to the amount of memory
-required for explicit storage of $\TRS$, which grows merely
-linearly. Therefore, efficient representation of $Q$ becomes a problem
-even in analysis task where explicit storate of $\TRS$ (or $\RS$) is
-possible.
-
-\subsection{Conflict and confusion}
-
-A pair of immediate transitions $t_1$, $t_2$ cannot fire
-``simultaneously'' if only one of traces
-$M \xrightarrow{t_1} M' \xrightarrow{t_2} M'''$ and
-$M \xrightarrow{t_2} M'' \xrightarrow{t_1} M'''$ is possible. In this
-case, we must evaluate the effects of $t_1$ and $t_2$ separately. This
-notion is formalized as the effective conflict relation, which is
-noncommutative, unreflexive and intransitive due to the presence on
-priority levels and inhibitor arcs.
-
-\begin{dfn}[\cite{DBLP:journals/tse/ChiolaMBC93}]
-  The transitions $t_1$ and $t_2$ are in \emph{effective conflict} in
-  the marking $M$ \paren{written as $t_1 \EffC{M} t_2$} if and only if
-  $t_2$ has concession in $M$, $t_1$ is enabled in $M$, $M
-  \xrightarrow{t_1} M'$ and $t_2$ has no concession in $M'$.
-\end{dfn}
-
-If $t_1$ and $t_2$ are not in conflict, but the final outcome of the
-sequence of immediate firings depends on the order in which $t_1$ and
-$t_2$ are fired, the \gspn\ is in \emph{confusion}. \textbf{TODO Petri
-  net with confusion.} More formally:
-
-\begin{dfn}[\cite{DBLP:journals/tse/ChiolaMBC93}]
-  The transition s $t_1$ and $t_2$ are in \emph{assymetric confusion}
-  in the marking $M$ if and only if it is \emph{not} the case that
-  $t_1 \EffC{M} t_2$, $t_1$ is enabled in $M$,
-  $M \xrightarrow{t_1} M'$ and there exists a transition $t_3 \in T$
-  such that $t_2 \EffC{M'} t_3$.
-\end{dfn}
-
-Algorithms that are used to determine $p_{\text{immediate}}$
-\citep{DBLP:journals/tse/ChiolaMBC93, DBLP:journals/tse/TeruelFP03}
-usually consider confusion a semantic error and help the modeller
-choose priorities for the immediate transitions in order to avoid
-confusion. If the net is not confused, immediate transitions not in
-pairwise conflict can be fired in \emph{batches}, while weights
-$\lambda$ are used to randomly resolve conflicts.
-
-The trivial case of a net without confusion is one without any
-immedaite transitions, i.e.~$\PI \equiv 0$ for all transitions. Such
-$\gspn$s are called (ordinary) stochastic Petri nets or \spn s.
-
-\section{Tensors and Kronecker algebra}
-
-\chapter{Example Petri Net}
-
-We will now consider the Generalized Stochastic Petri Net $\PN$ in
-Figure~\ref{fig:example:pn}~(a). The net contains seven places, two
-immediate transitions $t_1$ and $t_3$, which form an effective
-conflict set, and six timed transitions.
-
-\begin{figure}
-  \hspace*{\fill}
-  \parbox[c]{0.55\linewidth}{\centering \input{example_net}}
-  \hfill
-  \parbox[c]{0.4\linewidth}{\centering \input{example_net_hl}}
-  \hspace*{\fill}
-  \par\vspace{0.5\onelineskip}
-  \hspace*{\fill}
-  \parbox[t]{0.55\linewidth}{\subcaption{%
-      Partition consisting of regions $\LN_1$ and $\LN_2$}}
-  \hfill
-  \parbox[t]{0.4\linewidth}{\subcaption{High level structure}}
-  \hspace*{\fill}
-  \caption{Example Generalized Stochastic Petri Net $\PN$ with its
-    initial marking $M_0$}
-  \label{fig:example:pn}
-\end{figure}
-
-\section{Decomposition into High Level and Low Level Nets}
-
-\subsection{Partitioning Into Minimal Regions}
-
-To facilitate Kronecker analysis we partition the net into
-\emph{minimal regions} following
-\citet{DBLP:journals/sigmetrics/BuchholzK98}.
-
-A set of transitions $T_r \subset T$ defines a region if
-$({}^{\bullet, \circ}T_r)^{\bullet, \circ} = T_r$, where
-${}^{\bullet,\circ}T_r = {}^{\bullet}T_r \cup {}^{\circ}T_r$ is set of
-places connected to transitions in $T_r$ by input or inhibitor edges,
-and $P_r^{\bullet, \circ} = P_r^{\bullet} \cup P_r^{\circ}$ is the set
-of transitions connected to places in $P_r$ by input or inhibitor
-edges. In other words, the minimum regions partition the set of
-transitions $T$ such that no place is shared by two transitions for
-different regions as input on inhibitor.
-
-We first partition $T$ into singleton sets $(\{p_i\})_{i = 1}^7$, then
-iterate over the places. In the $i$th iteration, all the sets which
-share $p_i$ as input (or inhibitor) are merged. We only need to merge
-regions in iterations when $p_i$ has at least two adjacent input (or
-inhibitor) edges.
-
-\subsection{Merging Minimal Regions into Subnets}
-
-The minimal region $\{t_1, t_2, t_3, t_4\}, \{t_5\}$ has immediate
-output transitions $t_1$ and $t_2$ which must be turned into internal
-transitions by region merging. Moreover, minimal regions $\{t_7\}$ and
-$\{t_8\}$ contain no internal (timed) behaviour, therefore, they also
-need to be merged. We merge them with each other in order to divide
-$\PN$ into $J = 2$ low-level nets and $k = 3$ output transitions
-between them.
-
-Partitioning of the net is illustrated in
-Table~\ref{tbl:example:partition}.
-
-\begin{table}
-  {\centering
-    \begin{tabular}{@{}lll@{}}
-      \toprule
-      & Action & Regions \\
-      \midrule
-      & Initialize & $\{t_1\}, \{t_2\}, \{t_3\}, \{t_4\}, \{t_5\},
-                     \{t_6\}, \{t_7\}, \{t_8\}$ \\[0.5em]
-      $p_1$ & Merge $t_1, t_2, t_3, t_4$ & $\{t_1, t_2, t_3, t_4\}, \{t_5\},
-                     \{t_6\}, \{t_7\}, \{t_8\}$ \\
-      $p_2$ & & $\{t_1, t_2, t_3, t_4\}, \{t_5\},
-                     \{t_6\}, \{t_7\}, \{t_8\}$ \\
-      $p_3$ & & $\{t_1, t_2, t_3, t_4\}, \{t_5\},
-                     \{t_6\}, \{t_7\}, \{t_8\}$ \\
-      $p_4$ & $t_1, t_3$ ok & $\{t_1, t_2, t_3, t_4\}, \{t_5\},
-                     \{t_6\}, \{t_7\}, \{t_8\}$ \\
-      $p_5$ & $t_2, t_4$ ok & $\{t_1, t_2, t_3, t_4\}, \{t_5\},
-                     \{t_6\}, \{t_7\}, \{t_8\}$ \\
-      $p_6$ & & $\{t_1, t_2, t_3, t_4\}, \{t_5\},
-                     \{t_6\}, \{t_7\}, \{t_8\}$ \\
-      $p_7$ & & $\{t_1, t_2, t_3, t_4\}, \{t_5\},
-                     \{t_6\}, \{t_7\}, \{t_8\}$ \\[0.5em]
-      $t_1$ & Merge $t_1, t_5$ & $\{t_1, t_2, t_3, t_4, t_5\},
-                     \{t_6\}, \{t_7\}, \{t_8\}$ \\
-      $t_3$ & Merge $t_3, t_6$ & $\{t_1, t_2, t_3, t_4, t_5, t_6\},
-                     \{t_7\}, \{t_8\}$ \\[0.5em]
-      $t_7$ & Merge $t_7, t_8$ & $\LN_1 = \{t_1, t_2, t_3, t_4, t_5, t_6\},
-                     \LN_2 = \{t_7, t_8\}$ \\
-      \bottomrule
-    \end{tabular}
-    \par}
-  \caption{Partitioning the set of transitions into regions}
-  \label{tbl:example:partition}
-\end{table}
-
-\subsection{Partial Place Invariants and MSIPs}
-
-We first compute the $P$-invariants of $\PN$:
-\begin{itemize*}
-\item $\{p_2, p_3, p_4, p_5\}$,
-\item $\{p_1, p_2, p_3, p_6, p_7\}$.
-\end{itemize*}
-The $P$-invariants of $\LN_1$ with the output transitions removed:
-\begin{itemize*}
-\item $\PI_1 = \{p_1, p_2, p_3\}$,
-\item $\{p_2, p_3, p_4, p_5\}$.
-\end{itemize*}
-The $P$-invariant of $\LN_2$ with the output transition removed:
-\begin{itemize*}
-\item $\PI_2 = \{p_6, p_7\}$.
-\end{itemize*}
-
-\emph{Partial} $P$-invariants are invariants of the low-level nets
-which are not invariants of the full net. Therefore, both $\LN_1$ and
-$\LN_2$ have only one partial invariants, $\PI_1$ and $\PI_2$,
-respectively. These invariants correspond to MSIPs in the high level
-net $\HN$ an the extended nets $\EN_1$ and $\EN_2$. The high-level net
-is shown in Figure~\ref{fig:example:pn}~(b).
-
-\section{High-level and Low-level TRS exploration}
-
-Because both the high-level and low-level nets are $1$-bounded, we
-will denote a marking by the set of places which have a token,
-e.g.~$M_0 = \{p_1, p_5\}$ in the original net $\PN$ and $M_0 =
-\{\PI_1\}$ in $\HN$.
-
-The set of reachable high-level states (macro-markings) are
-\begin{equation*}
-  \TRS(\HN) = \{s^H_1 = \{\PI_1\}, s^H_2 = \{\PI_2\}\} \text.
-\end{equation*}
-When exploring the tangible state-spaces of the low-level nets, we
-also note which high-level marking a given state corresponds to:
-\begin{align*}
-  \TRS(\LN_1) &= S^{(1)}_1 \cup S^{(1)}_2 \text, \\
-  S^{(1)}_1 &= \{s^{(1)}_{1} = \{p_1, p_5\}, s^{(1)}_{2} = \{p_2\},
-              s^{(1)}_{3} = \{p_3\}\} \text, \\
-  S^{(2)}_2 &= \{s^{(1)}_{4} = \{p_4\}, s^{(1)}_{5} = \{p_5\}\} \text,
-  \\
-  \TRS(\LN_2) &= S^{(2)}_1 \cup S^{(2)}_2 \text, \\
-  S^{(2)}_1 &= \{s^{(2)}_{1} = \emptyset\} \text, \\
-  S^{(2)}_2 &= \{s^{(2)}_{2} = \{p_6\}, s^{(2)}_{3} = \{p_7\}\} \text.
-\end{align*}
-
-A na\"\i ve approximation of the state space of $\PN$ is $\TRS(\LN_1)
-\times \TRS(\LN_2)$. However, this set of states contains many
-markings unreachable from $M_0$.
-
-We will analyse the behaviour of $\PN$ as a \ctmc\ over the state space
-$S' = S'_1 \cup S'_2 = S^{(1)}_1 \times S^{(2)}_1 \cup S^{(1)}_2
-\times S^{(2)}_2\}$.
-Observe that the the global state $(s^{(1)}_{5}, s^{(2)}_{2})$ is
-unreachable, because in order have a token in $p_5$, transition $t_6$
-must be fired, however, in order to have a token in $p_6$, transition
-$t_5$ must be fired. The true state space of $\PN$ is
-$S = S' \setminus \{(s^{(1)}_{5}, s^{(2)}_{2})\}$.
-
-While the introduction of low-level state-space partitioning by MSIPs
-reduced the size of $S'$ considerably, the resulting Markov chain is
-still not irreducible; we have to work around unreachable marking. In
-addition, the reduction of state-space size---which reduces storage
-requirements of probability vectors---increased the complexity of the
-rate matrix, as we will see in the next Section.
-
-\section{Rate Matrix Generation}
-
-We will find the rate matrix as a block matrix of $\lvert S^H \rvert
-\times \lvert S^H \rvert$ block, plus a diagonal correction term:
-\begin{gather}
-  Q_O = \left( \begin{array}{@{}c|c@{}}
-                 Q_O[1, 1] & Q_O[1, 2] \\
-                 \hline Q_O[2, 1] & Q_O[2, 2]
-       \end{array} \right) \text, \\
-  Q_D = \diag(\vec{e}^T Q_O) \text, \\
-  Q = Q_O + Q_D \text,
-  \intertext{where the $\lvert S'_{x} \rvert \times \lvert S'_{y}
-    \rvert$ matrix $Q_O[x, y]$ describes the rate of transitions from
-    macro-marking $s^H_{x}$ to $s^H_{y}$ and is of the form:}
-  Q_O[x, y] = \begin{cases}
-    \displaystyle \bigoplus_{j = 1}^J Q^{(j)}_L[x, x] +
-    \sum_{i = 1}^{k_{x, x}} \bigotimes_{j = 1}^{J} Q^{j}_k[x, x] & \text{if
-      $x = y$,} \\
-    \displaystyle
-    \sum_{i = 1}^{k_{x, y}} \bigotimes_{j = 1}^{J} Q^{j}_k[x, y] & \text{if
-      $x \ne y$.}
-  \end{cases} \label{eq:example:QO}
-\end{gather}
-
-\emph{Is it true in the general case that $k_{x,x} = 0$? An output
-  transition adds at least one token to a place in a \emph{foreign}
-  region, therefore increases the value of at least one partial
-  P-invariant of that region. Therefore, no output transition may
-  leave the MSIPs unchanged.}
-
-The $\lvert S^{(j)}_{x} \rvert \times \lvert S^{(j)}_{x} \rvert$
-matrix $Q^{(j)}_L[x, x]$ describes the effects of inner transitions in
-$\LN_j$ when the current macro-marking is $s^H_x$. The
-$\lvert S^{(j)}_{x} \rvert \times \lvert S^{(j)}_{y} \rvert$ matrix
-$Q^{(j)}_i[x, x]$ describes the effects in $\LN_j$ of the $i$th
-transition (out of $k_{x, x}$) which takes $\HN$ from $s^H_x$ to
-$s^H_y$.
-
-The local transition matrices are
-\begin{align}
-  Q^{(1)}_L[1, 1] &= \begin{pmatrix}
-    0 & 2 & 1 \\
-    0 & 0 & 0 \\
-    0 & 0 & 0
-  \end{pmatrix} \text,
-  & Q^{(2)}_L[1, 1] &= \begin{pmatrix}
-    0
-  \end{pmatrix} \text, \\
-  Q^{(1)}_L[2, 2] &= \begin{pmatrix}
-    0 & 0 \\
-    0 & 0
-  \end{pmatrix} \text, &
-  Q^{(2)}_L[2, 2] &= \begin{pmatrix}
-    0 & 1 \\
-    0 & 0
-  \end{pmatrix} \text.
-\end{align}
-
-There are no output transitions that leave the macro-marking
-unchanged, therefore $k_{1, 1} = k_{2, 2} = 0$. The transitions $t_5$
-and $t_6$ take $s^H_1$ to $s^H_2$, while transition $t_8$ takes
-$s^H_2$ to $s^H_1$, therefore $k_{1, 2} = 2$ and $k_{2, 1} = 1$.
-
-First we construct the matrices corresponding to output transitions
-$t_5$. Note that we write $\lambda(t_5)$ ad $\lambda(t_6)$ in the
-appropriate cells of $Q^{(1)}_1[1, 2]$ and $Q^{(1)}_2[1, 2]$ instead
-of $1$ in order to avoid multiplication by $\lambda$ in
-\eqref{eq:example:QO}.
-\begin{align}
-  Q^{(1)}_1[1, 2] &= \begin{pmatrix}
-    0 & 0 \\
-    0.1 & 0 \\
-    0 & 0
-  \end{pmatrix} \text, &
-  Q^{(2)}_1[1, 2] &= \begin{pmatrix}
-    1 & 0
-  \end{pmatrix} \text, \\
-  Q^{(1)}_2[1, 2] &= \begin{pmatrix}
-    0 & 0 \\
-    0 & 0 \\
-    0 & 0.1
-  \end{pmatrix} \text, &
-  Q^{(2)}_2[1, 2] &= \begin{pmatrix}
-    0 & 1
-  \end{pmatrix} \text. \\
-\end{align}
-
-To construct the matrices corresponding to $t_8$, we must model the
-immediate random behaviour of $\LN_1$ due to $t_1$ and $t_3$ in
-$Q^{(1)}_1[2, 1]$:
-\begin{align}
-  Q^{(1)}_1[2, 1] &= \begin{pmatrix}
-    0 & \frac{1}{3} & \frac{2}{3} \\
-    1 & 0 & 0
-  \end{pmatrix} \text, &
-  Q^{(2)}_1[2, 1] &= \begin{pmatrix}
-    0 \\
-    0.5
-  \end{pmatrix} \text.
-\end{align}
-
-The full $Q$ matrix is
-\begin{equation}
-  Q = \left( \begin{array}{@{}ccc|cccc@{}}
-               * & 2 & 1 & 0 & 0 & 0 & 0 \\
-               0 & * & 0 & 0.1 & 0 & 0 & 0 \\
-               0 & 0 & * & 0 & 0 & 0 & 0.1 \\
-               \hline
-               0 & 0 & 0 & * & 1 & 0 & 0 \\
-               0 & \frac{1}{6} & \frac{1}{3} & 0 & * & 0 & 0 \\
-               0 & 0 & 0 & 0 & 0 & * & 1 \\
-               0.5 & 0 & 0 & 0 & 0 & 0 & * \\
-             \end{array} \right) \text.
-\end{equation}
-Observe that the second-to-last column contains no positive entries,
-therefore, the corresponding $(s^{(1)}_5, s^{(2)}_2)$ state is indeed
-unreachable and the CMTC is not irreducible.
-
-\section{Kronecker Analysis with Decomposition}
-
-\chapter{Kronecker Analysis}
-
-\begin{figure}
-  {\centering
-    \input{flowchart.tex}
-    \par}
-  \caption{The exact decompositional algorithm}
-  \label{fig:kronecker:flowchart}
-\end{figure}
-
-Rough outline for figuring out the exact decomposition algorithm
-\citep{bao2008decompositional} in Figure~\ref{fig:kronecker:flowchart}:
-
-\section{Construction of Initial Probability Vector}
-
-Due to the reducibility of $Q$, the initial choice of $\vec{\uppi}$ will
-determine the steady-state solution. Therefore, we need to choose
-$\vec{\uppi}$ such that it is only nonzero at the states reachable from
-$M_0$,
-\begin{equation}
-  \pi_i = \begin{cases}
-    1 / \lvert \TRS(\PN) \rvert & \text{if $s_i \in \TRS(\PN)$,} \\
-    0 & \text{if $s_i \notin \TRS(\PN)$.} \\
-  \end{cases}
-\end{equation}
-This requires discovery of $\TRS(\PN)$.
-
-\section{Solution of the Reducible Subproblem}
-
-Due to the block structure of $Q^{(j)}$, the ``projection'' of $Q$ to
-$\LN_j$ which is obtained by removing the Kronecker products from
-\eqref{eq:example:QO}, it is never irreducible. State changes which
-would allow $Q^{(j)}$ to move between different macro-markings would violate
-the partial $P$-invariants of $\LN_j$ which are used to describe the
-macro-markings.
-
-Therefore, we have to disaggregate and aggregate the synchronized part
-of $Q$ in the decompositional algorithm. This reduces the
-decompositional algorithm of \citet{bao2008decompositional} to the
-approximate decompositional algorithm of
-\citet{DBLP:journals/sigmetrics/BuchholzK98}, plus a Gauss--Seidel
-correction step.
-
-\section{Disaggregation of the Probability Vector}
-
-After solving the local equations with (dis)aggregated synchronized
-transitions, we obtain local probability vectors $\pi^{(j)}$ for each
-local net $\LN_j$. Due to the reducibility of $Q$, the
-vector Kronecker product
-\begin{equation}
-  \vec{\uppi}' = \bigotimes_{j = 1}^J \vec{\uppi}^{(j)}
-\end{equation}
-cannot be used as input for the GS correction step, because it can
-have support at states unreachable from $M_0$.
-
-\begin{prop}
-  Let $S = \{1, 2, \ldots, n\}$ and $S^{(j)} = \{1, 2, \ldots, n_j\}$
-  for all $j = 1, 2, \ldots, J$ be state spaces, $\TRS \subseteq S$,
-  $f^{(j)}: S \to S^{(j)}$ be surjective mappings and
-  $\vec{\uprho}^{(j)}$ be positive probability vectors (that is,
-  $\sum_{s^{(j)} \in S^{(j)}} \rho^{(j)}(s^{(j)}) = 1$ and
-  $\rho^{(j)}(s^{(j)}) > 0$ for all
-  $s^{(j)} \in S^{(j)}$). The system of equations
-  \begin{empheq}[left=\empheqlbrace]{gather}
-    \sum_{s \in S} \pi(s) = 1 \text, \qquad
-    \pi(s) \ge 0 \text{ for all $s \in S$,}
-    \label{eq:kronecker:disaggregate-cond1} \\
-    \sum_{f^{(j)}(s) = s^{(j)}} \pi(s) = \rho^{(j)}(s^{(j)}) \text{
-      for all $j = 1, 2, \ldots, j$ and $s^{(j)} \in S^{(j)}$,}
-    \label{eq:kronecker:disaggregate-cond2} \\
-    \pi(s) = 0 \text{ for all $s \notin \TRS$}
-    \label{eq:kronecker:disaggregate-cond3}
-  \end{empheq}
-  has a solution of the form
-  \begin{align}
-    \pi(s) = a \prod_{j = 1}^{J} p^{(j)}(f^{(j)}(s))
-    \text, \label{eq:kronecker:disaggregated-pi}
-  \end{align}
-  where $\vec{p}^{(j)}$ are nonnegative vectors and a is a positive
-  constant. Solutions of this form have maximum entropy
-  \begin{align}
-    H(\vec{\uppi}) = \sum_{s \in \TRS} - \pi(s) \log \pi(s) \text.
-  \end{align}
-
-  Conversely, any probability vector $\vec{\uppi}$ of the form
-  \eqref{eq:kronecker:disaggregated-pi} that satisfies
-  \eqref{eq:kronecker:disaggregate-cond2} and
-  \eqref{eq:kronecker:disaggregate-cond3} also satisfies
-  \eqref{eq:kronecker:disaggregate-cond1} and has maximum entropy the
-  entropy $H(\vec{\uppi})$.
-\end{prop}
-
-\begin{proof}
-  Consider the Lagrange function associated with the optimization
-  problem $\max_{\vec{\uppi}} H(\vec{\uppi})$ subject to
-  \eqref{eq:kronecker:disaggregate-cond1}--%
-  \eqref{eq:kronecker:disaggregate-cond3} by introducing Lagrange
-  multiplicators $\alpha, \vec{\upbeta}, \vec{\upgamma}^{(j)}$ and
-  $\vec{\updelta}$,
-  \begin{equation}
-    \begin{aligned}
-      & \Lambda(\vec{\pi}, \alpha, \vec{\upbeta},
-      \vec{\upgamma}^{(1)}, \vec{\upgamma}^{(2)}, \ldots,
-      \vec{\upgamma}^{(J)},
-      \vec{\updelta}) =\\
-      &\qquad - \sum_{s \in \TRS} - \pi(s) \log \pi(s) + \alpha
-      \Biggl( \sum_{s \in S} \pi(s) - 1 \Biggr) + \sum_{s \in S}
-      \beta(s) \pi(s) \\
-      &\qquad + \sum_{j = 1}^{J} \, \sum_{s' \in S^{(j)}}
-      \gamma^{(j)}(s') \Biggl( \sum_{s \in F^{(j)}(s')} \pi(s) -
-      \rho^{(j)}(s') \Biggr) + \sum_{s \notin \TRS} \delta(s) \pi(s)
-      \text,
-    \end{aligned}
-  \end{equation}
-  where we have written $F^{(j)}(s') = \{ s \in S \mid f^{(j)}(s) = s'
-  \}$ for brevity.
-
-  Suppose that the optimal solution has $\pi(s) > 0$ for all
-  $s \in \TRS$. Hence, the gradient $\nabla \Lambda$ exists and the
-  optimal solution satisfies the Karush--Kuhn--Tucker conditions
-  \begin{gather}
-    \frac{\partial \Lambda}{\partial \pi(s)}
-    = \log \pi(s) + 1 + \alpha + \beta(s) + \sum_{j = 1}^{J}
-    \gamma^{(j)}(f^{(j)}(s)) = 0 \text{ for all $s \in \TRS$,} \\
-    \beta(s) \ge 0 \text{ and } \beta(s) \pi(s) = 0 \text{ for all $s
-      \in S$.}
-  \end{gather}
-  We can conclude from $\pi(\TRS) > 0$ that $\beta(s) = 0$ for all
-  $s \in \TRS$ and
-  \begin{equation}
-    \pi(s) = \exp (-1 - \alpha) \prod_{j = 1}^J \exp
-    [ -\gamma^{(j)}(f^{(j)}(s)) ]
-    = a \prod_{j = 1}^J p^{(j)}(f^{(j)}(s)) \text.
-  \end{equation}
-\end{proof}
-
-\section{Correction Vector Calculation}
-
-(Block) Gauss--Seidel, as presented in the book, only works on sums of
-Kronecker products, not block matrices where each block is a sum of
-Kronecker products. Therefore, another method is needed to calculate
-the correction vector $\vec{y}$.
-
-Could (Block) Jacobi or (Block) power iteration \citep[Section
-3.2]{dayar2012analyzing} be used here? Another possibility is a
-``hybrid'' Jacobi--Gauss--Seidel approach, where we use Gauss--Seidel
-backward substitution is used for the diagonal block, but the
-off-diagonal blocks are zero in the matrix we need to ``invert'' in
-matrix splitting.
-
-\citet[Equation~(16)]{DBLP:journals/questa/Buchholz94} gives a
-modified form of block Gauss--Seidel iteration for block structured
-matrices. Does it respect the unreachable global states?
-
-\section{Exact Hierarchical Decomposition}
-
-\subsection{Basic Algorithm}
-
-Let $\LN_1, \LN_2, \ldots, \LN_J$ be a decomposition of $\PN$ into
-subnets, i.e.~$P = P_1 \coprod P_2 \coprod \cdots \coprod P_j$ a
-disjoint partition of the places $P$ in $\PN$ into subsets $P_j$,
-which are the places of $\LN_j$, respectively.
-
-Let $\TRS_j$ denote the tangible reachability set of $\LN_j$. The set
-$\TRS$ of tangible states of $\PN$ is a subset of the \emph{potential}
-reachability set $\PS$,
-\begin{equation}
-  \TRS \subseteq \PS = \TRS_1 \times \TRS_2 \times \cdots \times
-  \TRS_J\text.
-\end{equation}
-
-Let us define the equivalence relation $\sim_j$ over $\TRS_j$ as
-\begin{equation}\label{eq:kronecker:state-equivalence}
-  s^{(j)} \sim_j s'^{(j)} \Longleftrightarrow \{ s \in \TRS : s[j] =
-  s^{(j)} \} = \{ s' \in \TRS : s'[j] = s'^{(j)} \} \text,
-\end{equation}
-where $s[j] \in \TRS_j$ denotes the local state of $\LN_j$ in the
-global state $s \in \TRS$, i.e.~the $j$th component of $s$. The set of
-macro-states $\macroTRS_j$ is the set of equivalence classes $\TRS_j /
-{\sim_j}$.
-
-The set of reachable macro-state combinations
-$\macroTRS \subset \macroStates{\PS} = \macroTRS_1 \times \macroTRS_2
-\times \cdots \times \macroTRS_j$
-is used as a set os block indices to the block-Kronecker infinitesimal
-generatior matrix:
-\begin{gather}
-  Q = Q_O - Q_D \text, \\
-  Q_O[\macroS{s}, \macroS{s}'] = \begin{cases} \displaystyle
-    \bigoplus_{j = 1}^J Q_L^{(j)}[\macroS{s}, \macroS{s}] + \sum_{i =
-      1}^{k_{\macroS{s}, \macroS{s}}} \bigotimes_{j = 1}^J
-    Q_{i}^{j}[\macroS{s},
-    \macroS{s}] & \text{if $\macroS{s} = \macroS{s}'$,} \\
-    \displaystyle \sum_{i = 1}^{k_{\macroS{s}, \macroS{s}'}}
-    \bigotimes_{j = 1}^J Q_{i}^{j}[\macroS{s}, \macroS{s}'] & \text{if
-      $\macroS{s} = \macroS{s}'$,}
-  \end{cases} \\
-  Q_D = \diag (Q_O \vec{e}^T) \text,
-\end{gather}
-where $Q_L^{(j)}[\macroS{s}, \macroS{s}]$ corresponds to the local
-transitions in $\LN_j$ and the macro-state $\macroS{s}$, while
-$Q_{i}^{j}[\macroS{s}, \macroS{s}']$ corresponds to the effects of
-$i$th synchronized transition that brings the system from global
-macro-state $\macroS{s}$ to $\macroS{s}'$ in $\LN_j$.
-
-In the original algorithm of \citet{DBLP:journals/tse/Buchholz99},
-$\TRS$ is represented with a bit vector of length $\lvert \PS
-\rvert$.
-After the generation of macro-states $\macroTRS_1$, only a bit vector
-of length
-$\lvert \macroTRS_1 \times \TRS_2 \times \TRS_3 \times \cdots \times
-\TRS_J \rvert$
-is needed, because states in the macro-states of $\LN_1$ have
-identical external behaviour. Likewise, the first $j - 1$ subnets may
-be represented by their macro-states when we calculate $\macroTRS_j$.
-
-\subsection{Reducing Storage Requirements by Preprocessing}
-
-TODO Section~5 in \citet{DBLP:journals/tse/Buchholz99}.
-
-\subsection{Efficient Macro-state Generation with MDDs}
-
-Consider the quasi-reduced ordered MDD that describes $\TRS$ and
-suppose that nodes on the $j$th level correspond to the subnet
-$\LN_j$. Let
-\begin{equation}
-  \Env_j(s^{(j)}) = \bigcup_{\level(a) = j} \Above(a) \times a[s^{(j)}]
-\end{equation}
-be the \emph{environment} of the local state $s^{(j)} \in S^{(j)}$,
-where $\Above(a)$ is the MDD of the upper $J - j$ levels of $r$
-leading to $a$.
-
-Local macro states consist of local states with the same
-(quasi-reduced) environment, that is,
-\begin{gather}
-  s^{(j)}_1 \sim_j s^{(j)}_2 \Longleftrightarrow \Env_j(s^{(j)}_1) =
-  \Env_j(s^{(j)}) \text, \\
-  \macroS{S}^{(j)} = S^{(j)} / {\sim}_j \text.
-\end{gather}
-
-We can obtain the MDD representation of $\macroTRS$ by replacing the
-local states with the corresponding local macro-states in $r$.
-
-\subsection{Block iteration}
-
-The block iteration technique \citep{DBLP:journals/tse/Buchholz99}
-attempts to find the steady-state solution by iterating
-\begin{gather}
-  \vec{p}_k[\macroS{x}] Q[\macroS{x}, \macroS{x}] =
-  \vec{b}_k[\macroS{x}] \text, \label{eq:kronecker:block:solve} \\
-  \vec{b}_k = \sum_{\macroS{y} < \macroS{x}} \vec{p}_k[\macroS{y}]
-  Q[\macroS{y}, \macroS{x}] + \sum_{\macroS{y} > \macroS{x}}
-  \vec{p}_{k - 1}[\macroS{y}] Q[\macroS{y}, \macroS{x}] \text,
-\end{gather}
-which corresponds to \emph{grouped GS iteration} from 
-
-The main complication comes from the fact that, even in the case of an
-irreducible $Q[\macroS{x}, \macroS{x}]$,
-\eqref{eq:kronecker:block:solve} may have infinitely many solutions.
-
-\begin{dfn}[\citet{young1971iterative}, Chapter~2, Definition~6.1.]
-  The $n \times n$ matrix $A$ has \emph{Property A} if there exists a
-  permutation matrix $P$ such that
-  \begin{align}
-    P^{-1} A P = \begin{pmatrix}
-      D_1 & H \\ K & D_2
-    \end{pmatrix} \text,
-  \end{align}
-  where $D_1$ and $D_2$ are square diagonal matrices.
-\end{dfn}
-
-\begin{dfn}[\citet{young1971iterative}, Chapter~5, Definition~3.1.]
-  Given a matrix $A = (a_{ij})$, the integers $i$ and $j$ are
-  associated with respect to $A$ if $a_{ij} \ne 0$ or $a_{ji} \ne 0$.
-\end{dfn}
-
-\begin{dfn}[\citet{young1971iterative}, Chapter~5, Definition~3.2.]
-  The $n \times n$ matrix $A$ is \emph{consistently ordered} if there
-  exists a partition
-  $S_1 \uplus S_2 \uplus \cdots \uplus S_t = \{1, 2, \ldots, n\}$
-  such that if $i$ and $j$ are associated with respect to $A$ and
-  $i \in S_k$, then $j \in S_{k + 1}$ if $j > i$ and $j \in S_{k - 1}$
-  if $j < i$.
-\end{dfn}
-
-\begin{thm}[\citet{young1971iterative}, Chapter~5]
-  If $A$ is consistently ordered, then $A$ has Property A. Moreover,
-  if $A$ has Property A, there exists a permutation matrix $P$ such
-  that $P^{-1} A P$ is consistently ordered.
-\end{thm}
-
-\section{TODO}
-
-\begin{itemize}
-\item Add citations to \emph{everything} including the activity
-  diagram
-\item TODO articles and workflow
-\item Navigable activity diagram
-\item More examples\ldots
-\end{itemize}
-
-\begin{gather}
-  Q[\macroS{x}, \macroS{y}] = \sum_{t \in T(\macroS{x}, \macroS{y})}
-  w(t) \bigotimes_{j = 1}^J Q_{t}^{(j)}[\macroS{x}^{(j)},
-  \macroS{y}^{(j)}]
-  - \delta(\macroS{x}, \macroS{y}) \sum_{\macroS{z} \in \macroS{S}} \sum_{t \in T(\macroS{x}, \macroS{z})}
-  w(t) \bigotimes_{j = 1}^J D_{t}^{(j)}[\macroS{x}^{(j)},
-  \macroS{z}^{(j)}] \text, \\
-  D_{t}^{(j)}[\macroS{x}^{(j)}, \macroS{z}^{(j)}] = \diag
-  Q_{t}^{(j)}[\macroS{x}^{(j)}, \macroS{z}^{(j)}] \vec{e}^T \text.
-\end{gather}
-
-\chapter{Low-Rank Probability Vector Representations}
-
-\section{Hiearchical Tucker Tensor Format}
-
-Hiearchical Tucker represenation of tensors are a tool for storing
-vectors
-$\vec{v} \in \mathbb{R}^{n_1} \otimes \mathbb{R}^{n_2} \otimes \cdots
-\otimes \mathbb{R}^{n_k}$
-with moderate memory requirements. The recursive structure of the
-dimension trees allows for simple operations on hierarchical Tucker
-structured vectors, while the \emph{truncation} operation can reduce
-memory requirements whith bounded error.
-
-\begin{dfn}
-  A \emph{dimension tree}
-  $T(\mathbb{R}^{n_1}, \mathbb{R}^{n_2}, \ldots, \mathbb{R}^{n_k})$ is
-  an (almost) balanced binary tree with leaf nodes
-  $\{l_j\}_{j = 1}^{k}$. Each non-leaf node $p$ has exactly two
-  children, $a.\textit{left}$ and $a.\textit{right}$. We will denote
-  the root of the dimension tree by $T.\textit{root}$.
-\end{dfn}
-
-\begin{dfn}
-  A \emph{hiearchical Tucker tree} $[\cdot]_{\vec{v}}$
-  maps additional information to the nodes of a dimension tree
-  $T(\mathbb{R}^{n_1}, \mathbb{R}^{n_2}, \ldots, \mathbb{R}^{n_k})$.
-
-  Each node $a$ has two associated vectors spaces
-  $[a]_{\vec{v}}.\textit{super}$ and $[a]_{\vec{v}}.\textit{sub}$,
-  where $[a]_{\vec{v}}.\textit{sub} \le [a]_{\vec{v}}.\textit{super}$,
-  and the \emph{rank} $[a]_{\vec{v}}.r = \dim
-  [a]_{\vec{v}}.\textit{sub}$. The \emph{hiearachical Tucker rank} of
-  $\vec{v}$ is tuple of all ranks $[a]_{\vec{v}}.r$, $a \in T$.
-
-  For each leaf node $l_j$,
-  $[l_j]_{\vec{a}}.\textit{super} = \mathbb{R}^{n_j}$, and
-  $[l_j]_{\vec{a}}.\textit{sub}$ is the span of $[l_j]_{\vec{a}}.r$
-  basis vectors
-  $\langle [l_j]_{\vec{a}}.\vec{b}[1], [l_j]_{\vec{a}}.\vec{b}[2],
-  \ldots, [l_j]_{\vec{a}}.\vec{b}[l_j.r] \rangle$.
-
-  For each non-leaf node $p$, $[p]_{\vec{a}}.\textit{super} =
-  [p.\textit{left}]_{\vec{v}}.\textit{sub} \otimes
-  [p.\textit{right}]_{\vec{v}}.\textit{sub}$. The associated subspace
-  is determined as follows:
-  \begin{itemize}
-  \item Let
-    $[p]_{\vec{v}}.A[1], [p]_{\vec{v}}.A[2], \ldots,
-    [p]_{\vec{v}}.A[[p]_{\vec{v}}.r]$
-    be
-    $[p.\textit{left}]_{\vec{v}}.r \times
-    [p.\textit{left}]_{\vec{v}}.r$ matrices, referred together as the
-    \emph{transfer tensor};
-  \item Calculate the $i$th basis vector $[p]_{\vec{v}}.\vec{b}[i]$ as
-    \begin{equation}
-      [p]_{\vec{v}}.\vec{b}[i] = \sum_{j_1 =
-        1}^{[p.\textit{left}]_{\vec{v}}.r} \sum_{j_2 =
-        1}^{[p.\textit{right}]_{\vec{v}}.r} [p]_{\vec{v}}.A[i][j_1,
-      j_2] \cdot
-      [p.\textit{left}]_{\vec{v}}.\vec{b}[j_1] \otimes
-      [p.\textit{right}]_{\vec{v}}.\vec{b}[j_2] \text;
-    \end{equation}
-  \item $[p]_{\vec{a}}.\textit{sub}$ is the span of all
-    $[p]_{\vec{v}}.r$ basis vectors.
-  \end{itemize}
-\end{dfn}
-
-In practice, only the matrices $[p]_{\vec{v}}.A$ need to be stored in
-the non-leaf nodes and the bases $[l_j]_{\vec{v}}.\vec{b}$ in the leaf
-nodes.
-
-\begin{dfn}
-  A representation of a vector
-  $\vec{v} \in \mathbb{R}^{n_1} \otimes \mathbb{R}^{n_2} \otimes
-  \cdots \otimes \mathbb{R}^{n_k}$
-  in \emph{hiearchical Tucker format} is a tuple
-  $(T, [\cdot]_{\vec{v}}, \rho)$, where $[\cdot]_{\vec{v}}$ is a
-  hiearchical tucker tree over the dimension tree
-  $T(\mathbb{R}^{n_1}, \mathbb{R}^{n_2}, \ldots, \mathbb{R}^{n_k})$
-  and $\rho \in \mathbb{R}$ is a scaling constant if
-  $[T.r]_{\vec{v}}.r = 1$ and
-  \begin{equation}
-    \vec{v} = \rho \cdot [r]_{\vec{v}}.\vec{b}[1] \text.
-  \end{equation}
-\end{dfn}
-
-\begin{dfn}
-  A hierarchical Tucker tree is \emph{orthonormal} if all the
-  bases $[a]_{\vec{v}}.\vec{b}$ are orthonormal. A hiearchinal Tucker
-  vector is orthonormal if its tree is orthonormal.
-\end{dfn}
-
-While multiplication by scalar, multiplication by Kronekcer product of
-matrices and addition can be implemented on any hiearchical Tucker
-format vector, efficient truncation requires orthonormal
-bases. Therefore, the orthonormalization operator is of crucial
-importance.
-
-\subsection{Multiplication by Scalar}
-
-Multiplication by scalar is a trivial operation on hiearchical Tucker
-vectors.
-
-\begin{algorithm}
-  \caption{Multiplication by Scalar}
-  \begin{algorithmic}[1]
-    \Function{Multiply}{$(T, [\cdot]_{\vec{v}}, \rho)$, $\lambda$}
-    \State \Return $(T, [\cdot]_{\vec{v}}, \lambda \cdot \rho)$
-    \EndFunction
-  \end{algorithmic}
-\end{algorithm}
-
-\subsection{Multiplication by Kronecker Product}
-
-Multiplication by a Kronecker product of matrices is done by
-performing matrix multiplication in $\mathbb{R}^{n_j}$ for each leaf
-node $l_j$ of $T$, while the transfer tensors are unchanged.
-
-We call the function \textsc{Clone} to create an exact copy of a
-hiearchical Tucker tree for modification. The returned hiearachical
-Tucker vector is generally not orthonormal.
-
-\begin{algorithm}
-  \caption{Multiplication by Kronecker Product}
-  \begin{algorithmic}[1]
-    \Function{Multiply}{$(T, [\cdot]_{\vec{v}}, \rho)$, $A_1 \otimes A_2
-      \otimes \cdots \otimes A_j$}
-    \State $[\cdot]_{\vec{w}} \gets \Call{Clone}{[\cdot]_{\vec{v}}}$
-    \ForAll{leaf node $l_j$}
-    \For{$i \gets 1$ \To $[l_j]_{\vec{v}}.r$}
-    \State $[l_j]_{\vec{w}}.\vec{b}[i] \gets
-    [l_j]_{\vec{v}}.\vec{b}[i] \cdot A_j$
-    \EndFor
-    \EndFor
-    \State \Return $(T, [\cdot]_{\vec{w}}, \rho)$
-    \EndFunction
-  \end{algorithmic}
-\end{algorithm}
-
-\subsection{Addition of Hierarchical Tucker Vectors}
-
-Addition of hierarchical Tucker vectors may be perfomred
-recursively. The symbol $\dirplus$ is used to denote the direct sum of
-matrices.
-
-The returned hiearachical Tucker vector is generally not
-orthonormaland its hiearchical Tucker rank is the sum of the addends'
-rank.
-
-\begin{algorithm}
-  \caption{Addition of Hierarchical Tucker Vectors}
-  \begin{algorithmic}[1]
-    \Function{Add}{$(T, [\cdot]_{\vec{v}}, \rho)$, $(T,
-      [\cdot]_{\vec{w}}, \sigma)$}
-    \State Initialize a new hierarchical Tucker tree $[\cdot]_{\vec{v}
-      + \vec{w}}$ over $T$
-    \State $[T.r]_{\vec{v} + \vec{w}}.r = [T.r]_{\vec{v}}.r +
-    [T.r]_{\vec{w}}.r$
-    \State \Call{RecursiveAdd}{$[\cdot]_{\vec{v}}$,
-      $[\cdot]_{\vec{w}}$, $[\cdot]_{\vec{v} + \vec{w}}$,
-      $T.r.\textit{left}$}
-    \State \Call{RecursiveAdd}{$[\cdot]_{\vec{v}}$,
-      $[\cdot]_{\vec{w}}$, $[\cdot]_{\vec{v} + \vec{w}}$,
-      $T.r.\textit{right}$}
-    \For{$i \gets 1$ \To $[T.r]_{\vec{v}}.r$}
-    \State $[T.r]_{\vec{v} + \vec{w}}.A[i] \gets \rho \cdot ([T.r]_{\vec{v}}.A[i]
-    \dirplus 0)$
-    \EndFor
-    \For{$i \gets 1$ \To $[T.r]_{\vec{w}}.r$}
-    \State $[T.r]_{\vec{v} + \vec{w}}.A[i + [T.r]_{\vec{v}}.r] \gets
-    \sigma \cdot (0 \dirplus [T.r]_{\vec{w}}.A[i])$
-    \EndFor
-    \State \Return $(T, [\cdot]_{\vec{v} + \vec{w}}, 1)$
-    \EndFunction
-    \Statex
-    \Procedure{RecursiveAdd}{$[\cdot]_{\vec{v}}$,
-      $[\cdot]_{\vec{v}}$, $[\cdot]_{\vec{v} + \vec{w}}$, $a$}
-    \State $[a]_{\vec{v} + \vec{w}}.r = [a]_{\vec{v}}.r +
-    [a]_{\vec{w}}.r$
-    \If{$a$ is a leaf node}
-    \State $[a]_{\vec{v} + \vec{w}}.\vec{b} = [a]_{\vec{v}}.\vec{b}
-    \uplus [a]_{\vec{w}}.\vec{b}$
-    \Else
-    \State \Call{RecursiveAdd}{$[\cdot]_{\vec{v}}$,
-      $[\cdot]_{\vec{w}}$, $[\cdot]_{\vec{v} + \vec{w}}$,
-      $a.\textit{left}$}
-    \State \Call{RecursiveAdd}{$[\cdot]_{\vec{v}}$,
-      $[\cdot]_{\vec{w}}$, $[\cdot]_{\vec{v} + \vec{w}}$,
-      $a.\textit{right}$}
-    \EndIf
-    \For{$i \gets 1$ \To $[a]_{\vec{v}}.r$}
-    \State $[a]_{\vec{v} + \vec{w}}.A[i] \gets [a]_{\vec{v}}.A[i]
-    \dirplus 0$
-    \EndFor
-    \For{$i \gets 1$ \To $[a]_{\vec{w}}.r$}
-    \State $[a]_{\vec{v} + \vec{w}}.A[i + [a]_{\vec{v}}.r] \gets
-    0 \dirplus [a]_{\vec{w}}.A[i]$
-    \EndFor
-    \EndProcedure
-  \end{algorithmic}
-\end{algorithm}
+\include{kronecker}
 
 \backmatter
 

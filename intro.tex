@@ -1,0 +1,589 @@
+\chapter{Background}
+
+\section{Continous-time Markov chains}
+
+\begin{dfn}
+  A \emph{continous-time Markov chain} \paren{\emph{\ctmc}}
+  $\{X(t) \in S : t \ge 0\}$ over the finite or countably infinite
+  state space $S = \{s_1, s_2, \ldots\}$ is a stochastic process which
+  satisfies the Markovian property
+  \begin{equation}
+    \Pr \{ X(t') = s_{j} \mid X(t) = s_{i}, \forall u \in U : X(u) \}
+    = \Pr \{ X(t') = s_{j} \mid X(t) = s_{i} \}
+  \end{equation}
+  for all $t' > t$ and $U \subseteq [0, t)$.
+\end{dfn}
+
+\begin{dfn}
+  A continous-time Markov chain is \emph{(time-)homogenous} if its
+  transition probabilities are invariant with respect to time, i.e.
+  \begin{equation}
+    \Pr \{ X(t') = s_{j} \mid X(t) = s_{i} \} = p(t' - t)[i, j] \text.
+  \end{equation}
+\end{dfn}
+
+We will assume that the \ctmc s we consider are homogenous and have a
+finite state space, unless otherwise indicated.
+
+Let us introduce to shorthand $\vec{\uppi}(t)$ to denote the vector of
+probabilities
+\begin{equation}
+  \pi(t)[i] = \Pr\{X(t) = s_i\} \text,
+\end{equation}
+which will be called the \emph{probablity vector} at time $t$.
+
+The row-stochastic matrix
+\begin{equation}
+  P(\tau) = \bigl(p(\tau)[i, j]\bigr)_{i, j = 1}^{\lvert S \rvert}
+  \label{eq:intro:p_tau}
+\end{equation}
+describes the state transitions of the \ctmc\ over a time period
+$\tau$. More concretely,
+\begin{equation}
+  \vec{\uppi}(t') = \vec{\uppi}(t) P(t' - t) \text.
+\end{equation}
+
+If $X(t)$ is a homogenous \ctmc\ over a finite state space, there exists
+an \emph{infinitesimal generator matrix}
+$Q \in \mathbb{R}^{\lvert S \rvert \times \lvert S \rvert}$ such that
+\begin{equation}
+  P(\tau) = \exp(\tau Q) = \sum_{k = 1}^\infty \frac{\tau^k Q^k}{k!} =
+  I + \tau Q + o(\tau) \text,
+\end{equation}
+where $\exp(\cdot)$ denotes the matrix exponential function. This
+matrix satisfies
+\begin{enumerate}
+\item If $i \ne j$, $q[i, j] \ge 0$;
+\item
+  $q[i, i] = -\bigl( q[i, 1] + q[i, 2] + \cdots + q[i, i - 1] + q[i, i + 1] +
+  \cdots + q[i, \lvert S \rvert] \bigr)$
+  for all $0 \ge i \ge \lvert S \rvert$, that is,
+  $Q \vec{e}^T = \vec{0}^T$.
+\end{enumerate}
+Matricies having these two properties are called Q-matrices.
+
+The \emph{sojourn time} from state $s_j$
+\begin{equation}
+  T(i) = \inf_{t > 0} \{ X(t) \ne s_i \mid X(0) = s_i \}
+\end{equation}
+has the memoryless property
+\begin{equation}
+  \Pr\{T(i) > t + \epsilon \mid T(i) > t\} = \Pr\{T(i) > \epsilon\} \text.
+\end{equation}
+and is exponentially distributed with rate $1 / \E[T(i)] = -q(i,
+i)$.
+
+Moreover, if a state change occurs at time $t$, that is,
+$X(t-) \ne X(t+)$, then $X(t+) = s_j$ given $X(t-) = s_i$ with
+probability $-q[i, j] / q[i, i]$. Thus we can use the matrix $Q$ to
+visualize the behaviour of the \ctmc\ in state $s_i$ as a sojourn in
+$s_i$ with exponentially distributed duration followed by a random
+jump to some state $s_j \ne s_i$.
+
+The configuration above is equivalent to a ``race'' between $n - 1$
+exponentially distributed delays with rates
+$q[i, 1], q[i, 2], \ldots, q[i, i - 1], q[i, i + 1], \ldots, q[i,
+\lvert S \rvert]$, respectively, where the
+first delay to complete causes the \ctmc\ to shift to the destination
+state associated with the delay. The latter characterization turns out
+to be the key intution for modelling asynchronous distributed systems
+with continous-time Markov chains.
+
+The time evolution of the probability vector satisfies the
+differential equation
+\begin{equation}
+  \frac{d \vec{\uppi}(t)}{dt} = \vec{\uppi}(t) Q \text.
+  \label{eq:intro:diffeq}
+\end{equation}
+This gives us a third way of understanding the structure of the
+infintesimal generator matrix: the value $q[i, j]$ corresponds to a
+``flow amount'' of probability mass from the state $s_i$ to
+$s_j$. Off-diagonal entries $q[i, j]$ of $Q$ have positive flow amount
+if the \ctmc\ can eventually leave $s_i$ towards $s_j$ and zero
+otherwise, while negative entries $q[i, i]$ along a diagonal
+correspond to ``leaking'' of probability mass from $s_i$ to other
+states. A zero diagonal entry represents a final state which cannot be
+left.
+
+\begin{dfn}
+  The state $s_j \in S$ of the \ctmc\ $X(t)$ is \emph{accessible} from
+  $s_i \in S$ \paren{written as $s_i \to s_j$} if $p(\tau)[i, j] > 0$ for
+  some $\tau > 0$.
+\end{dfn}
+
+\begin{dfn}
+  The states $s_i, s_j \in S$ of the \ctmc\ $X(t)$ \emph{communicate}
+  \paren{written as $s_i \leftrightarrow s_j$} if $s_i \to s_j$ and
+  $s_j \to s_i$.
+\end{dfn}
+
+\begin{dfn}
+  The \ctmc\ $X(t)$ is \emph{irreducible} if all of its states pairwise
+  communicate.
+\end{dfn}
+
+If $X(t)$ is irreducible, then its infinitesimal generator matrix $Q$
+has rank $\lvert S \rvert - 1$.
+
+\subsection*{Analysis tasks}
+
+The two tasks most frequently associated with continous-time Markov
+chains are \emph{transient} and \emph{steady-state} analysis.
+
+In transient problems, the probability distribution vector
+$\vec{\uppi}(t)$ at time $t$ is sought given the initial probability
+distribution vector $\vec{\uppi}(0) = \vec{\uppi}_0$. In practice,
+instead of directly calculating the matrix exponential
+\labelvref{eq:intro:p_tau}, either the initial value problem based on
+\vref{eq:intro:diffeq}
+\begin{equation}
+  \frac{d \vec{\uppi}(t)}{dt} = \vec{\uppi}(t) Q \text{ subject
+    to } \vec{\uppi}(0) = \vec{\uppi}_0 \label{eq:intro:diffeq-initial}
+\end{equation}
+is solved, or the \emph{uniformization algorithm}
+\begin{equation}
+  \vec{\uppi}(t) = \sum_{k = 1}^{\infty} \vec{\uppi}_0 \mleft( I +
+  \frac{1}{\gamma} Q \mright)^k \frac{(\gamma t)^k}{k!} e^{-\gamma t}
+\end{equation}
+is used with some appropriately chosen $\gamma > 0$.
+
+In steady-state analysis, the limit
+\begin{equation}
+  \vec{\uppi}_{\infty} = \lim_{t \to \infty} \vec{\uppi}(t)
+\end{equation}
+is computed. If the \ctmc\ is irreducible, this limit is well-defined
+and independent of the choice of the initial probability distribution
+$\vec{\uppi}(0)$.
+
+The equlibirium condition
+\begin{equation}
+  \frac{d \vec{\uppi}}{dt} = 0
+\end{equation}
+together with \eqref{eq:intro:p_tau} yields the homogenous system of
+linear equations
+\begin{equation}
+  \vec{\uppi}_\infty Q = \vec{0} \text{ subject to } \sum_{i =
+    0}^{\lvert S \rvert} \pi_\infty[i] = 1 \text{ and } \forall 1 \le
+  i \le \lvert S \rvert :  \pi_\infty[i] > 0 \label{eq:intro:steadystate}
+\end{equation}
+for finding the steady-state probability distribution vector. In other
+words, $\vec{\uppi}_\infty$ is the (unique) vector in the null space
+of $Q$ which is a valid probability distribution vector, that is,
+whose components are all nonnegative and sum to $1$.
+
+While these two task primitives are often useful on their own, more
+complicated inquiries, such as model checking for stochastic temporal
+logical formulae also use them as subroutines.
+
+\section{Petri nets}
+
+\begin{dfn}
+  A \emph{Petri net} is a tuple
+  \begin{equation}
+    \PN = (P, T, \Pi, W^{-}, W^{+}, W^{H}, M_0) \text,
+  \end{equation}
+  where
+  \begin{itemize}
+  \item $P$ and $T$ are finite set of \emph{places} and
+    \emph{transitions}, respectively;
+  \item $\Pi: P \to \mathbb{N}$ is the \emph{priority function}, which
+    map places to nonnegative integer priorities;
+  \item $W^{-}, W^{+}, W^{H} : T \to \Bag(P)$ are the \emph{input,
+      output} and \emph{inhibitor arc functions}, which map
+    transitions to ``bags'' \paren{multisets} of places;
+  \item $M_0 \in \Bag(P)$ is the \emph{initial marking}.
+  \end{itemize}
+\end{dfn}
+
+For convenience, we will write $w^-[j, i]$, $w^+[j, i]$ and
+$w^H[j, i]$ for the multiplicity of the place $p_i \in P$ in
+$W^-(t_j)$, $W^+(t_j)$ and $W^H(t_j)$, respectively, where $t_j \in T$
+is a transition. A \emph{marking} is a multiset of places
+$M \in \Bag(P)$. We write $m(i)$ for the multiplicity of $p_i$ in the
+marking $M$. The set of \emph{input places} $\leftTok{t_j}$,
+\emph{output places} $\rightTok{t_j}$ and \emph{inhibitor places}
+$\leftInh{t_j}$ of a transition $t_j$ are defined as
+\begin{equation}
+  \left\{ \begin{gathered}
+    \begin{aligned}
+      \leftTok{t_j} &= \{ p_i \in P : w^-[j, i] > 0 \}\text, &
+      \rightTok{t_j} &= \{ p_i \in P : w^+[j, i] > 0 \}\text,
+    \end{aligned} \\
+    \leftInh{t_j} = \{ p_i \in P : w^H[j, i] > 0 \}\text,
+  \end{gathered} \right.
+\end{equation}
+while set of \emph{input} $\leftTok{p_i}$,
+\emph{output} $\rightTok{p_i}$ and \emph{inhibited transitions}
+$\rightInh{p_i}$ of a place $p_i$ are defined symmetrically.
+
+\subsection*{Token game}
+
+\begin{dfn}
+  The transition $t_j$ has \emph{concession} in the marking $M$ if
+  \begin{equation}
+    \forall p_i \in \leftTok{t_j} : m(i) \ge w^-[j, i] \text{ and }
+    \forall p_i \in \leftInh{t_j} : m(i) < w^H[j, i] \text.
+  \end{equation}
+\end{dfn}
+
+\begin{dfn}
+  The transition $t_j$ is \emph{enabled} in the marking $M$ if it has
+  concession in $M$ and no transition $t_{k}$ has concession in $M$
+  such that $\Pi(t_{k}) > \Pi(t_j)$.
+\end{dfn}
+
+If the transition $t_j$ is enabled in $M$, it can \emph{fire} to yield
+another marking
+\begin{equation}
+  M' = M - W^-(T_j) + W^+(T_j)
+\end{equation}
+which is written as $M \xrightarrow{t_j} M'$. We can visualize the
+marking $M$ as a bag of ``tokens'' located on some of the places
+$P$. The firing of $t_j$ removes $W^-(t_j)$ tokens from
+$\leftTok{t_j}$ and places $W^{+}(t_j)$ tokens to $\rightTok{t_j}$,
+but only if there are less than $W^H(t_j)$ tokens on $\leftInh{t_j}$
+and no higher priority transition has concession.
+
+\begin{dfn}
+  The marking $M'$ is \emph{reachable} from the marking $M$ if there
+  exists a \paren{possibly empty} sequence of transitions
+  $t_{i_1}, t_{i_2}, \ldots, t_{i_n}$ such that
+  \begin{equation}
+    M \xrightarrow{t_{i_1}} M_1 \xrightarrow{t_{i_2}} M_2
+    \xrightarrow{t_{i_3}} \cdots \xrightarrow{t_{i_{n - 1}}} M_{n - 1}
+    \xrightarrow{t_{i_n}} M_n = M'\text.
+  \end{equation}
+\end{dfn}
+
+\begin{dfn}
+  The \emph{reachability set} $\RS$ of a Petri net is the set of all
+  markings reachable from the initial marking $M_0$.
+\end{dfn}
+
+The rechability set may contain an enormous amount of markings even if
+the Petri net is of modest size. This phenomenon is called \emph{state
+  space explosition} \textbf{TODO citation?}, which is a significant
+obstacle in the analysis of Petri nets. The maximum size of the models
+which can be analyzed using a given pool of resources may be incresead
+by chosing an efficient representation of the reachability set instead
+of explicit storage of all reachable markings. \textbf{TODO citation!}
+
+\section{Stochastic Petri nets}
+
+\begin{dfn}
+  A \emph{Generalized Stochastic Petri Net} \paren{\emph{\gspn}} is a
+  tuple
+  \begin{equation}
+    \GSPN = (P, T, \Pi, \Lambda, W^-, W^+, W^H, M_0) \text,
+  \end{equation}
+  where $(P, T, \Pi, W^-, W^+, W^H, M_0)$ is a Petri net and $\Lambda:
+  T \to \mathbb{R}^{+}$ is called the \emph{rate} or \emph{weight}
+  function.
+\end{dfn}
+
+Transitions with $\Pi = 0$ are called \emph{timed} transitions, while
+transitions with $\Pi \ge 1$ are called \emph{immediate}
+transitions. The value $\Lambda(t_j)$, abbreviated as $\lambda_j$, is
+referred to as the \emph{rate} associated with $t_j$ if $t_j$ is
+timed or the \emph{weight} of $t_j$ if $t_j$ is immediate.
+
+It is customary to draw timed transitions as open rectangles, while
+immediate transition are shown as black bars or filled rectangles.
+
+\begin{dfn}
+  A marking $M$ is \emph{vanishing} if there exists an immediate
+  transition with concession. Non-vanishing markings are called
+  \emph{tangible}.
+\end{dfn}
+
+The \emph{tangible reachability set} $\TRS \subseteq \RS$ is the set
+of all reachable tangible states. The dynamics of a \gspn\ are
+described with by continous-time Markov chain $X(t)$ whose set of
+states $S$ is the tangible reachability set $\TRS$ and the initial
+state $X(0)$ is the initial marking $M_0$. The states
+$S = \{s_0, s_1, s_2, \ldots\}$ and tangible reachable markings
+$\TRS = \{M_0, M_1, M_2, \ldots\}$ will be used interchangeably in the
+rest of this report, specifically, we will assume that the state $s_0$
+represents the initial marking $M_0$ in the \ctmc.
+
+In tangible states, timed transitions that are enabled fire with
+delays exponentially distributed according to their $\lambda$
+rates. If the resulting marking is vanishing, the enabled immediate
+transitions fire until a tangible marking is reached, which will
+become the next state of the \ctmc. If multiple immediate transitions
+are enabled in a vanishing marking, one is selected and fired randomly
+with probability proportional to its $\lambda$ weight. Thus, state
+changes of the \ctmc\ corresponding to the \gspn\ consist of the
+firing of a timed transition followed by a -- possibly empty, if the
+output marking of the timed transition is tangible -- random sequence
+of immiditate transition firings.
+
+See \vref{fig:intro:gspn-timedomain} for an example of a \gspn
+'s time-domain behavior.
+
+\begin{figure}
+  \centering
+  \begin{tikzpicture}
+    \petriP(p1)(0,0){$p_1$}<1>
+    \petriP(p2)(3,0){$p_2$}
+    \petriP(p3)(6,0){$p_3$}
+
+    \petriT(t1)(1.5,0){$t_1$}{\lambda_1}
+    \petriT(t2)(4.5,0){$t_2$}{\lambda_2}
+    \petriT(t3)(3,1.75){$t_3$}<1>{1}
+    \petriT(t4)(4.5,-1.75){$t_4$}<1>{2}
+
+    \begin{pgfonlayer}{connections}
+      \begin{scope}[-{Straight Barb[angle=60:3pt 3]}]
+        \draw (p1) edge (t1) edge (p2) edge node [above] {2} (t2)
+        edge (p3);
+        \draw (p3) edge [in=0,out=130] node [above] {2} (t3);
+        \draw (t3) edge [out=180,in=50] (p1);
+        \draw (p3) edge [in=0,out=-100] (t4);
+        \draw (t4) edge [out=180,in=-80] (p2);
+      \end{scope}
+    \end{pgfonlayer}
+  \end{tikzpicture}\par
+  \vspace{1ex}
+  \begin{tikzpicture}
+    \timing [yscale=1.4,xscale=4.8,timing/font=\LARGE,timing/slope=0.05] at (0,0)
+    {D{$(1,0,0)$}N(a)D{$(0,2,0)$}N(b)0.9D{$(0,1,1)$}N(c),Dd{$(0,1,1)$}N(d)D{$(1,0,0)$}};
+    \coordinate (aa) at ($(a)+(0,1)$);
+    \coordinate (bb) at ($(b)+(0,1)$);
+    \coordinate (cc) at ($(c)+(0,1)$);
+    \coordinate (dd) at ($(d)+(0,1)$);
+    \begin{scope}[-{Bar[width=10pt]}]
+      \path [draw,{Bar[width=10pt]}-{Bar[width=10pt]}] (aa) -- node
+      [above] {$\mathbb{E}[T] = \lambda_1$} (bb);
+      \path [draw] (bb) -- node [above] {$\mathbb{E}[T] = \lambda_2$} (cc);
+      \path [draw] (cc) -- node [above] {$\mathbb{E}[T] = \lambda_2$} (dd);
+    \end{scope}
+    \begin{scope}[node distance=2pt]
+      \node [below=of a,anchor=north west] {$t_1$ fire};
+      \node [below=of b,anchor=north west] {$t_2$ fire};
+      \node [below=of c,anchor=north west,text width=4cm] {$t_2$ and
+        $t_4$ fire \newline
+        (with $\Pr = \nicefrac{2}{3}$)};
+      \node [below=of d,anchor=north west, text width=2cm] {$t_2$,
+        $t_3$ fire \newline
+        ($\Pr = \nicefrac{1}{3}$)};
+    \end{scope}
+    \begin{scope}[dashed]
+      \draw (a) --  ++ (0,-1.2);
+      \draw (b) --  ++ (0,-1.2);
+      \draw (c) --  ++ (0,-1.2);
+      \draw (d) --  ++ (0,-1.2);
+    \end{scope}
+  \end{tikzpicture}
+  \caption{Behaviour of a \gspn. Markings are written in the form
+    $(m_1, m_2, m_3)$ to show the number of tokens at the places
+    $p_1$, $p_2$ and $p_3$, respectively. The trace starts from the
+    initial marking shown on the net.}
+  \label{fig:intro:gspn-timedomain}
+\end{figure}
+
+Let $p_{\text{immediate}}(M_i, M_j)$ denote the probabilty that the
+\gspn\ reaches the tangible marking $M_j$ starting from the tangible
+or transient marking $M_i$ by a possible empty sequence of immediate
+transition firings. Observe that when $M_i$ is tangible,
+$p_{\text{immediate}}(M_i, M_j) = 1$ if $i = j$ and $0$ otherwise.
+
+The behaviour of the \gspn\ is well-defined if
+$p_{\text{immediate}}(M, M')$ is well-defined for all $M \in \RS$,
+$M' \in \TRS$ \citep{DBLP:journals/tse/TeruelFP03} and the net is free
+of \emph{confusion}.
+
+The infinitesimal generator of a \gspn\ can be written as
+\begin{empheq}[left=\empheqlbrace]{gather}
+  q_{O}[i, j] = \sideset{}{'}\sum_{M_i \xrightarrow{t_k} M'} \lambda_k
+  p_{\text{immedidate}}(M', M_j)
+  \text, \label{eq:intro:qd-element} \\
+  Q = Q_{O} + Q_{D} = Q_{O} - \diag Q_O \vec{e}^T \text, \label{eq:intro:qd-qo}
+\end{empheq}
+where the summation is performed over all \emph{timed} transitions
+$t_k$ enabled in the state $M_i$, while $Q_O$ and $Q_D$ stand for the
+off-diagonal and diagonal parts of $Q$, respectively.
+x
+The storage of $Q$ for \gspn\ is particularly challenging due to state
+space explosition, because the number of entries, therefore the amount
+of memory required for the explicit storage of the inifinitesimal
+generator matrix, grows quadratically in the number of tangible
+reachable markings. This behaviour is opposed to the amount of memory
+required for explicit storage of $\TRS$, which grows merely
+linearly. Therefore, efficient representation of $Q$ becomes a problem
+even in analysis task where explicit storate of $\TRS$ (or $\RS$) is
+possible.
+
+\subsection*{Conflict and confusion}
+
+A pair of immediate transitions $t_1$, $t_2$ cannot fire
+``simultaneously'' if only one of traces
+$M \xrightarrow{t_1} M' \xrightarrow{t_2} M'''$ and
+$M \xrightarrow{t_2} M'' \xrightarrow{t_1} M'''$ is possible. In this
+case, we must evaluate the effects of $t_1$ and $t_2$ separately. This
+notion is formalized as the effective conflict relation, which is
+noncommutative, unreflexive and intransitive due to the presence on
+priority levels and inhibitor arcs.
+
+\begin{dfn}[\cite{DBLP:journals/tse/ChiolaMBC93}]
+  The transitions $t_1$ and $t_2$ are in \emph{effective conflict} in
+  the marking $M$ \paren{written as $t_1 \EffC{M} t_2$} if and only if
+  $t_2$ has concession in $M$, $t_1$ is enabled in $M$, $M
+  \xrightarrow{t_1} M'$ and $t_2$ has no concession in $M'$.
+\end{dfn}
+
+If $t_1$ and $t_2$ are not in conflict, but the final outcome of the
+sequence of immediate firings depends on the order in which $t_1$ and
+$t_2$ are fired, the \gspn\ is in \emph{confusion}. \textbf{TODO Petri
+  net with confusion.} More formally:
+
+\begin{dfn}[\cite{DBLP:journals/tse/ChiolaMBC93}]
+  The transition s $t_1$ and $t_2$ are in \emph{assymetric confusion}
+  in the marking $M$ if and only if it is \emph{not} the case that
+  $t_1 \EffC{M} t_2$, $t_1$ is enabled in $M$,
+  $M \xrightarrow{t_1} M'$ and there exists a transition $t_3 \in T$
+  such that $t_2 \EffC{M'} t_3$.
+\end{dfn}
+
+Algorithms that are used to determine $p_{\text{immediate}}$
+\citep{DBLP:journals/tse/ChiolaMBC93, DBLP:journals/tse/TeruelFP03}
+usually consider confusion a semantic error and help the modeller
+choose priorities for the immediate transitions in order to avoid
+confusion. If the net is not confused, immediate transitions not in
+pairwise conflict can be fired in \emph{batches}, while weights
+$\lambda$ are used to randomly resolve conflicts.
+
+The trivial case of a net without confusion is one without any
+immedaite transitions, i.e.~$\Pi \equiv 0$ for all transitions. Such
+$\gspn$s are called (ordinary) stochastic Petri nets or \spn s.
+
+\subsection*{Superposed \textls[35]{GSPNs}}
+
+\begin{dfn}[\cite{DBLP:journals/tse/Buchholz99}]
+  A \emph{superposed \gspn\ \paren{\sgspn}} is a tuple
+  \begin{equation}
+    \SGSPN = (P, \mathcal{P}, T, \Pi, \Lambda, W^-, W^+, W^H, M_0)
+    \text,
+  \end{equation}
+  where $(P, T, \Pi, \Lambda, W^-, W^+, W^H, M_0)$ is a \gspn\ and
+  $\mathcal{P} = \{P\loc{1}, P\loc{2}, \ldots, P\loc{J}\}$ is a
+  disjoint partition $P\loc{1} \uplus P\loc{2} \uplus \cdots \uplus
+  P\loc{J}$ of $P$.
+\end{dfn}
+
+Transitions
+\begin{equation}
+  T\loc{j} = \TL\loc{j} \uplus \TS\loc{j} =
+  \bigcup_{p \in P\loc{j}} \leftTok{p} \cup \rightTok{p} \cup
+  \rightInh{p}
+\end{equation}
+along with the projected versions $\Pi\loc{j}$, $\Lambda\loc{j}$,
+$W^{-(j)}$, $W^{+(j)}$, $W^{H(j)}$, $M\loc{j}_0$ of $\Pi$, $\Lambda$,
+$W^-$, $W^+$, $W^H$, $M_0$ comprise the $j$th \emph{local net}
+\begin{equation}
+  \LN\loc{j} = (P\loc{j}, T\loc{j}, \Pi\loc{j}, \Lambda\loc{j},
+  W^{-(j)}, W^{+(j)}, W^{H(j)}, M\loc{j}_0) \text.
+\end{equation}
+The transitions $\TL\loc{j} \subseteq T\loc{j}$ belong to only a
+single local net and are called \emph{local transitions}, while
+elements of $\TS\loc{j} = T\loc{j} \setminus \TL\loc{j}$ are
+\emph{synchronized transitions}.
+
+\begin{restr}
+  Synchronized transitions of an \sgspn\ must be timed, that is,
+  \begin{equation}
+    \exists 1 \le j \le J: t \in \TS\loc{j} \implies \Pi(t) =
+    \Pi\loc{j}(t) = 0 \text.
+  \end{equation}
+  Equivalently, every timed transition must be internal to its local
+  net.
+\end{restr}
+
+\section{Tensors and Kronecker algebra}
+\label{sec:intro:tensors}
+
+\begin{dfn}
+  The \emph{Kronecker product} of two matrices is defined as
+  \begin{equation}
+    \begin{gathered}
+      \otimes: \mathbb{R}^{m_1 \times n_1} \times \mathbb{R}^{m_2 \times
+        n_2} \to \mathbb{R}^{m_1 m_2 \times n_1 n_2}\text, \\
+      (A \otimes B)[i_1 m_2 + i_2, j_1 n_2 + j_2] = a[i_1, j_1] b[i_2,
+      j_2] \text.
+    \end{gathered}
+  \end{equation}
+\end{dfn}
+
+The matrix $A \otimes B$ has a block structure with $i_1 \times j_1$
+block, where each block has $i_2 \times j_2$ elements. This can be
+written as
+\begin{equation}
+  A \otimes B = \begin{pmatrix}
+    a[1,1] B & a[1,2] B & \cdots & a[1,n_1] B \\
+    a[2,1] B & a[2,2] B & \cdots & a[1,n_1] B \\
+    \vdots & \vdots & \ddots & \vdots \\
+    a[m_1,1] B & a[m_1,2] B & \cdots & a[m_1,n_1] B    
+  \end{pmatrix} \text,
+\end{equation}
+where each entry of the right-hand side is a $m_2 \times n_2$ matrix.
+
+It will be occasionally useful to refer to entries of $A \times B$ by
+multi-indices, that is,
+\begin{equation}
+  (A \otimes B)[i_1, i_2, j_1, j_2] = (A \otimes B)[\vec{i}, \vec{j}]
+  = (A \otimes B)[i_1 m_2 + i_2, j_1 n_2 + j_2] \text,
+\end{equation}
+where $\vec{i} = (i_1, i_2)$ and $\vec{j} = (j_1, j_2)$. Multi-index
+notation can be extended to Kronecker products of more than two
+matrices, for example,
+\begin{multline}
+  (A \otimes B \otimes C)[i_1, i_2, i_3, j_1, j_2, j_3] \\ = (A
+  \otimes B \otimes C)[i_1 m_2 m_3 + i_2 m_3 + i_3, j_1 n_2 n_3 + j_2
+  m_3 + j_3] \\ = a[i_1, j_1] b[i_2, j_2] c[i_3, j_3] \text,
+\end{multline}
+where $A \in \mathbb{R}^{m_1 \times n_1}$, $B \in \mathbb{R}^{m_2
+  \times n_1=2}$, $C \in \mathbb{R}^{m_3 \times n_3}$.
+
+The Kronecker product distributes over the matrix multiplication,
+\begin{equation}
+  \label{eq:intro:kronecker-distrib}
+  (A \otimes B) (C \otimes D) = (AC) \otimes (BD)
+\end{equation}
+if the matrices $A$, $C$ and $B$, $D$ are compatible.
+
+An important special case of the Kronecker product is the product of
+two row or column vector, which is called the tensor product:
+
+\begin{dfn}
+  The \emph{tensor product} of two vectors is defined as
+  \begin{equation}
+    \otimes: \mathbb{R}^{n_1} \times \mathbb{R}^{n_2} \to
+    \mathbb{R}^{n_1 n_2}\text ,
+    \quad (\vec{u} \otimes \vec{v})[i_1 n_2 + i_2] = u[i_1] v[i_2] \text.
+  \end{equation}
+\end{dfn}
+
+The tensor product can be used to form the product of two vector
+spaces:
+
+\begin{dfn}
+  The \emph{tensor product} of two vector spaces is the vector space
+  generated by the tensor products of their vectors,
+  \begin{equation}
+    \mathbb{R}^{n_1} \otimes \mathbb{R}^{n_2} = \langle \vec{u} \otimes
+    \vec{v} : \vec{u} \in \mathbb{R}^{n_1}, \vec{v} \in
+    \mathbb{R}^{n_2} \rangle \text.
+  \end{equation}
+\end{dfn}
+
+If $\mathscr{B} = \{\vec{b}_1, \vec{b}_2, \ldots, \vec{b}_{n_1} \}$
+and $\mathscr{C} = \{\vec{c}_1, \vec{c}_2, \ldots, \vec{c}_{n_2} \}$
+are bases in $\mathbb{R}^{n_1}$ and $\mathbb{R}^{n_2}$, respectively,
+then $\mathscr{D} = \{\vec{b} \otimes \vec{c} : \vec{b} \in
+\mathscr{B}, \vec{c} \in \mathscr{C} \}$ is a basis in
+$\mathbb{R}^{n_1} \otimes \mathbb{R}^{n_2}$.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "markov"
+%%% End:
