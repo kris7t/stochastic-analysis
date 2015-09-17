@@ -1,0 +1,285 @@
+\NeedsTeXFormat{LaTeX2e}
+
+\ProvidesPackage{include/tdk}
+
+%
+% Encoding and language
+
+\RequirePackage[T1]{fontenc}
+\RequirePackage[utf8]{inputenc}
+
+\def\magyarOptions{defaults=over-1.4}
+\RequirePackage[magyar,english]{babel}
+
+\RequirePackage{csquotes}
+
+%
+% Typography
+%
+
+% Use Bistream Vera, Helvetica and Bera Mono
+\RequirePackage{XCharter}
+\RequirePackage[scaled]{berasans,beramono}
+\RequirePackage[expert,bitstream-charter,
+greekuppercase=italicized,greeklowercase=italicized]{mathdesign}
+
+% Improve microtypography and add tracking to small-caps text
+\RequirePackage[final,tracking,letterspace=75]{microtype}
+
+% Sans serif chapter titles
+\renewcommand*{\chapnamefont}{\normalfont\huge\textit}
+\renewcommand*{\chapnumfont}{\chapnamefont}
+\renewcommand*{\chaptitlefont}{\normalfont\Huge\sffamily\bfseries}
+\renewcommand*{\cftchapterfont}{\normalfont\sffamily\bfseries}
+\renewcommand*{\cftchapterpagefont}{\cftchapterfont}
+
+% Sans serif headings
+\setsecheadstyle{\Large\sffamily\bfseries}
+\setsubsecheadstyle{\large\sffamily\bfseries}
+\setsubsubsecheadstyle{\normalsize\sffamily\bfseries}
+\setparaheadstyle{\normalsize\sffamily\bfseries}
+\setsubparaheadstyle{\normalsize\sffamily\bfseries}
+
+% Use a command to write upright parentheses even in italic text
+\newcommand{\paren}[1]{\textup(#1\textup)}
+
+%
+% Document divisions
+%
+
+% Number subsections
+\setsecnumdepth{subsection}
+\settocdepth{subsection}
+
+% Display current chapter and section in the header
+\newcommand*{\leftmarkstyle}[1]{{\itshape\textls{\MakeUppercase{#1}}}}
+\copypagestyle{my}{ruled}
+\makeevenhead{my}{\thepage}{\leftmarkstyle{\leftmark}}{}
+\makeoddhead{my}{}{\itshape\rightmark}{\thepage}
+\makeevenfoot{my}{}{}{}
+\makeoddfoot{my}{}{}{}
+\makepsmarks{my}{%
+  \def\chaptermark##1{%
+    \markboth{##1}{}}%
+  \def\tocmark{%
+    \markboth{\contentsname}{}}
+  \def\sectionmark##1{%
+    \markright{%
+      \ifnum\c@secnumdepth > \z@
+      \thesection.~%
+      \fi
+      ##1}}}
+\pagestyle{my}
+
+%
+% Tables and lists
+%
+
+\RequirePackage{array,booktabs,mdwlist}
+\renewcommand*{\arraystretch}{1.2}
+
+%
+% Mathematics I
+%
+
+\RequirePackage{amsmath,relsize,stackengine,mleftright,mathtools,upgreek,nicefrac}
+
+\allowdisplaybreaks
+
+% Print small equation numbers
+% http://tex.stackexchange.com/a/100151/8744
+\def\tagform@#1{\maketag@@@{\small(#1)\@@italiccorr}}
+
+% We will use ntheorem, so we must load empheq with the ntheorem option.
+\RequirePackage[ntheorem]{empheq}
+
+%
+% References
+%
+
+% Varioref and hyperref MUST be loaded before ntheorem!
+
+% Varioref prints intelligent references that refer to a page number
+% if the referred label is on a different page.
+\RequirePackage{varioref}
+% Do not print anything if the referred label is on the opposite page.
+\renewcommand*{\reftextfacebefore}{}
+\renewcommand*{\reftextfaceafter}{}
+% Use cleveref for labels far away (loaded after hyperref)
+\renewcommand*{\reftextfaraway}[1]{on~\cpageref{#1}}
+
+% Now we can load hyperref
+\RequirePackage[
+  hyperfootnotes=false,
+  breaklinks=true,
+  hypertexnames=false,
+  plainpages=false,
+  pdfpagelabels=true,
+  hidelinks
+]{hyperref}
+
+% Cleveref adds the type of the referred entity (eg. Section~1.1) to
+% the reference. 
+\RequirePackage[capitalise,noabbrev]{cleveref}
+% Protect pages and equations from capitalization
+\crefname{page}{{p}age}{{p}ages}
+\crefname{equation}{{e}q.}{{e}qs.}
+
+% Make \labelref varioref-aware
+\DeclareRobustCommand{\labelvref}{\cref@vref{labelcref}}
+\DeclareRobustCommand{\labelfullref}{\cref@fullref{labelcref}}
+
+% Only number referred equations
+\RequirePackage{autonum}
+% Make autonum cleveref- and varioref-aware
+\autonum@generatePatchedReferenceCSL{Cref}
+\autonum@generatePatchedReferenceCSL{labelcref}
+\autonum@generatePatchedReferenceCSL{vref}
+\autonum@generatePatchedReferenceCSL{Vref}
+\autonum@generatePatchedReferenceCSL{labelvref}
+\autonum@generatePatchedReferenceCSL{fullref}
+\autonum@generatePatchedReferenceCSL{Fullref}
+\autonum@generatePatchedReferenceCSL{labelfullref}
+
+%
+% Mathematics II: Theorems
+%
+
+% ntheorem wants to create an \openbox command, but it is already defined.
+\let\openbox\relax
+
+% Load ntheorem with amsmath and hyperref compatibility.
+% Empheq was already made ntheorem-aware.
+\RequirePackage[amsmath,thmmarks,hyperref]{ntheorem}
+
+% Sans serif theorem headers
+\theoremheaderfont{\normalfont\sffamily\bfseries}
+
+% Emulate an amsthm-style proof environment
+% ntheorem does not support this is amsmath and hyperref compatibility
+% is enabled.
+% Lifted and modified from ntheorem.sty
+\newcounter{proof}
+\newcounter{currproofctr}
+\newcounter{endproofctr}
+\newcommand*{\openbox}{\leavevmode
+  \hbox to.77778em{%
+    \hfil\vrule
+  \vbox to.675em{\hrule width.6em\vfil\hrule}%
+  \vrule\hfil}}
+\gdef\proofSymbol{\openbox}
+\providecommand{\proofname}{Proof}
+\newenvironment{proof}[1][\proofname]{%
+  \th@nonumberplain
+  \def\theorem@headerfont{\itshape}%
+  \normalfont
+  \theoremsymbol{\ensuremath{_\blacksquare}}%
+  \@thm{proof}{proof}{#1.}%
+}{\@endtheorem}
+
+% Upright parentheses in theorem titles
+\newtheoremstyle{my}%
+{\item[\hskip\labelsep \theorem@headerfont ##1~##2\theorem@separator]}%
+{\item[\hskip\labelsep {\theorem@headerfont ##1~##2} \paren{##3}\theorem@separator]}
+\theoremstyle{my}
+\theoremseparator{.}
+
+% Define theorem-like environments
+\newtheorem{thm}{Theorem}[chapter]
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem{lem}[thm]{Lemma}
+\newtheorem{dfn}[thm]{Definition}
+\newtheorem{example}[thm]{Example}
+
+%
+% Graphics
+%
+
+\RequirePackage{graphicx}
+
+\RequirePackage{tikz}
+
+%
+% Algorithms
+%
+
+\RequirePackage{algorithm,algpseudocode}
+
+% Number algorithms inside chapters
+\@addtoreset{algorithm}{chapter}
+\renewcommand{\thealgorithm}{\thechapter.\arabic{algorithm}} 
+
+%
+% Bibliography
+%
+
+% Bibliography is (Author, year) style and generated by biber
+\RequirePackage[
+  style=authoryear-comp,
+  maxnames=2,
+  maxbibnames=99,
+  uniquename=init,
+  uniquelist=false,
+  backref=false,
+  doi=true,
+  isbn=true,
+  eprint=true,
+  natbib=true,
+  hyperref=true,
+  autolang=hyphen,
+  language=english,
+  backend=biber
+]{biblatex}
+
+% Remove unneccessary data from references at runtime rather than
+% editing the .bib file
+\AtEveryBibitem{
+  % Remove detailed address and date info
+  \clearlist{address}
+  \clearfield{date}
+  \clearlist{location}
+  \clearfield{month}
+
+  % Remove editor except for books
+  \ifentrytype{book}{}{
+    \ifentrytype{inbook}{}{
+      \clearname{editor}
+    }
+  }
+
+  % If there is a doi, there is no need for other identifiers
+  \iffieldundef{doi}{}{
+    \clearfield{url}
+    \clearfield{isbn}
+    \clearfield{issn}
+    \clearfield{eprint}
+  }
+
+  % If there is an eprint location, there is no need for other identifiers
+  \iffieldundef{eprint}{}{
+    \clearfield{url}
+    \clearfield{isbn}
+    \clearfield{issn}
+  }
+
+  % Uncomment this to remove all urls
+  %  \clearfield{url}}{}
+}
+
+% Bibliography is "References"
+\DefineBibliographyStrings{english}{%
+  bibliography = {References}
+}
+
+% Use upright parentheses only in the bibliography and references
+\renewcommand*{\bibopenparen}{\textup(}
+\renewcommand*{\bibcloseparen}{\textup)}
+
+%
+% Miscellaneous
+%
+
+\RequirePackage{xspace}
+\RequirePackage{blindtext}
+
+\endinput

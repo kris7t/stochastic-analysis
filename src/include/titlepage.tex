@@ -1,0 +1,40 @@
+\thispagestyle{empty}
+
+\begin{tikzpicture}[overlay,remember picture]
+  \node at (current page.center) {%
+    \begin{minipage}{\textwidth}
+
+      \centering
+
+      \includegraphics[width=7cm]{include/figures/bme_logo}
+      \vspace{0.3cm}
+
+      \bme \\
+      \vik \\
+      \bmemit \\
+      \vspace{4cm}
+
+      {\Huge\sffamily\bfseries \thetitle \par}
+      \vspace{1.5cm}
+
+      {\large \vikdoctype \par}
+      \vspace{3cm}
+
+      {\Large 
+        \authors: \\ \vspace{0.3cm}
+        \authori \\
+        \authorii
+
+        \vspace{1.5cm}
+        \advisors: \\ \vspace{0.3cm}
+        \advisori \\
+        \advisorii \\
+        \advisoriii\par}
+
+      \vspace{2cm}
+      {\large \viktdkyear.\par}
+
+    \end{minipage}};
+\end{tikzpicture}
+
+\cleardoublepage
