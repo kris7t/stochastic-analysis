@@ -8,3 +8,4 @@ all:
 
 clean:
 	rm -rf ./out
+	rm -f stochastic_analysis.pdf
