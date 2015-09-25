@@ -4,28 +4,55 @@
   \thispagestyle{plain}
   \paragraph*{Összefoglaló}
 
-  A technológia fejlődésével a számítógépes rendszerek
-  alkalmazási köre ma már olyan biztonságkritikus rendszerekre is
-  kiterjed, amelyek helyes működésétől sokszor teljes vállalatok
-  sorsa, vagy akár emberéletek is függhetnek. Az ilyen rendszerek
-  méretének és bonyolultságának növekedtével szükségessé vált a
-  megbízható automatikus módszerek kifejlesztése a rendszer (biztonság
-  szempontjából) kritikus tulajdonságai teljesülésének ellenőrzésére,
-  illetve a megbízhatósági és teljesítményjellemzők kiszámítására. Míg
-  a formális módszerekkel matematikai igényességgel igazolható a
-  tervezési folyamat helyessége, a sztochastikus technikák lehetővé
-  teszik a modell kibővítését dinamikus, kvantiatív jellemzőkkel.
+  A kritikus rendszerek\thinspace --\thinspace biztonságkritikus,
+  elosztott és felhőalkalmazások\thinspace --\thinspace helyességének
+  biztosításához szükséges a funkcionális és nemfunkcionális
+  követelmények matematikai igényességű ellenőrzése. Számos,
+  szolgáltatásbiztonsággal és teljesítményvizsgálattal kapcsolatos
+  tipikus kérdés általában sztochasztikus analízis segítségével
+  válaszolható meg.
 
-  A modellek métetének és bonyolultságának növekedése nagyságrendekkel
-  emelheti meg a modell lehetséges futásidejű konfigurációinak
-  számát. Ez a jelenség az \emph{állapottér-robbanás}, mely mind a
-  modellelenőrzés alapú formális verifikáció, mind a sztochasztikus
-  analízís során nehézséget jelent. A modellellenőrzésnél, mely a
-  formalizált követelmények verifikálásához felderíti a modell
-  állapothalmazát, a \emph{szaturációs} használó szimbolikus technikák
-  segítik a rendkívül nagy méretű állapotterek hatékony kezelését. A
-  sztochastikus analízis erre a célra általában lineáris algebrai
-  mátrix-dekompozíciókat alkalmaz.
+  A kritikus rendszerek elosztott és aszinkron tulajdonságai az
+  \emph{állapottér robbanás} jelenségéhez vezetnek. Emiatt méretük és
+  komplexitásuk gyakran megakadályozza a sikeres sztochasztikus
+  analízist, melynek számításigénye nagyban függ a lehetséges
+  viselkedések számától. A modellek komponenseinek jellegzetes időbeli
+  viselkedése a számításigény további jelentős növekedését okozhatja.
+
+  A szolgáltatásbiztonsági és teljesítményjellemzők kiszámítása
+  markovi modellek állandósult állapotbeli és tranziens megoldását
+  igényli. Számos eljárás ismert ezen problémák kezelésére, melyek
+  eltérő reprezentációkat és numerikus algoritmusokat
+  alkalmaznak\hspace{1pt}; ám a modellek változatos tulajdonságai
+  miatt nem választható ki olyan eljárás, mely minden esetben hatékony
+  lenne.
+
+  A markovi analízishez szükséges a modell lehetséges viselkedéseinek,
+  azaz állapotterének felderítése, illetve tárolása, mely szimbolikus
+  módszerekkel hatékonyan végezhető el. Ezzen szemben a sztochasztikus
+  algoritmusokban használt vektor- és indexműveletek szimbolikus
+  megvalósítása nehézkes. Munkánk célja egy olyan, integrált
+  keretrendszer fejlesztése, mely lehetővé teszi a komplex
+  sztochasztikus rendszerek kezelését a szimbolikus módszerek,
+  hatékony mátrix reprezentációk és numerikus algoritmusok előnyeinek
+  ötvözésével.
+
+  Egy teljesen szimbolikus algoritmust javasolunk a sztochasztikus
+  viselkedéseket leíró mátrix-dekompozíciók előállítására a
+  szimbolikus formában adott állapottérből kiindulva. Ez az eljárás
+  lehetővé teszi a temporális logikai kifejezéseken alapuló
+  szimbolikus technikák használatát.
+
+  A keretrendszerben megvalósítottuk a konfigurálható sztochasztikus
+  analízist\hspace{1pt}: megközelítésünk lehetővé teszi a különböző
+  mátrix reprezentációk és numerikus algoritmusok kombinált
+  használatát. Az implementált algoritmusokkal állandósult állapotbeli
+  költség- és érzékenység analízis, tranziens költséganalízis és első
+  hiba várható bekövetkezési idő analízis végezhető el sztochasztikus
+  Petri-háló~\paren{\textls{SPN}} markovi költségmodelleken. Az
+  elkészített eszközt integráltuk a PetriDotNet modellező
+  szoftverrel. Módszerünk gyakorlati alkalmazhatóságát szintetikus és
+  ipari modelleken végzett mérésekkel igazoljuk.
 
 \end{otherlanguage}
 
@@ -42,45 +69,44 @@ the system. A large class of typical quantitative questions regarding
 dependability and performability are usually addressed by stochastic
 analysis.
 
-However, the size and complexity of such systems often prevents the
-success of the analysis as they are highly sensitive to the number of
-possible behaviors. Recent critical systems are used to be
-distributed/asynchronous leading to the well-known phenomenon of state
-space explosion. In addition, temporal characteristics of the
-components can easily lead to huge computational overhead.
+Recent critical systems are often distributed/asynchronous, leading to
+the well-known phenomenon of \emph{state space explosion}. The size
+and complexity of such systems often prevents the success of the
+analysis due to the high sensitivity to the number of possible
+behaviors. In addition, temporal characteristics of the components can
+easily lead to huge computational overhead.
 
 Calculation of dependability and performability measures can be
 reduced to steady-state and transient solutions of Markovian
 models. Various approaches are known in the literature for these
-problems differing in the representation of the stochastic behavior
-of the models and also differing in the applied numerical
-algorithms. Various characteristics of the models influence overheads
-associated with these approaches, therefore no single best approach is
-known.
+problems differing in the representation of the stochastic behavior of
+the models or in the applied numerical algorithms. The efficiency of
+these approaches are influenced by various characteristics of the
+models, therefore no single best approach is known.
 
-The prerequisite of Markovian analysis is the exploration of the set
-of reachable states, i.e.~the behaviors of the system. Symbolic
-approaches provide an efficient state space exploration and storage
-technique, however their application to support the vector operations
-and index manipulations extensively used by stochastic algorithms is
-cumbersome.  The goal of our work is to introduce a framework that
-facilitates the analysis of complex, stochastic systems by combining
-together the advantages of symbolic algorithms, compact matrix
-representations and various numerical algorithms.
+The prerequisite of Markovian analysis is the exploration of the state
+space, i.e.~the possible behaviors of the system. Symbolic approaches
+provide an efficient state space exploration and storage technique,
+however their application to support the vector operations and index
+manipulations extensively used by stochastic algorithms is cumbersome.
+The goal of our work is to introduce a framework that facilitates the
+analysis of complex, stochastic systems by combining together the
+advantages of symbolic algorithms, compact matrix representations and
+various numerical algorithms.
 
-We propose a fully symbolic method to describe the stochastic
-behaviors. A new algorithm is introduced to transform the symbolic
-state space representation into a decomposed linear algebraic
+We propose a fully symbolic method to explore and describe the
+stochastic behaviors. A new algorithm is introduced to transform the
+symbolic state space representation into a decomposed linear algebraic
 representation. This approach allows leveraging existing symbolic
 techniques, such as the specification of properties with
 \emph{Computational Tree Logic}~\paren{\textls{CTL}} expressions.
 
 The framework provides configurable stochastic analysis: an approach
-is introduced to combine the various matrix representations with the
+is introduced to combine the different matrix representations withq
 numerical solution algorithms. Various algorithms are implemented for
 steady-state reward and sensitivity analysis, transient reward
 analysis and mean-time-to-first-failure analysis of stochastic models
-in the \emph{Stochastic Petri Net} \paren{\textls{SPN}} Markov reward
+in the \emph{Stochastic Petri Net}~\paren{\textls{SPN}} Markov reward
 model formalism. The analysis tool is integrated into the PetriDotNet
 modeling application.  Benchmarks and industrial case studies are used
 to evaluate the applicability of our approach.
