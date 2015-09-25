@@ -35,58 +35,52 @@
 \thispagestyle{plain}
 \paragraph*{Abstract}
 
-Ensuring the correctness of critical systems--such as safety-critical,
-distributed and cloud applications--requires the rigorous analysis of the
-functional and extra-functional properties of the system. A large class of typical quantitative questions
-regarding dependability and performability are usually addressed by stochastic
-analysis. 
-%However, existing approaches 
-%egy algoritmist implementálnak, nincs érzékenység és futási idő.
+Ensuring the correctness of critical systems---such as
+safety-critical, distributed and cloud applications---requires the
+rigorous analysis of the functional and extra-functional properties of
+the system. A large class of typical quantitative questions regarding
+dependability and performability are usually addressed by stochastic
+analysis.
 
-%In contrast to that/ To address these problems,
-However, the size and complexity of such systems often prevents the success of the analysis as they are highly
-sensitive to the number of possible behaviours of the systems. This situation raises the need for
-sophisticated analysis algorithms. Recent critical systems are used to be distributed/asynchronous leading to
-the well-known phenomenon of state space. In addition, temporal
-characteristics of the components can easily lead to huge
-computational overhead.
+However, the size and complexity of such systems often prevents the
+success of the analysis as they are highly sensitive to the number of
+possible behaviors. Recent critical systems are used to be
+distributed/asynchronous leading to the well-known phenomenon of state
+space explosion. In addition, temporal characteristics of the
+components can easily lead to huge computational overhead.
 
 Calculation of dependability and performability measures can be
 reduced to steady-state and transient solutions of Markovian
 models. Various approaches are known in the literature for these
-problems differing in the representation of the stochastic behaviour
+problems differing in the representation of the stochastic behavior
 of the models and also differing in the applied numerical
-algorithms. Various characteristics of the models influence the
-overheads associated with these approaches, therefore no single best
-approach is known.
+algorithms. Various characteristics of the models influence overheads
+associated with these approaches, therefore no single best approach is
+known.
 
 The prerequisite of Markovian analysis is the exploration of the set
-of reachable states i.e.~the behaviours of the system. Symbolic
+of reachable states, i.e.~the behaviors of the system. Symbolic
 approaches provide an efficient state space exploration and storage
 technique, however their application to support the vector operations
 and index manipulations extensively used by stochastic algorithms is
 cumbersome.  The goal of our work is to introduce a framework that
-facilitates the analysis of complex, stochastic systems by combining together the advantages of symbolic algorithms, compact matrix representations and various numerical algorithms.
+facilitates the analysis of complex, stochastic systems by combining
+together the advantages of symbolic algorithms, compact matrix
+representations and various numerical algorithms.
 
-We propose a fully symbolic method to describe the stochastic behaviors. A new algorithm is introduced to transform the symbolic
+We propose a fully symbolic method to describe the stochastic
+behaviors. A new algorithm is introduced to transform the symbolic
 state space representation into a decomposed linear algebraic
 representation. This approach allows leveraging existing symbolic
-techniques, such as the specification of
-properties with \emph{Computational Tree Logic} \paren{\textls{CTL}}
-expressions.
+techniques, such as the specification of properties with
+\emph{Computational Tree Logic}~\paren{\textls{CTL}} expressions.
 
-The framework provides configurable stochastic analysis: an approach is introduced to combine the various matrix representations with the numerical solution algorithms. 
-
-The decomposition method is implemented for steady-state reward and
-sensitivity analysis, transient reward analysis and
-mean-time-to-first-failure analysis of stochastic models in the
-\emph{stochastic Petri net} \paren{\textls{SPN}} Markov reward model
-formalism. The analysis tool is integrated into the PetriDotNet
-modeling and analysis applications along with a flexible linear
-algebra optimized for decompositions and calculations in used
-stochastic analysis which allows the user to fine-tune the analysis
-for the model under study.
-
-The performance of analysis algorithms and decompositions is studied
-for multiple benchmark models and case studies and compared to other
-available analysis tools.
+The framework provides configurable stochastic analysis: an approach
+is introduced to combine the various matrix representations with the
+numerical solution algorithms. Various algorithms are implemented for
+steady-state reward and sensitivity analysis, transient reward
+analysis and mean-time-to-first-failure analysis of stochastic models
+in the \emph{Stochastic Petri Net} \paren{\textls{SPN}} Markov reward
+model formalism. The analysis tool is integrated into the PetriDotNet
+modeling application.  Benchmarks and industrial case studies are used
+to evaluate the applicability of our approach.
