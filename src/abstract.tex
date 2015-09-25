@@ -52,7 +52,7 @@ Calculation of dependability and performability measures can be
 reduced to steady-state and transient solutions of Markovian
 models. Various approaches are known in the literature for these
 problems differing in the representation of the stochastic behaviour
-of the model and also differing in the applied numerical
+of the models and also differing in the applied numerical
 algorithms. Various characteristics of the models influence the
 overheads associated with these approaches, therefore no single best
 approach is known.
@@ -65,21 +65,20 @@ and index manipulations extensively used by stochastic algorithms is
 cumbersome.  The goal of our work is to introduce a framework that
 facilitates the analysis of complex, stochastic systems.
 
-We propose a fully symbolic method to describe the stochastic behavior
-of the system. A new algorithm is introduced to transform the symbolic
+We propose a fully symbolic method to describe the stochastic behaviors. A new algorithm is introduced to transform the symbolic
 state space representation into a decomposed linear algebraic
 representation. This approach allows leveraging existing symbolic
-techniques for complex systems, such as the specification of
+techniques, such as the specification of
 properties with \emph{Computational Tree Logic} \paren{\textls{CTL}}
 expressions.
 
+The framework provides configurable stochastic analysis: an approach is introduced to combine the various matrix representations with the numerical solution algorithms. 
 
 The decomposition method is implemented for steady-state reward and
 sensitivity analysis, transient reward analysis and
 mean-time-to-first-failure analysis of stochastic models in the
 \emph{stochastic Petri net} \paren{\textls{SPN}} Markov reward model
-formalism. The analysis tool is integrated into the Petridotnet~1.3%
-\footnote{\url{https://inf.mit.bme.hu/research/tools/petridotnet}}
+formalism. The analysis tool is integrated into the PetriDotNet
 modeling and analysis applications along with a flexible linear
 algebra optimized for decompositions and calculations in used
 stochastic analysis which allows the user to fine-tune the analysis
