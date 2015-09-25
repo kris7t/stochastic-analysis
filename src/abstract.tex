@@ -1,13 +1,15 @@
 \begin{otherlanguage}{magyar}
 
-  \chapter{Összefoglaló}
+  \addcontentsline{toc}{chapter}{Összefoglaló}
+  \thispagestyle{plain}
+  \paragraph*{Összefoglaló}
 
-  A technológia fejlődésével a számítógépes rendszerek alkalmazási
-  köre ma már olyan biztonságkritikus rendszerekre is kiterjed,
-  amelyek helyes működésétől sokszor teljes vállalatok sorsa, vagy
-  akár emberéletek is függhetnek. Az ilyen rendszerek méretének és
-  bonyolultságának növekedtével szükségessé vált a megbízható
-  automatikus módszerek kifejlesztése a rendszer (biztonság
+  A technológia fejlődésével a számítógépes rendszerek
+  alkalmazási köre ma már olyan biztonságkritikus rendszerekre is
+  kiterjed, amelyek helyes működésétől sokszor teljes vállalatok
+  sorsa, vagy akár emberéletek is függhetnek. Az ilyen rendszerek
+  méretének és bonyolultságának növekedtével szükségessé vált a
+  megbízható automatikus módszerek kifejlesztése a rendszer (biztonság
   szempontjából) kritikus tulajdonságai teljesülésének ellenőrzésére,
   illetve a megbízhatósági és teljesítményjellemzők kiszámítására. Míg
   a formális módszerekkel matematikai igényességgel igazolható a
@@ -27,20 +29,49 @@
 
 \end{otherlanguage}
 
-\chapter{Abstract}
+\cleardoublepage
 
-Ensuring correctness of critical systems, like safety-critical, distributed and cloud applications necessitates the analysis of functional and also qualitative aspects. Typical qualitative questions regarding dependability and performability are answered by stochastic analysis. However, the complexity of such systems raised the need for rigorous analysis methods. 
-Stochastic analysis methods are highly sensitive to the number of possible behaviours of the systems. Recent critical systems are used to be distributed/asynchronous leading to the well-known phenomenon of state space explosion often preventing the success of stochastic analysis. In addition, temporal characteristics of the components can easily lead to huge 
-computational overhead. 
-Calculation of dependability and performability measures can be reduced to steady-state and transient solutions of Markovian models. Various approaches are known in the literature for these problems differing in the representation of the stochastic behaviour of the model and also differing in the applied numerical algorithms. Various characteristics of the models influence the overheads associated with these approaches, therefore no single best approach is known.
-The prerequisite of Markovian analysis is the exploration of the set of reachable states i.e.~the behaviours of the system. Symbolic approaches provide an efficient state space exploration and storage technique, however their application to support the vector operations and index manipulations extensively used by stochastic algorithms is cumbersome. 
-The goal of our work is to introduce a framework that facilitates the analysis of complex, stochastic systems. 
+\addcontentsline{toc}{chapter}{Abstract}
+\thispagestyle{plain}
+\paragraph*{Abstract}
 
-We propose a fully symbolic method to describe the
-stochastic behavior of the system. A new algorithm is introduced to transform the symbolic state space representation into a decomposed linear algebraic representation. This approach allows leveraging existing symbolic
-techniques for complex systems, such as the
-specification of properties with
-\emph{Computational Tree Logic} \paren{\textls{CTL}} expressions.
+Ensuring correctness of critical systems, like safety-critical,
+distributed and cloud applications necessitates the analysis of
+functional and also qualitative aspects. Typical qualitative questions
+regarding dependability and performability are answered by stochastic
+analysis. However, the complexity of such systems raised the need for
+rigorous analysis methods.  Stochastic analysis methods are highly
+sensitive to the number of possible behaviours of the systems. Recent
+critical systems are used to be distributed/asynchronous leading to
+the well-known phenomenon of state space explosion often preventing
+the success of stochastic analysis. In addition, temporal
+characteristics of the components can easily lead to huge
+computational overhead.
+
+Calculation of dependability and performability measures can be
+reduced to steady-state and transient solutions of Markovian
+models. Various approaches are known in the literature for these
+problems differing in the representation of the stochastic behaviour
+of the model and also differing in the applied numerical
+algorithms. Various characteristics of the models influence the
+overheads associated with these approaches, therefore no single best
+approach is known.
+
+The prerequisite of Markovian analysis is the exploration of the set
+of reachable states i.e.~the behaviours of the system. Symbolic
+approaches provide an efficient state space exploration and storage
+technique, however their application to support the vector operations
+and index manipulations extensively used by stochastic algorithms is
+cumbersome.  The goal of our work is to introduce a framework that
+facilitates the analysis of complex, stochastic systems.
+
+We propose a fully symbolic method to describe the stochastic behavior
+of the system. A new algorithm is introduced to transform the symbolic
+state space representation into a decomposed linear algebraic
+representation. This approach allows leveraging existing symbolic
+techniques for complex systems, such as the specification of
+properties with \emph{Computational Tree Logic} \paren{\textls{CTL}}
+expressions.
 
 
 The decomposition method is implemented for steady-state reward and
