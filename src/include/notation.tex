@@ -1,0 +1,37 @@
+
+%
+% Numbers
+%
+
+\newcommand*{\RR}{\mathbb{R}} % Reals
+\newcommand*{\QQ}{\mathbb{Q}} % Rationals
+\newcommand*{\ZZ}{\mathbb{Z}} % Whole numbers
+\newcommand*{\NN}{\mathbb{N}} % Naturals
+\newcommand*{\NNpos}{\mathbb{N}^{+}} % Positive whole numbers
+
+%
+% Petri nets
+%
+
+\newcommand*{\PN}{\textit{PN}}
+\newcommand*{\PNI}{\PN_I}
+\newcommand*{\inarc}{\prescript{\bullet}{}}
+\newcommand*{\outarc}[1]{#1^\bullet}
+\newcommand*{\inharc}{\prescript{\circ}{}}
+\newcommand*{\outharc}[1]{#1^\circ}
+\newcommand*{\tranto}[1]{\mathbin{[#1\rangle}}
+\newcommand*{\reachto}{}\let\reachto\leadsto
+\newcommand*{\token}{\ensuremath{\bullet}}
+
+\tikzset{
+  petri net place/.style={
+    inner sep=0pt,minimum size=0.65cm,draw,circle,
+    fill=white,drop shadow={color=black,opacity=0.1,shadow xshift=2pt,
+    shadow yshift=-2pt}
+  },
+  petri net transition/.style={
+    inner sep=0pt,minimum width=0.2cm,minimum height=0.65cm,draw,
+    fill=white,drop shadow={color=black,opacity=0.1,shadow xshift=2pt,
+    shadow yshift=-2pt}
+  }
+}

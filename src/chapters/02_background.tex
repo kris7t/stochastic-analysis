@@ -3,33 +3,191 @@
 
 \section{Petri nets}
 
+Petri nets are a widely used graphical and mathematical modeling tool
+for systems which are concurrent, asynchronous, distributed, parallel
+or nondeterministic.
+
+\begin{dfn}
+  A \emph{Petri net} is a 5-tuple $\PN = (P, T, F, W, M_0)$, where
+  \begin{asparaitem}
+  \item $P = \{p_1, p_2, \ldots, p_n\}$ is a finite set of places;
+  \item $T = \{t_1, t_2, \ldots, t_m\}$ is a finite set of transitions;
+  \item $F \subseteq (P \times T) \cup (P \times T)$ is a set of
+    arcs, also called the flow relation;
+  \item $W: F \to \NNpos$ is an arc weight function;
+  \item $M_0: P \to \NN$ is the initial marking;
+  \item $P \cap T = \emptyset$ and $P \cup T \neq \emptyset$.
+  \end{asparaitem}
+  A \emph{Petri net structure} without an initial marking is a 4-tuple
+  $N = (P, T, F, W)$, while a Petri net with a given initial marking
+  is denoted by $(N, M_0)$~\citep{murata1989petri}.
+\end{dfn}
+
+Arcs from $P$ to $T$ are called \emph{input arcs}. The input places of
+a transition $t$ are denoted by $\inarc{t} = \{ p : (p, t) \in F
+\}$.
+In contrast, arcs of the form $(t, p)$ are called \emph{output arcs}
+and the output places of $t$ are denoted by
+$\outarc{t} = \{p : (t, p) \in F \}$.
+
+A \emph{marking} $M: P \to \NN$ assigns a number of \emph{tokens} to each
+place. The transition $t$ is \emph{enabled} in the marking $M_1$
+\paren{written as $M_1\,\tranto{t}\,$} when $M(p) \ge W(p, t)$ for all $p \in
+\inarc{t}$.
+
+Petri nets are graphically represented as edge weighted directed
+bipartite graphs. Places are drawn as circles, while transitions are
+drawn as rules or rectangles. Edge weights of $1$ are ususally omitted
+from presentation. Dots on places correspond to tokens in the current
+marking.
+
+If $M_1\,\tranto{t}$ the transition $t$ can be \emph{fired} to get a
+new marking $M_2$ \paren{written as $M_1 \tranto{t} M_2$} by
+decreasing the token counts for each place $p \in \inarc{t}$ by
+$W(p, t)$ and increasing the token counts for each place
+$p \in \outarc{t}$ by $W(t, p)$. Note that in general, $\inarc{t}$ and
+$\outarc{t}$ need not be disjoint. Thus, the firing rule can be
+written as
+\begin{equation}
+  \label{eq:background:petri:fire}
+  M_2(p) = M_1(p) - W(p, t) + W(t, p) \text,
+\end{equation}
+where we take $W(x, y) = 0$ if $(x, y) \notin F$ for brevity.
+
+A marking $M'$ is \emph{reachable} from the marking $M$ (written as
+$M \reachto M'$) if there exists a sequence of markings and transitions
+for some finite $k$ such that
+\begin{equation}
+  M_1 \tranto{t_{i_1}} M_2 \tranto{t_{i_2}} M_3 \tranto{t_{i_3}}
+  \cdots \tranto{t_{i_{k - 1}}} M_{k - 1} \tranto{t_{i_k}} M_k \text,
+\end{equation}
+where $M_1 = M$ and $M_k = M'$. A marking $M$ is in the reachable
+\emph{state space} of the net if $M_0 \reachto M$.
+
+\begin{figure}
+  \centering
+  \newcommand*{\examplenet}[3]{
+    \begin{tikzpicture}
+      \matrix [column sep=1cm,ampersand replacement=\&] {
+        \node [petri net place] (h2) {#1}; \& \& \\
+        \& \node [petri net transition] (t) {} ; \& \node [petri net place] (h2o) {#3}; \\
+        \node [petri net place] (o2) {#2}; \& \& \\
+      };
+      \draw [-{Latex}] (h2) edge node [above] {$2$} (t) (o2) edge (t)
+      (t) edge node [above] {$2$} (h2o);
+      \node [below=0cm of h2] {$p_{\text{H$_2$}}$};
+      \node [below=0cm of o2] {$p_{\text{O$_2$}}$};
+      \node [below=0cm of h2o] {$p_{\text{H$_2$O}}$};
+      \node [below=0cm of t] {$t$};
+    \end{tikzpicture}}
+
+  $\vcenter{\hbox{\examplenet{\token\token}{\token\token}{}}}
+  \quad\vcenter{\hbox{$\tranto{t}$}}\quad
+  \vcenter{\hbox{\examplenet{}{\token}{\token\token}}}$
+  \caption{A Petri net model of the reaction of hydrogen and oxygen.}
+  \label{fig:background:petri:h2o}
+\end{figure}
+
+\begin{example}
+  The Petri net in~\cref{fig:background:petri:h2o} models the chemical
+  reaction
+  \begin{equation}
+    2 \, \mathrm{H}_2 + \mathrm{O}_2 \rightarrow 2 \,
+    \mathrm{H}_2\mathrm{O} \text.
+  \end{equation}
+  In the initial marking \paren{left} there are two hydrogen and two
+  oxygen molecules, represented by token on the places $p_{\text{H$_{2}$}}$
+  and $p_{\text{O$_{2}$}}$, therefore the transition $t$ is
+  enabled. Firing $t$ yields the marking on the right where the two
+  tokens on $p_{\text{H$_{2}$O}}$ are the reaction products. Now $t$ is no
+  longer enabled.
+\end{example}
+
+\begin{figure}
+  \centering
+  \begin{tikzpicture}
+    \matrix [column sep=0.65cm,row sep=0.5cm,label distance=0cm] {
+      \node [petri net place,label={\strut$p_{W_1}$}] (W1) {};
+      & \node [petri net transition,label={\strut$t_{a_1}$}] (a1) {};
+      & \node [petri net place,label={\strut$p_{S_1}$}] (S1) {};
+      & \node [petri net transition,label={\strut$t_{d_1}$}] (d1) {};
+      & \node [petri net place,label={\strut$p_{C_1}$}] (C1) {\token};
+      & \node [petri net transition,label={\strut$t_{r_1}$}] (r1) {}; \\
+      & & \node [petri net place] (S) {\token}; & & & \\
+      \node [petri net place,label={-90:\strut$p_{W_2}$}] (W2) {};
+      & \node [petri net transition,label={-90:\strut$t_{a_2}$}] (a2) {};
+      & \node [petri net place,label={-90:\strut$p_{S_2}$}] (S2) {};
+      & \node [petri net transition,label={-90:\strut$t_{d_2}$}] (d2) {};
+      & \node [petri net place,label={-90:\strut$p_{C_2}$}] (C2) {\token};
+      & \node [petri net transition,label={-90:\strut$t_{r_2}$}] (r2) {}; \\
+    };
+    \node [right=0cm of S] {$p_S$};
+    \draw [-{Latex}] (W1) edge (a1) (S) edge (a1) (a1) edge (S1)
+    (S1) edge (d1) (d1) edge (S) (d1) edge (C1) (C1) edge (r1)
+    (W2) edge (a2) (S) edge (a2) (a2) edge (S2)
+    (S2) edge (d2) (d2) edge (S) (d2) edge (C2) (C2) edge (r2);
+    \draw [-{Latex},rounded corners] (r1.east) -| ++(0.65cm,1.2cm) -|
+    ($(W1.west)+(-0.65cm,0)$) -- (W1);
+    \draw [-{Latex},rounded corners] (r2.east) -| ++(0.65cm,-1.2cm) -|
+    ($(W2.west)+(-0.65cm,0)$) -- (W2);
+  \end{tikzpicture}
+  \caption{The \emph{SharedResource} Petri net model.}
+  \label{fig:background:petri:sharedresource}
+\end{figure}
+
+\begin{example}
+  In~\cref{fig:background:petri:sharedresource} we introduce the
+  \emph{SharedResource} model which will serve as a running example
+  throughout this report.
+
+  The model consists of a single shared resource $S$ and two
+  consumers. Each consumer can be in one of the
+  $C_i$ \paren{calculating locally}, $W_i$ \paren{waiting for
+    resource} and $S_i$ \paren{shared working} states. The transitions
+  $r_i$ \paren{request resource}, $a_i$ \paren{acquire resource} and
+  $d_i$ \paren{done} correspond to behaviours of the consumers.
+
+  The Petri net model allows the verification of safety properties,
+  e.g.~we can show that there is mutual exclusion
+  --~$M(S_1) + M(S_2) \le 1$ for all reachable markings~-- or that
+  deadlocks cannot occur. In contrast, we cannot compute dependability
+  or performability measures \paren{e.g.~the utilization of the shared
+    resource or number of calculations completed per unit time}
+  because the model does not describe the temporal behaviour of the
+  system.
+\end{example}
+
+\subsection{Petri nets extended with inhibitor arcs}
+
+One of the most frequently used extensions of Petri nets is the
+addition of inhibitor arcs, which modifies the rule for transition
+enablement. This modification gives Petri nets expressive power
+equivalent to Turing
+machines~\citep{DBLP:conf/apn/Chrzastowski-Wachtel99}.
+
+\begin{dfn}
+  A \emph{Petri net with inhibitor arcs} is a 3-tuple $\PNI = (\PN,
+  I, W_I)$, where
+  \begin{asparaitem}
+  \item $\PN = (P, T, F, W, M_0)$ is a Petri net;
+  \item $I \subseteq P \times T$ is the set of inhibitor arcs;
+  \item $W_I: I \to \NNpos$ is the inhibitor arc weight function.
+  \end{asparaitem}
+\end{dfn}
+
+Let $\inharc{t} = \{ p : (p, t) \in I\}$ denote the set of inhibitor
+places of the transition $t$. The enablement rule for Petri nets with
+inhibitor arcs can be formalized as
+\begin{equation}
+  \label{eq:background:petri:inh-fire}
+  M\,\tranto{t} \Longleftrightarrow \text{\strut$M(p) \ge W(p, t)$ for all
+    $p \in \inarc{t}$ and $M(p) < W_I(p, t)$ for all $p \in
+    \inharc{t}$.}
+\end{equation}
+The firing rule \eqref{eq:background:petri:fire} remains unchanged.
+
 \section{Continous-time Markov chains}
 
-\blindtext
 
-\citet{dayar2012analyzing}
 
 \section{Stochastic Petri nets}
-
-\blindmathtrue
-\renewcommand*{\blindmarkup}{\emph}
-\Blindtext[2]
-
-\begin{thm}
-  \blindtext[1]
-\end{thm}
-
-\section{Example section}
-
-\Blindtext[3]
-
-\subsection{Example subsection}
-
-\blindtext[1]
-
-\subsection{Example subsection}
-
-\blindmathfalse
-\blindtext[1]
-\blinditemize
-\Blindtext[5]
