@@ -6,3 +6,7 @@ tramp
 
 out
 /*.txss
+/*.sublime-workspace
+/*.sublime-project
+/src/stochastic_analysis.synctex.gz
+/src/stochastic_analysis.pdf
