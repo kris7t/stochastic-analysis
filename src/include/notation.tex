@@ -1,19 +1,46 @@
 
 %
+% General
+%
+
+\let\Pr\relax
+\DeclareMathOperator{\Pr}{\mathbb{P}}
+\DeclareMathOperator{\Ex}{\mathbb{E}}
+
+\newcommand*{\dd}{\mathrm{d}}
+\newcommand*{\T}{\mathrm{T}}
+\newcommand*{\vecarrow}{}\let\vecarrow\vec
+\renewcommand*{\vec}[1]{\bm{\mathrm{#1}}}
+\newcommand*{\krtimes}{}\let\krtimes\otimes
+
+%
+% Figures
+%
+
+\tikzset{
+  tdk highlight/.style={
+    fill=white,
+    drop shadow={color=black,opacity=0.12,shadow xshift=2pt, shadow yshift=-2pt}
+  }
+}
+
+%
 % Numbers
 %
 
 \newcommand*{\RR}{\mathbb{R}} % Reals
+\newcommand*{\RRpos}{\RR^{+}} % Positiver reals
 \newcommand*{\QQ}{\mathbb{Q}} % Rationals
 \newcommand*{\ZZ}{\mathbb{Z}} % Whole numbers
 \newcommand*{\NN}{\mathbb{N}} % Naturals
-\newcommand*{\NNpos}{\mathbb{N}^{+}} % Positive whole numbers
+\newcommand*{\NNpos}{\NN^{+}} % Positive whole numbers
 
 %
 % Petri nets
 %
 
 \newcommand*{\PN}{\textit{PN}}
+\newcommand*{\SPN}{\textit{SPN}}
 \newcommand*{\PNI}{\PN_I}
 \newcommand*{\inarc}{\prescript{\bullet}{}}
 \newcommand*{\outarc}[1]{#1^\bullet}
@@ -25,13 +52,15 @@
 
 \tikzset{
   petri net place/.style={
-    inner sep=0pt,minimum size=0.65cm,draw,circle,
-    fill=white,drop shadow={color=black,opacity=0.1,shadow xshift=2pt,
-    shadow yshift=-2pt}
+    inner sep=0pt,minimum size=0.65cm,draw,circle,tdk highlight
   },
   petri net transition/.style={
-    inner sep=0pt,minimum width=0.2cm,minimum height=0.65cm,draw,
-    fill=white,drop shadow={color=black,opacity=0.1,shadow xshift=2pt,
-    shadow yshift=-2pt}
+    inner sep=0pt,minimum width=0.2cm,minimum height=0.65cm,draw,tdk highlight
   }
 }
+
+%
+% Markov chains
+%
+
+\newcommand*{\CTMC}{\textls{CTMC}}

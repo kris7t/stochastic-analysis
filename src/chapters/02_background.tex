@@ -10,17 +10,15 @@ or nondeterministic.
 \begin{dfn}
   A \emph{Petri net} is a 5-tuple $\PN = (P, T, F, W, M_0)$, where
   \begin{asparaitem}
-  \item $P = \{p_1, p_2, \ldots, p_n\}$ is a finite set of places;
-  \item $T = \{t_1, t_2, \ldots, t_m\}$ is a finite set of transitions;
+  \item $P = \{p_0, p_1, \ldots, p_{n - 1}\}$ is a finite set of places;
+  \item $T = \{t_0, t_1, \ldots, t_{m - 1}\}$ is a finite set of transitions;
   \item $F \subseteq (P \times T) \cup (P \times T)$ is a set of
     arcs, also called the flow relation;
   \item $W: F \to \NNpos$ is an arc weight function;
   \item $M_0: P \to \NN$ is the initial marking;
-  \item $P \cap T = \emptyset$ and $P \cup T \neq \emptyset$.
+  \item $P \cap T = \emptyset$ and $P \cup T \neq
+    \emptyset$~\citep{murata1989petri}.
   \end{asparaitem}
-  A \emph{Petri net structure} without an initial marking is a 4-tuple
-  $N = (P, T, F, W)$, while a Petri net with a given initial marking
-  is denoted by $(N, M_0)$~\citep{murata1989petri}.
 \end{dfn}
 
 Arcs from $P$ to $T$ are called \emph{input arcs}. The input places of
@@ -135,7 +133,7 @@ where $M_1 = M$ and $M_k = M'$. A marking $M$ is in the reachable
   \label{fig:background:petri:sharedresource}
 \end{figure}
 
-\begin{example}
+\begin{runningExample}
   In~\cref{fig:background:petri:sharedresource} we introduce the
   \emph{SharedResource} model which will serve as a running example
   throughout this report.
@@ -145,7 +143,7 @@ where $M_1 = M$ and $M_k = M'$. A marking $M$ is in the reachable
   $C_i$ \paren{calculating locally}, $W_i$ \paren{waiting for
     resource} and $S_i$ \paren{shared working} states. The transitions
   $r_i$ \paren{request resource}, $a_i$ \paren{acquire resource} and
-  $d_i$ \paren{done} correspond to behaviours of the consumers.
+  $d_i$ \paren{done} correspond to behaviors of the consumers.
 
   The Petri net model allows the verification of safety properties,
   e.g.~we can show that there is mutual exclusion
@@ -153,9 +151,9 @@ where $M_1 = M$ and $M_k = M'$. A marking $M$ is in the reachable
   deadlocks cannot occur. In contrast, we cannot compute dependability
   or performability measures \paren{e.g.~the utilization of the shared
     resource or number of calculations completed per unit time}
-  because the model does not describe the temporal behaviour of the
+  because the model does not describe the temporal behavior of the
   system.
-\end{example}
+\end{runningExample}
 
 \subsection{Petri nets extended with inhibitor arcs}
 
@@ -186,8 +184,348 @@ inhibitor arcs can be formalized as
 \end{equation}
 The firing rule \eqref{eq:background:petri:fire} remains unchanged.
 
+% \needspace{15\baselineskip}
+
 \section{Continous-time Markov chains}
 
+Continous-time Markov chains are mathematical tools for describing the
+behavior of systems in countinous time where the random behavior of
+the system only depends on its current state.
 
+\begin{dfn}
+  A \emph{Continous-time Markov Chain} \paren{\CTMC}
+  $X(t) \in S, t \ge 0$ over a finite or countable infinite state
+  space $S = \{0, 1, \ldots, n - 1\}$ is a continous-time random
+  process with the \emph{Markovian} or memoryless property
+  \begin{multline}\allowdisplaybreaks[0]
+    \Pr(X(t_k) = x_k \mid X(t_{k - 1}) = x_{k - 1}, X(t_{k -
+      2}) = x_{k - 2}, \ldots, X(t_{0}) = x_{0}) \\
+    = \Pr(X(t_k) = x_k \mid X(t_{k - 1}) = x_{k - 1}) \text,
+  \end{multline}
+  where $t_0 \le t_1 \le \cdots \le t_k$. A \CTMC\ is said to be
+  \emph{time-homogenous} if it also satisfies
+  \begin{equation}
+    \Pr(X(t_k) = x_k \mid X(t_{k - 1}) = x_{k - 1}) = \Pr(X(t_k - t_{k -
+      1}) = x_k \mid X(0) = x_{k - 1}) \text.
+  \end{equation}
+\end{dfn}
+
+In this report we will restrict our attention to time-homogenous \CTMC
+s over finite state spaces. The state probabilities of these
+stochastic processes at time $t$ form a finite-dimensional vector
+$\vec{\uppi}(t) \in \RR$,
+\begin{equation}
+  \pi(t)[x] = \Pr(X(t) = x)
+\end{equation}
+that satisfies the differential equation
+\begin{equation}
+  \label{eq:background:ctmc:diffeq}
+  \frac{\dd \vec{\uppi}(t)}{\dd t} = \vec{\uppi}(t) \, Q
+\end{equation}
+for some square matrix $Q$. The matrix $Q$ is called the
+\emph{infinitesimal generator matrix} of the \CTMC\ and can be
+interpreted as follows:
+\begin{itemize}
+\item The diagonal elements $q[x, x] < 0$ describe the holding times
+  of the \CTMC. If $X(t) = x$, the \emph{holding time}
+  $h_x = \inf \{ h > 0 : X(t + h) \ne x \}$ spent in state $x$ is
+  exponentially distributed with rate $\lambda_x = -q[x, x]$. If $q[x,
+  x] = 0$, the no transitions are possible form state $x$ and it is
+  said to be \emph{absorbing}.
+\item The off-diagonal elements $q[x, y] \ge 0$ describe the state
+  transitions. In state~$x$ the \CTMC\ will jump to state~$y$ at the
+  next state transition with probability $-q[x, y] / q[x, x]$.
+  Equivalently, there is expontentially distributed countdown in the
+  state $x$ for each $y : q[x, y] > 0$ with \emph{transition rate}
+  $\lambda_{xy} = q[x, y]$. The first countdown to finish will trigger
+  a state change to the corresponding state $y$. Thus, the \CTMC\ is a
+  Kripke structure with exponentially distributed timed transitions.
+\item Elements in each row of $Q$ sum to $0$, hence it satisfies
+  $Q \vec{1}^\T = 0$.
+\end{itemize}
+
+For more algebraic properties of infinitesimal generator matrices, we
+refer to \textbf{TODO Markov biblia} and \textbf{TODO Nonnegative
+  matrices}.
+
+A state $y$ is said to be \emph{reachable} from the state $x$
+($x \reachto y$) if there exists a sequence of states
+\begin{equation}
+  x = z_1, z_2, z_3, \ldots, z_{k - 1}, z_k = y
+\end{equation}
+such that $q[z_i, z_{i + 1}] > 0$ for all $i = 1, 2, \ldots, k -
+1$.
+If $y$ is reachable from $x$ for all $x, y \in S$ $y$, the Markov chain
+is said to be \emph{irreducible}. Equivalenty, $Q$ is the
+infinitesimal generator matrix of an irreducible \CTMC\ if there is no
+permutation matrix $M$ such that
+\begin{equation}
+  M^{-1} Q M =
+  \begin{pmatrix}
+    Q_1 & 0 \\
+    0 & Q_2
+  \end{pmatrix}
+\end{equation}
+for some square matrices $Q_1$, $Q_2$.
+
+The \emph{steady-state probability distribution}
+$\vec{\uppi} = \lim_{t \to \infty} \vec{\uppi}(t)$ exists and is
+independent from the \emph{initial distribution}
+$\vec{\uppi}(0) = \vec{\uppi}_0$ if and only if the finite \CTMC\ is
+irreducible. The steady-state distribution is a stationary solution
+of~\cref{eq:background:ctmc:diffeq}, therefore it satisfies the linear
+equation
+\begin{equation}
+  \label{eq:background:ctmc:steadystate}
+  \frac{\dd \vec{\uppi}}{\dd t} = \vec{\uppi} \, Q = \vec{0}
+  \text.
+\end{equation}
+
+\begin{figure}
+  \begin{minipage}{.49\linewidth}
+    \centering
+    \begin{tikzpicture}
+      \matrix [column sep=1.5cm, every node/.style={inner
+        sep=0pt,minimum size=.85cm, draw,circle,tdk highlight}] {
+        \node (s0) {0}; & \node (s1) {1}; & \node (s2) {2}; \\
+      }; \draw [every edge/.append style={-{Latex},bend left}, every
+      node/.append style={above}] (s0) edge node {$\lambda_1$} (s1)
+      (s1) edge node {$\lambda_2$} (s2) (s2) edge node {$\mu_2$} (s1)
+      (s1) edge node {$\mu_1$} (s0) (s2) edge [bend left=45] node
+      {$\mu_3$} (s0);
+    \end{tikzpicture}
+  \end{minipage}
+  \begin{minipage}{.49\linewidth}
+    \centering
+    $\begin{blockarray}{rccc}
+      & 0 & 1 & 2 \\
+      \begin{block}{r(ccc)}
+        0 & -\lambda_1 & \lambda_1 & 0 \\
+        Q = 1 & \mu_1 & -\lambda_2 - \mu_1 & \lambda_2 \\
+        2 & \mu_3 & \mu_2 & -\mu_2 - \mu_3 \\
+      \end{block}
+    \end{blockarray}$
+    \vspace{0.5cm}
+  \end{minipage}
+  \caption{Example \CTMC\ with 3 states and its generator matrix.}
+  \label{fig:background:ctmc:repair}
+\end{figure}
+
+\begin{example}
+  \Cref{fig:background:ctmc:repair} shows a \CTMC\ with $3$
+  states. The transitions from state $0$ to $1$ and from $1$ to $2$
+  are associated with exponentially distributed countdowns with rates
+  $\lambda_1$ and $\lambda_2$ respectively, while transitions in the
+  reverse direction have rates $\mu_1$ and $\mu_2$. The transition
+  form state $2$ to $0$ is also possible with rate $\mu_3$.
+  
+  The rows \paren{corresponding to source states} and
+  columns \paren{destination states} of the infinitesimal generator
+  matrix $Q$ are labeled with the state numbers. The diagonal element
+  $q[1, 1]$ is $-\lambda_2 - \mu_1$, hence the holding time in state
+  $1$ is exponentially distributed with rate $\lambda_2 + \mu_1$. The
+  transition to $0$ is taken with probability
+  $-q[1, 0] / q[1, 1] = \mu_1 / (\lambda_2 + \mu_1)$, while the
+  transition to $2$ is taken with probability
+  $\lambda_2 / (\lambda_2 + \mu_1)$.
+
+  The \CTMC\ is irreducible, because every state is reachable from
+  every other state. Therefore, there is a unique steady-state
+  distribution $\vec{\uppi}$ independent from the initial distribution
+  $\vec{\uppi}_0$.
+\end{example}
+
+\subsection{Markov reward models}
+
+Continous-time Markov chains may be employed in the estimation of
+performance measures of models by defining \emph{rewards} that
+associate \emph{reward rates} with the states of a \CTMC. The
+momentary reward rate random variable $R(t)$ can describe performance
+measures defined at a single point of time, such as resource
+utilization or probability of failure, while the \emph{accumulated
+  reward} random variable $Y(t)$ may correspond to performance
+measures associated intervals of time, such as total downtime.
+
+\begin{dfn}
+  A \emph{Continous-time Markov Reward Process} over a finite state
+  space $S = \{0, 2, \ldots, n - 1\}$ is a pair $(X(t), \vec{r})$,
+  where $X(t)$ is a \CTMC\ over $S$ and $\vec{r} \in \RR^n$ is a
+  \emph{reward rate vector}.
+\end{dfn}
+
+The element $r[x]$ of reward vector is a momentary reward rates in
+state $x$, therefore the reward rate random variable can be written as
+$R(t) = r[X(t)]$. Accumulated rewards reward until time $t$ is
+calculated by integration as
+\begin{equation}
+  Y(t) = \int_{0}^t R(\tau) \, \dd \tau \text.
+\end{equation}
+
+\textbf{TODO Valamit írni és hivatkozni arról, hogy az $R(t)$ és
+  $Y(t)$ eloszlásait nehéz meghatározni, mi csak a várható értékekkel
+  foglalkozunk + behivatkozni valamit a várható értékhez.}
+
+Given the initial probability distribution vector
+$\vec{\uppi}(0) = \vec{\uppi}_0$ the expected value of the reward rate
+at time $t$ can be calculated as
+\begin{equation}
+  \label{eq:background:ctmc:reward}
+  \Ex R(t) = \sum_{i = 0}^{n - 1} \pi(t)[i] r[i] = \vec{\uppi}(t)
+  \, \vec{r}^\T \text,
+\end{equation}
+which requires the solution of the initial value problem
+\begin{equation}
+  \frac{\dd \vec{\uppi}(t)}{\dd t} = \vec{\uppi}(t) \, Q, \quad
+  \vec{\uppi}(0) = \vec{\uppi}_0
+\end{equation}
+to from the inner product $ \Ex[R(t)] = \vec{\uppi}(t) \,
+\vec{r}^\T$.
+To obtain the expected steady-state reward rate (if it exists) the
+linear equation~\eqref{eq:background:ctmc:steadystate} should be solved
+instead for the steady-state probability vector $\vec{\uppi}$.
+
+The expected value of the accumulated reward is
+\begin{align}
+  \Ex Y(t) &= \Ex\mleft[ \int_0^t R(\tau) \,\dd\tau \mright] =
+             \int_0^t \Ex[R(\tau)] \,\dd\tau \\
+           &= \int_0^t \sum_{i = 0}^{n - 1} \pi(\tau)[i] r[i]
+             \,\dd\tau = \sum_{i = 0}^{n - 1} \int_0^t \pi(\tau)[i]
+             \,\dd\tau \, r[i] \\
+           &= \int_0^t \vec{\uppi}(t) \,\dd\tau \, \vec{r}^\T =
+             \vec{L}(t) \, \vec{r}^\T \text,
+\end{align}
+where $\vec{L}(t) = \int_0^t \vec{\uppi}(t) \,\dd\tau$ is the accumulated
+probability vector, which is the solution of the initial value problem
+\begin{equation}
+  \frac{\dd \vec{L}(t)}{\dd t} = \vec{\uppi}(t), \quad \frac{\dd
+    \vec{\uppi}(t)}{\dd t} = \vec{\uppi}(t) \, Q, \quad
+  \vec{L}(0) = \vec{0}, \quad \vec{\uppi}(0) = \vec{\uppi}_0.
+\end{equation}
+
+\begin{example}
+  Let $c_0$, $c_1$ and $c_2$ denote operating costs per unit time
+  associated with the states of the \CTMC\ in
+  \cref{fig:background:ctmc:repair}. Consider the Markov reward
+  process $(X(t), \vec{r})$ with reward rate vector
+  \begin{equation}
+    \vec{r} = \begin{pmatrix} c_0 & c_1 & c_2 \end{pmatrix} \text.
+  \end{equation}
+  The random variable $R(t)$ describes the momentary operating cost,
+  while $Y(t)$ is the total operating expenditure until time $t$. The
+  steady-state expectation of $R$ is the average maintenance cost per
+  unit time of the long-running system.
+\end{example}
+
+\subsection{Sensitivty}
+
+Consider a reward process $(X(t), \vec{r})$ where both the
+infinitesimal generator matrix $Q(\vec{\uptheta})$ and the reward rate
+vector $\vec{r}(\vec{\uptheta})$ may depend on some \emph{parameters}
+$\vec{\uptheta} \in \RR^m$. The \emph{sensitivity} analysis of the
+rewards $R(t)$ may reveal performance or reliability bottlenecks of
+the modeled system and aid designers in achieving desired performance
+measures.
+
+\begin{dfn}
+  The \emph{sensitivity} of the expected reward rate~$\Ex R(t)$ to the
+  parameter~$\theta[i]$ is the partial derivative
+  \begin{equation}
+    \frac{\partial \Ex R(t)}{\partial \theta[i]} \text.
+  \end{equation}
+\end{dfn}
+
+The model reacts to the change of parameters with high absolute
+sensitivity more prominently, therefore they can be promising avenues
+of system optimization.
+
+To calculate the sensivity of $\Ex R(t)$, the partial derivative of
+both sides of \cref{eq:background:ctmc:reward} is taken, yielding
+\begin{equation}
+  \frac{\partial \Ex R(t)}{\partial \theta[i]} = \frac{\partial
+    \vec{\uppi}(t)}{\partial \theta[i]} \vec{r}^\T + \vec{\uppi}(t)
+  \mleft(\frac{\partial \vec{r}}{\partial \theta[i]}\mright)^\T =
+  \vec{s}_i(t) \, \vec{r}^\T + \vec{\uppi}(t)
+  \mleft(\frac{\partial \vec{r}}{\partial \theta[i]}\mright)^\T \text,
+\end{equation}
+where $\vec{s}_i$ is the sensitivity of $\vec{\uppi}$ to the parameter
+$\theta[i]$.
+
+In transient analysis, the sensitivity vector $\vec{s}_i$ is the
+solution of the initial value problem
+\begin{equation}
+  \frac{\dd \vec{s}_i(t)}{\dd t} = \vec{s}_i(t) Q + \vec{\pi}(t) V_i,
+  \quad \frac{\dd \vec{\uppi}(t)}{\dd t} = \vec{\uppi}_i(t) Q,
+  \quad \vec{s}_i(0) = \vec{0}, \quad \vec{\uppi}(0) = \vec{\uppi}_0
+  \text,
+\end{equation}
+where $V_i = \partial Q(\vec{\uptheta}) / \partial \theta[i]$ is the
+partial derivative of the generator matrix. A similar initial value
+problem can be derived for the sensitivity of
+$\vec{L}(t)$~\citep{DBLP:conf/sigmetrics/BlakeRT88}.
+
+To obtain the The sensitivity $\vec{s}_i$ of the steady-state
+probability vector $\vec{\uppi}$, the system of linear equations
+\begin{equation}
+  \vec{s}_i Q = -\vec{\uppi} V_i, \quad \vec{s}_i \vec{1}^T
+\end{equation}
+is solved.
+
+\textbf{TODO Sensitivity masik definicioja, amikor a numerikus
+  stabilitast vizsgaljuk\ldots}
 
 \section{Stochastic Petri nets}
+
+While reward processes based continous-time Markov chains allow the
+study of dependability or reliability measurements, the explicit
+specification of stochastic processes and rewards is often
+cumbersome. More expressive formalisms include queing networks,
+stochastic process algebras, stochastic Automata
+Networks~(\textls{SAN}) and Stochastic Petri Nets
+(\textls{SPN}). \textbf{TODO Kanonikus hivatkozasokat keresni}
+
+Stochastic Petri Nets extend Petri nets by assigning random
+exponentially distributed random delays to
+transitions~\citep{DBLP:conf/apn/Marsan88}. After the delay associated
+with an enabled transition is elapsed the transition fires
+\emph{atomically} are transitions delays are reset.
+
+\begin{dfn}
+  A Stochastic Petri Net is a pair $\SPN = (\PN, \Lambda)$, where
+  $\PN = (P, T, F, W, M_0)$ is a Petri net and $\Lambda: P \to \RRpos$
+  is a transition rate function.
+\end{dfn}
+
+
+
+\subsection{Stochastic reward nets}
+
+\section{Kronecker algebra}
+
+\begin{dfn}
+  The \emph{Kronecker product} of matrices
+  $A \in \RR^{n_1 \times m_1}$ and $B \in \RR^{n_2 \times m_2}$ is the
+  matrix $C = A \krtimes B \in \RR^{n_1 n_2 \times m_1 m_3}$, where
+  \begin{equation}
+    c[i_1 n_1 + i_2, j_1 m_1 + j_2] = a[i_1, j_1] b[i_2, j_2] \text.
+  \end{equation}
+\end{dfn}
+
+Some properties of the Kroncker product are
+\begin{enumerate}
+\item Associativity:
+  \begin{equation}
+    A \krtimes (B \krtimes C) = (A \krtimes B) \krtimes C \text,
+  \end{equation}
+\item Distributivity over matrix addition:
+  \begin{equation}
+    (A + B) \krtimes (C + D) = A \krtimes C + B \krtimes C + A
+    \krtimes D + B \krtimes D \text,
+  \end{equation}
+\item Compatibility with ordinary matrix multiplication:
+  \begin{gather}
+    (AB) \krtimes (CD) = (A \krtimes C) (B \krtimes D) \text,
+    \shortintertext{in particular,}
+    A \krtimes B = (A \krtimes I_2) (I_1 \krtimes B)
+  \end{gather}
+  for appropriately-sized identity matrices $I_1$ and $I_2$.
+\end{enumerate}
