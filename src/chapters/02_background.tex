@@ -60,7 +60,20 @@ for some finite $k$ such that
   \cdots \tranto{t_{i_{k - 1}}} M_{k - 1} \tranto{t_{i_k}} M_k \text,
 \end{equation}
 where $M_1 = M$ and $M_k = M'$. A marking $M$ is in the reachable
-\emph{state space} of the net if $M_0 \reachto M$.
+\emph{state space} of the net if $M_0 \reachto M$. The set of all
+markings reachable from $M_0$ is denoted by
+\begin{equation}
+  \RS = \{ M : M_0 \reachto M \} \text.
+\end{equation}
+
+\begin{dfn}
+  The Petri net $\PN$ is $k$-\emph{bounded} if $M(p) \le k$ for all $M
+  \in \RS$ and $p \in P$. $\PN$ is \emph{bounded} if it is $k$-bounded
+  for some (finite) $k$.
+\end{dfn}
+
+The reachable state space $\RS$ is finite precisely when the Peti net
+is bounded.
 
 \begin{figure}
   \centering
@@ -104,30 +117,7 @@ where $M_1 = M$ and $M_k = M'$. A marking $M$ is in the reachable
 \begin{figure}
   \centering
   \begin{tikzpicture}
-    \matrix [column sep=0.65cm,row sep=0.5cm,label distance=0cm] {
-      \node [petri net place,label={\strut$p_{W_1}$}] (W1) {};
-      & \node [petri net transition,label={\strut$t_{a_1}$}] (a1) {};
-      & \node [petri net place,label={\strut$p_{S_1}$}] (S1) {};
-      & \node [petri net transition,label={\strut$t_{d_1}$}] (d1) {};
-      & \node [petri net place,label={\strut$p_{C_1}$}] (C1) {\token};
-      & \node [petri net transition,label={\strut$t_{r_1}$}] (r1) {}; \\
-      & & \node [petri net place] (S) {\token}; & & & \\
-      \node [petri net place,label={-90:\strut$p_{W_2}$}] (W2) {};
-      & \node [petri net transition,label={-90:\strut$t_{a_2}$}] (a2) {};
-      & \node [petri net place,label={-90:\strut$p_{S_2}$}] (S2) {};
-      & \node [petri net transition,label={-90:\strut$t_{d_2}$}] (d2) {};
-      & \node [petri net place,label={-90:\strut$p_{C_2}$}] (C2) {\token};
-      & \node [petri net transition,label={-90:\strut$t_{r_2}$}] (r2) {}; \\
-    };
-    \node [right=0cm of S] {$p_S$};
-    \draw [-{Latex}] (W1) edge (a1) (S) edge (a1) (a1) edge (S1)
-    (S1) edge (d1) (d1) edge (S) (d1) edge (C1) (C1) edge (r1)
-    (W2) edge (a2) (S) edge (a2) (a2) edge (S2)
-    (S2) edge (d2) (d2) edge (S) (d2) edge (C2) (C2) edge (r2);
-    \draw [-{Latex},rounded corners] (r1.east) -| ++(0.65cm,1.2cm) -|
-    ($(W1.west)+(-0.65cm,0)$) -- (W1);
-    \draw [-{Latex},rounded corners] (r2.east) -| ++(0.65cm,-1.2cm) -|
-    ($(W2.west)+(-0.65cm,0)$) -- (W2);
+    \runningExamplePetriNet
   \end{tikzpicture}
   \caption{The \emph{SharedResource} Petri net model.}
   \label{fig:background:petri:sharedresource}
@@ -143,7 +133,8 @@ where $M_1 = M$ and $M_k = M'$. A marking $M$ is in the reachable
   $C_i$ \paren{calculating locally}, $W_i$ \paren{waiting for
     resource} and $S_i$ \paren{shared working} states. The transitions
   $r_i$ \paren{request resource}, $a_i$ \paren{acquire resource} and
-  $d_i$ \paren{done} correspond to behaviors of the consumers.
+  $d_i$ \paren{done} correspond to behaviors of the consumers. The net
+  is \mbox{$1$-bounded}, therefore it has finite $\RS$.
 
   The Petri net model allows the verification of safety properties,
   e.g.~we can show that there is mutual exclusion
@@ -183,8 +174,6 @@ inhibitor arcs can be formalized as
     \inharc{t}$.}
 \end{equation}
 The firing rule \eqref{eq:background:petri:fire} remains unchanged.
-
-% \needspace{15\baselineskip}
 
 \section{Continous-time Markov chains}
 
@@ -241,12 +230,11 @@ interpreted as follows:
   a state change to the corresponding state $y$. Thus, the \CTMC\ is a
   Kripke structure with exponentially distributed timed transitions.
 \item Elements in each row of $Q$ sum to $0$, hence it satisfies
-  $Q \vec{1}^\T = 0$.
+  $Q \vec{1}^\T = \vec{0}^\T$.
 \end{itemize}
 
 For more algebraic properties of infinitesimal generator matrices, we
-refer to \textbf{TODO Markov biblia} and \textbf{TODO Nonnegative
-  matrices}.
+refer to \citet{plemmons1979nonnegative,stewart1994introduction}.
 
 A state $y$ is said to be \emph{reachable} from the state $x$
 ($x \reachto y$) if there exists a sequence of states
@@ -466,12 +454,14 @@ $\vec{L}(t)$~\citep{DBLP:conf/sigmetrics/BlakeRT88}.
 To obtain the The sensitivity $\vec{s}_i$ of the steady-state
 probability vector $\vec{\uppi}$, the system of linear equations
 \begin{equation}
-  \vec{s}_i Q = -\vec{\uppi} V_i, \quad \vec{s}_i \vec{1}^T
+  \vec{s}_i Q = -\vec{\uppi} V_i, \quad \vec{s}_i \vec{1}^T = 0
 \end{equation}
 is solved.
 
 \textbf{TODO Sensitivity masik definicioja, amikor a numerikus
   stabilitast vizsgaljuk\ldots}
+
+\subsection{Time to first failure}
 
 \section{Stochastic Petri nets}
 
@@ -491,13 +481,237 @@ with an enabled transition is elapsed the transition fires
 
 \begin{dfn}
   A Stochastic Petri Net is a pair $\SPN = (\PN, \Lambda)$, where
-  $\PN = (P, T, F, W, M_0)$ is a Petri net and $\Lambda: P \to \RRpos$
+  $\PN$ is a Petri net $(P, T, F, W, M_0)$ and $\Lambda: P \to \RRpos$
   is a transition rate function.
 \end{dfn}
 
+\needspace{5ex}
 
+A finite \CTMC\ can be associated with a bounded stochastic Petri net
+as follows:
+\begin{enumerate}
+\item The reachable state space of the Petri net is explored. We
+  associate a consecutive natural numbers with the states such that
+  the state space is
+  \begin{equation}
+    \RS = \{ M_0, M_1, M_2, \ldots, M_{n - 1} \} \text,
+  \end{equation}
+  where $M_0$ is the initial marking. From now on, we will use
+  markings $M_x \in \RS$ and natural numbers $x \in \{0, 1, \ldots, n
+  - 1\}$ to refer to states of the model interchangably.
+\item We define a \CTMC\ $X(t)$ over the finite state space
+  \begin{equation}
+    S = \{ 0, 1, 2, \ldots, n - 1 \} \text.
+  \end{equation}
+  The initial distribution vector will be set to
+  \begin{equation}
+    \vec{\uppi}(0) = \vec{\uppi}_0 = \begin{pmatrix}
+      1 & 0 & 0 & \cdots & 0
+    \end{pmatrix}
+  \end{equation}
+  in the analysis steps ($\pi_0[x] = \delta_{0x}$).
+\item The generator matrix $Q \in \RR^{n \times n}$ encodes the
+  possible state transitions of the Petri net and the associated
+  transition rate $\Lambda(\,\cdot\,)$ as
+  \begin{gather}
+    q_O[x, y] = \sum_{\mathclap{\substack{t \in T \\ M_{x} \tranto{t} M_y}}}
+    \Lambda(t) \quad \text{if $x \ne y$} \text, \\
+    q_O[x, x] = 0 \text, \\
+    Q = Q_O - \diag \{ Q_O \vec{1}^\T \} \text,
+  \end{gather}
+  where the summation is done over all transition from the marking
+  $M_x$ to $M_y$, while $Q_O$ and $Q_D = -\diag \{ Q_O \vec{1}^\T \}$
+  are the off-diagonal and diagonal parts of $Q$, respectively.
+\end{enumerate}
+
+\begin{figure}
+  \centering
+  \begin{tikzpicture}
+    \runningExamplePetriNet
+    \node [below=2pt of a1] {$1.0$};
+    \node [below=2pt of d1] {$0.5$};
+    \node [below=2pt of r1] {$\frac{1}{\theta[0]} = 1.6$};
+    \node [above=2pt of a2] {$1.0$};
+    \node [above=2pt of d2] {$1.1$};
+    \node [above=2pt of r2] {$\frac{1}{\theta[1]} = 0.8$};
+  \end{tikzpicture}
+  \caption{Example stochastic Petri net for the \emph{SharedResource}
+    model.}
+  \label{fig:background:spn:sharedresource}
+\end{figure}
+
+\begin{table}
+  \centering
+  $\mathllap{\RS = }\left\{\;\text{\small%
+    \begin{tabular}{@{}r*{7}{c}l@{}}
+      \toprule
+      & $S$ & $C_1$ & $W_1$ & $S_1$ & $C_2$ & $W_2$ & $S_2$ & \\
+      \midrule
+      $M_0$ & 1 & 1 & 0 & 0 & 1 & 0 & 0 & initial \\
+      $M_1$ & 1 & 0 & 1 & 0 & 1 & 0 & 0 & client 1 waiting \\
+      $M_2$ & 1 & 1 & 0 & 0 & 0 & 1 & 0 & client 2 waiting \\
+      $M_3$ & 1 & 0 & 1 & 0 & 0 & 1 & 0 & 1 waiting, 2 waiting \\
+      $M_4$ & 0 & 0 & 0 & 1 & 1 & 0 & 0 & client 1 shared working \\
+      $M_5$ & 0 & 0 & 0 & 1 & 0 & 1 & 0 & 1 shared working, 2 waiting \\
+      $M_6$ & 0 & 1 & 0 & 0 & 0 & 0 & 1 & client 2 shared working \\
+      $M_7$ & 0 & 0 & 1 & 0 & 0 & 0 & 1 & 1 waiting, 2 shared working \\
+      \bottomrule
+    \end{tabular}}%
+  \;\right\}$
+  \caption{Reachable state space of the \emph{SharedResource} model.}
+  \label{tab:background:spn:sharedresource-rs}
+\end{table}
+
+\begin{figure}
+  \centering
+  \begin{tikzpicture}
+    \newcommand*{\state}[2][]{\node [#1] (m#2) {$M_{#2}$};}
+    \newcommand*{\tran}[4][above]{\draw [-{Latex},#1]
+      (m#2) edge node [#1] {$#4$} (m#3);}
+
+    \matrix [column sep=1.2cm, row sep=1.2cm,
+    every node/.append style={tdk highlight, draw, circle,
+      inner sep=0pt, minimum size=0.8cm}] {
+      \state[thick]{0} & \state{1} & \state{4} \\
+      \state{2} & \state{3} & \state{5} \\
+      \state{6} & \state{7} \\
+    };
+
+    \tran[font=\footnotesize,above]{0}{1}{\frac{1}{\theta[0]}}
+    \tran{1}{4}{1}
+    \tran[bend right=60,above,pos=0.25,yshift=2pt]{4}{0}{0.5}
+    \tran[font=\footnotesize,left]{0}{2}{\frac{1}{\theta[1]}}
+    \tran[font=\footnotesize,left]{1}{3}{\frac{1}{\theta[1]}}
+    \tran[font=\footnotesize,left]{4}{5}{\frac{1}{\theta[1]}}
+    \tran[font=\footnotesize,above]{2}{3}{\frac{1}{\theta[0]}}
+    \tran{3}{5}{1}
+    \tran[bend right=60,above,pos=0.25,yshift=2pt]{5}{2}{0.5}
+    \tran[left]{2}{6}{1}
+    \tran[left]{3}{7}{1}
+    \tran[font=\footnotesize,above]{6}{7}{\frac{1}{\theta[0]}}
+    \tran[bend left=60,left,pos=0.25]{6}{0}{1.1}
+    \tran[bend left=60,left,pos=0.25]{7}{1}{1.1}
+  \end{tikzpicture}
+  \caption{The \CTMC\ associated with the \emph{SharedResource}
+    \textls{SPN} model.}
+  \label{fig:background:spn:sharedresouce-ctmc}
+\end{figure}
+
+\begin{runningExample}
+  \Cref{fig:background:spn:sharedresource} shows \textls{SPN}
+  \emph{SharedResouce} model, which is the Petri net
+  from~\vref{fig:background:petri:sharedresource} extended with
+  exponential transition rates.
+
+  The transitions $a_1$, $d_1$, $a_2$ and $d_2$ have rates $1.0$,
+  $0.5$, $1.0$ and $1.1$, respectively. The parameter vector
+  $\vec{\uptheta} = (0.625 \;\; 1.25) \in \RR^2$ is introduced such
+  that the transitions $r_1$ and $r_2$ have rates $1 / \theta[0]$ and
+  $1 / \theta[1]$.
+
+  The reachable state space
+  (\cref{tab:background:spn:sharedresource-rs}) contains $8$ markings
+  which are mapped to the integers $S = \{0, 1, \ldots, 7\}$. The
+  state space graph along with the transition rates of the \CTMC\ is
+  shown in \cref{fig:background:spn:sharedresouce-ctmc}. The generator
+  matrix is
+  \begin{equation}
+    Q =
+    \begin{blockarray}{l*{8}{c}}
+      & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 \\
+      \begin{block}{l(*{8}{c})}
+        0 & \ast & \frac{1}{\theta[0]} & \frac{1}{\theta[1]} & 0 & 0 & 0 & 0 & 0 \\
+        1 & 0 & \ast & 0 & \frac{1}{\theta[1]} & 1 & 0 & 0 & 0 \\
+        2 & 0 & 0 & \ast &  \frac{1}{\theta[0]} & 0 & 0 & 1 & 0 \\
+        3 & 0 & 0 & 0 & \ast & 0 & 1 & 0 & 1 \\
+        4 & 0.5 & 0 & 0 & 0 & \ast & \frac{1}{\theta[1]} & 0 & 0 \\
+        5 & 0 & 0 & 0.5 & 0 & 0 & \ast & 0 & 0 \\
+        6 & 1.1 & 0 & 0 & 0 & 0 & 0 & \ast & \frac{1}{\theta[0]} \\
+        7 & 0 & 1.1 & 0 & 0 & 0 & 0 & 0 & \ast \\
+      \end{block}
+    \end{blockarray}\;\;\text,
+  \end{equation}
+  where in each row the diagonal element is the negative of the sum of
+  the other elemens so that $Q \vec{1}^\T = \vec{0}^\T$. The \CTMC\ is
+  irreducible, therefore it has a well-defined steady-state distribution.
+\end{runningExample}
 
 \subsection{Stochastic reward nets}
+
+\begin{dfn}
+  A \emph{Stochastic Reward Net} is a triple
+  $\SRN = (\SPN, \rateReward, \impulseReward)$, where $\SPN$ is a
+  stochastic Petri net, $\rateReward: \NN^P \to \RR$ is a \emph{rate
+    reward function} and $\impulseReward: T \times \NN^P \to \RR$ is
+  an \emph{impulse reward} function.
+\end{dfn}
+
+The rate reward $\rateReward(M)$ is the reward gained per unit time in
+marking $M$, while $\impulseReward(t, M)$ is the reward gained when
+the transition $t$ fires in marking $M$. The instantaneous reward rate
+and accumulated reward at time $t$ is denoted by $R(t)$ and $Y(t)$,
+respectively.
+
+If $\impulseReward(t, M) \equiv 0$, the \textls{SRN} is
+equivalent to the Markov reward process $(X(t), \vec{r})$, where
+$X(t)$ is the \CTMC\ associated with the stochastic Petri net and
+\begin{equation}
+  \vec{r} \in \RR^n, \quad r[x] = \rateReward(M_x) \text.
+\end{equation}
+
+If there are impulse rewards, exact calculation of the expected reward
+rate $\Ex R(t)$ and expected accumulated reward $\Ex Y(t)$ can be
+performed on reward process $(X, \vec{r})$,
+\begin{equation}
+  r[x] = \rateReward(M_x) + \sum_{\mathclap{t \in T, M_x
+      \tranto{t}}} \Lambda(t) \, \impulseReward(t, M_x) \text,
+\end{equation}
+where the summation is taken over all enabled transitions. In general,
+the distributions of $R(t)$ and $Y(t)$ cannot be derived by this
+method.
+
+\begin{runningExample}
+  The \textls{SRN} model
+  \begin{equation}
+    \rateReward_1(M) = M(P_{S_1}) + M(P_{S_2}), \quad
+    \impulseReward_1(t, M) = 0
+  \end{equation}
+  describes the utilization of the shared resouce in the
+  \emph{SharedResouce} \textls{SPN}
+  (\vref{fig:background:spn:sharedresource}). $R_1(t) = 1$ if the
+  resource is allocated, hence $\Ex R_1(t)$ is the probability that
+  the resource is in use at time $t$, while $Y(t)$ is the total usage
+  time until $t$.
+
+  Another reward structure
+  \begin{equation}
+    \rateReward_2(M) = 0, \quad \impulseReward_2(t, M) = \begin{cases}
+      1 & \text{if $t \in \{t_{r_1}, t_{r_2}\}$,} \\
+      0 & \text{otherwise}
+    \end{cases}
+  \end{equation}
+  describes the calculations --~represented by places $C_1$ and
+  $C_2$~-- performed successfully. The exprected steady-state reward
+  rate $\lim_{t \to \infty} \Ex R(t)$ equals the number of
+  calculations per unit time in a long-running system, while $Y(t)$ is
+  the number of calculations performed until time $t$.
+
+  The reward vectors of the Markov reward models associated with the
+  two \textls{SRNs} above are
+  \begin{align}
+    \begin{blockarray}{l@{\mkern 15mu}*{8}{c}@{\mkern 10mu}r}
+      & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & \\
+      \begin{block}{l@{\mkern 15mu}(*{8}{c})@{\mkern 10mu}r}
+        \vec{r}_1 = & 0 & 0 & 0 & 0 & 1 & 1 & 1 & 1 & \text,\\
+      \end{block}
+      \begin{block}{l@{\mkern 15mu}(*{8}{c})@{\mkern 10mu}r}
+        \vec{r}_2 = & \frac{1}{\theta[0]} + \frac{1}{\theta[1]}
+        & \frac{1}{\theta[1]} & \frac{1}{\theta[0]}
+        & 0 & \frac{1}{\theta[1]} & 0 & \frac{1}{\theta[0]} & 0 & \text.\\
+      \end{block}
+    \end{blockarray}
+  \end{align}
+\end{runningExample}
 
 \section{Kronecker algebra}
 
