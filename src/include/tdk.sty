@@ -44,8 +44,9 @@
 
 % Sans serif chapter titles
 \renewcommand*{\chapnamefont}{\normalfont\huge\textit}
+\renewcommand*{\chapnamefont}{\normalfont\huge\clearthin\color{black!75}}
 \renewcommand*{\chapnumfont}{\chapnamefont}
-\renewcommand*{\chaptitlefont}{\normalfont\Huge\sffamily\bfseries}
+\renewcommand*{\chaptitlefont}{\normalfont\Huge\sffamily\bfseries\color{black}}
 \renewcommand*{\cftchapterfont}{\normalfont\sffamily\bfseries}
 \renewcommand*{\cftchapterpagefont}{\cftchapterfont}
 
@@ -68,10 +69,11 @@
 \settocdepth{subsection}
 
 % Display current chapter and section in the header
-\newcommand*{\leftmarkstyle}[1]{{\itshape\textls*{\MakeUppercase{#1}}}}
+\newcommand*{\markstyle}[1]{\color{black!75}{\textsft{#1}}}
+\newcommand*{\leftmarkstyle}[1]{{\markstyle{\textls*[30]{\MakeUppercase{#1}}}}}
 \copypagestyle{my}{ruled}
-\makeevenhead{my}{\thepage}{\leftmarkstyle{\leftmark}}{}
-\makeoddhead{my}{}{\slshape\rightmark}{\thepage}
+\makeevenhead{my}{\textsf{\thepage}}{}{\leftmarkstyle{\leftmark}}
+\makeoddhead{my}{\markstyle{\rightmark}}{}{\textsf{\thepage}}
 \makeevenfoot{my}{}{}{}
 \makeoddfoot{my}{}{}{}
 \makepsmarks{my}{%
@@ -86,6 +88,13 @@
       \fi
       ##1}}}
 \pagestyle{my}
+
+% Customize chapter page numbers
+\copypagestyle{plain}{ruled}
+\makeevenhead{plain}{\textsf{\thepage}}{}{}
+\makeoddhead{plain}{}{}{\textsf{\thepage}}
+\makeevenfoot{plain}{}{}{}
+\makeoddfoot{plain}{}{}{}
 
 %
 % Tables and lists
