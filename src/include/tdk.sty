@@ -21,7 +21,7 @@
 % Use Bistream Charter, Cabin and Inconsolata
 \RequirePackage[charter]{mathdesign}
 \RequirePackage[scaled=.98]{XCharter}
-\RequirePackage[scaled=.98]{ClearSans}
+\RequirePackage[scaled=.98,medium]{ClearSans}
 \RequirePackage[scaled=1.04,varqu,varl]{inconsolata}
 \RequirePackage[scr=boondoxo]{mathalfa}
 
@@ -56,6 +56,11 @@
 \setsubsubsecheadstyle{\normalsize\sffamily\bfseries}
 \setparaheadstyle{\normalsize\sffamily\bfseries}
 \setsubparaheadstyle{\normalsize\sffamily\bfseries}
+
+% Captions
+\captionnamefont{\normalfont\sffamily}
+\captiondelim{\quad}
+\captiontitlefont{\normalfont}
 
 % Use a command to write upright parentheses even in italic text
 \newcommand{\paren}[1]{\textup(#1\textup)}
@@ -204,12 +209,13 @@
   \@thm{proof}{proof}{#1.}%
 }{\@endtheorem}
 
-% Upright parentheses in theorem titles
+% Upright parentheses in theorem titles, leave an em space after
+% theorem number
 \newtheoremstyle{my}%
-{\item[\hskip\labelsep \theorem@headerfont ##1~##2\theorem@separator]}%
-{\item[\hskip\labelsep {\theorem@headerfont ##1~##2}~\paren{##3}\theorem@separator]}
+{\labelsep=1em\item[\hskip\labelsep \theorem@headerfont ##1~##2\theorem@separator]}%
+{\labelsep=1em\item[\hskip\labelsep {\theorem@headerfont ##1~##2}~\paren{##3}\theorem@separator]}
 \theoremstyle{my}
-\theoremseparator{\enspace}
+\theoremseparator{}
 
 % Highlight theorems with a rule
 \theoreminframepreskip{0cm}

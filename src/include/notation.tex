@@ -23,7 +23,7 @@
 \tikzset{
   tdk highlight/.style={
     fill=white,
-    drop shadow={color=black,opacity=0.12,shadow xshift=2pt, shadow yshift=-2pt}
+    drop shadow={color=black,opacity=0.1,shadow xshift=2pt, shadow yshift=-2pt}
   }
 }
 
@@ -37,6 +37,12 @@
 \newcommand*{\ZZ}{\mathbb{Z}} % Whole numbers
 \newcommand*{\NN}{\mathbb{N}} % Naturals
 \newcommand*{\NNpos}{\NN^{+}} % Positive whole numbers
+
+%
+% Markov chains
+%
+
+\newcommand*{\CTMC}{\textls{CTMC}}
 
 %
 % Petri nets
@@ -63,15 +69,13 @@
   }
 }
 
+%
+% Stochastic Reward Nets
+%
+
 \newcommand*{\SRN}{\mathabbrev{SRN}}
 \newcommand*{\rateReward}{\mathit{rr}}
 \newcommand*{\impulseReward}{\mathit{ir}}
-
-%
-% Markov chains
-%
-
-\newcommand*{\CTMC}{\textls{CTMC}}
 
 %
 % Running example
