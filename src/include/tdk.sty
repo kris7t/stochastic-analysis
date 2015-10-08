@@ -21,9 +21,10 @@
 % Use Bistream Charter, Cabin and Inconsolata
 \RequirePackage[charter]{mathdesign}
 \RequirePackage[scaled=.98]{XCharter}
-\RequirePackage[scaled=.98,medium]{ClearSans}
+\RequirePackage[scaled=.97,medium]{ClearSans}
 \RequirePackage[scaled=1.04,varqu,varl]{inconsolata}
 \RequirePackage[scr=boondoxo]{mathalfa}
+\let\mathcal\mathscr
 
 % \RequirePackage[theoremfont]{newpxtext}
 % \RequirePackage{textcomp}
@@ -243,7 +244,11 @@
 \RequirePackage{graphicx}
 
 \RequirePackage{tikz}
-\usetikzlibrary{arrows.meta,calc,shadows,matrix,positioning}
+\usetikzlibrary{arrows.meta,calc,patterns,shadows,matrix,positioning}
+
+% Create a bg layer for drawings
+\pgfdeclarelayer{bg}
+\pgfsetlayers{bg,main}
 
 %
 % Algorithms

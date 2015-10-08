@@ -451,17 +451,64 @@ partial derivative of the generator matrix. A similar initial value
 problem can be derived for the sensitivity of
 $\vec{L}(t)$~\citep{DBLP:conf/sigmetrics/BlakeRT88}.
 
-To obtain the The sensitivity $\vec{s}_i$ of the steady-state
-probability vector $\vec{\uppi}$, the system of linear equations
+To obtain the sensitivity $\vec{s}_i$ of the steady-state probability
+vector $\vec{\uppi}$, the system of linear equations
 \begin{equation}
   \vec{s}_i Q = -\vec{\uppi} V_i, \quad \vec{s}_i \vec{1}^T = 0
 \end{equation}
 is solved.
 
-\textbf{TODO Sensitivity masik definicioja, amikor a numerikus
-  stabilitast vizsgaljuk\ldots}
+Another type of sensitivty analysis considers \emph{unstructured}
+small perturbations of the infinitesimal generator matrix $Q$ instead
+of dependecies on parameters. This latter, unstructured analysis may
+be used to study the numerical stability and conditioning of the
+solutions of the Markov chain.
 
 \subsection{Time to first failure}
+
+Let $D \subsetneq S$ be a set of \emph{failure states} of the \CTMC\ 
+$X(t)$ and $U = S \setminus D$ be a set of operating states. We will
+assume without loss of generality that $U = \{0, 1, \ldots, n_U - 1\}$
+and $D = \{ n_U, n_U + 1, \ldots, n - 1 \}$.
+
+The matrix
+\begin{equation}
+  Q_{UD} = \begin{pmatrix}
+    Q_{UU} & \vec{q}_{UD}^\T \\
+    \vec{0} & 0
+  \end{pmatrix}
+\end{equation}
+is the generator matrix of a \CTMC\ $X_{UD}(t)$ in which all the
+failures states $D$ were merged into a single state $n_U$ and all
+outgoing transitions from $D$ were removed. The matrix $Q_{UU}$ is the
+$n_U \times n_U$ upper left submatrix of $Q$, while the vector
+$\vec{q}_{UD} \in \RR^{n_U}$ is defined as
+\begin{equation}
+  q_{UD}[x] = \sum_{y \in D} q[x, y] \text.
+\end{equation}
+
+If the initial distribution $\vec{\uppi}_0$ is $0$ for all failure
+states (i.e.~$\pi_0[x] = 0$ for all $x \in D$), the \emph{Time
+  to First Failure}
+\begin{equation}
+  \TFF = \inf \{ t \ge 0 : X(t) \in D \} = \inf \{ t \ge 0 : X_{UD}(t)
+  = n_U \}
+\end{equation}
+has \emph{phase-type distribution} with parameters
+$(Q_{UU}, \vec{q}_{UD}, \vec{\pi}_{U})$, where $\vec{\uppi}_U$ is the
+vector containing the first $n_U$ elements of $\vec{\pi}_0$. In
+particular, the \emph{Mean Time to First Failure} is
+\begin{equation}
+  \MTFF = \Ex[\TFF] = - \vec{\pi}_D Q_{UU}^{-1} \vec{1}^\T \text.
+\end{equation}
+
+The probability of a $y$-mode failure ($y \in D$) is
+\begin{equation}
+  \Pr(X(\TFF + 0) = y) = - \vec{\pi}_D Q_{UU}^{-1} \vec{q}_{Uy}^\T \text,
+\end{equation}
+where $\vec{q}_{Uy} \in \RR^{n_U}$, $q_{Uy}[x] = Q[x, y]$ is the
+vector of transition rates from operation state to the failure state
+$y$. \textbf{TODO Hivatkozas a PH-eloszlashoz es a szamitasokhoz}.
 
 \section{Stochastic Petri nets}
 
@@ -469,8 +516,8 @@ While reward processes based continous-time Markov chains allow the
 study of dependability or reliability measurements, the explicit
 specification of stochastic processes and rewards is often
 cumbersome. More expressive formalisms include queing networks,
-stochastic process algebras, stochastic Automata
-Networks~(\textls{SAN}) and Stochastic Petri Nets
+stochastic process algebras, Stochastic Automata Networks, Stochastic
+Activity Networks~(\textls{SAN}) and Stochastic Petri Nets
 (\textls{SPN}). \textbf{TODO Kanonikus hivatkozasokat keresni}
 
 Stochastic Petri Nets extend Petri nets by assigning random
@@ -483,12 +530,16 @@ with an enabled transition is elapsed the transition fires
   A Stochastic Petri Net is a pair $\SPN = (\PN, \Lambda)$, where
   $\PN$ is a Petri net $(P, T, F, W, M_0)$ and $\Lambda: P \to \RRpos$
   is a transition rate function.
+
+  Likewise, a stochastic Petri net with inhibitor arcs is a pair
+  $\SPN_I = (\PN_I, \Lambda)$, where $\PN_I$ is a Petri net with
+  inhibitor arcs.
 \end{dfn}
 
 \needspace{5ex}
 
 A finite \CTMC\ can be associated with a bounded stochastic Petri net
-as follows:
+(with inhibitor arcs) as follows:
 \begin{enumerate}
 \item The reachable state space of the Petri net is explored. We
   associate a consecutive natural numbers with the states such that
@@ -527,13 +578,7 @@ as follows:
 \begin{figure}
   \centering
   \begin{tikzpicture}
-    \runningExamplePetriNet
-    \node [below=2pt of a1] {$1.0$};
-    \node [below=2pt of d1] {$0.5$};
-    \node [below=2pt of r1] {$\frac{1}{\theta[0]} = 1.6$};
-    \node [above=2pt of a2] {$1.0$};
-    \node [above=2pt of d2] {$1.1$};
-    \node [above=2pt of r2] {$\frac{1}{\theta[1]} = 0.8$};
+    \runningExampleSPN
   \end{tikzpicture}
   \caption{Example stochastic Petri net for the \emph{SharedResource}
     model.}
@@ -605,7 +650,7 @@ as follows:
 
   The transitions $a_1$, $d_1$, $a_2$ and $d_2$ have rates $1.0$,
   $0.5$, $1.0$ and $1.1$, respectively. The parameter vector
-  $\vec{\uptheta} = (0.625 \;\; 1.25) \in \RR^2$ is introduced such
+  $\vec{\uptheta} = (0.625, 1.25) \in \RR^2$ is introduced such
   that the transitions $r_1$ and $r_2$ have rates $1 / \theta[0]$ and
   $1 / \theta[1]$.
 
@@ -636,14 +681,20 @@ as follows:
   irreducible, therefore it has a well-defined steady-state distribution.
 \end{runningExample}
 
+\textbf{TODO GSPN-ekre hivatkozni, de csak roviden -- vagy csak future
+  workben?}
+
 \subsection{Stochastic reward nets}
 
 \begin{dfn}
   A \emph{Stochastic Reward Net} is a triple
   $\SRN = (\SPN, \rateReward, \impulseReward)$, where $\SPN$ is a
-  stochastic Petri net, $\rateReward: \NN^P \to \RR$ is a \emph{rate
-    reward function} and $\impulseReward: T \times \NN^P \to \RR$ is
-  an \emph{impulse reward} function.
+  stochastic Petri net or a stochastic Petri net,
+  $\rateReward: \NN^P \to \RR$ is a \emph{rate reward function} and
+  $\impulseReward: T \times \NN^P \to \RR$ is an \emph{impulse reward}
+  function. A stochastic Reward net with inhibitor arcs is a triple
+  $\SRN_I = (\SPN_I, \rateReward, \impulseReward)$, where $\SPN_I$ is
+  a stochastic Petri net with inhibitor arcs.
 \end{dfn}
 
 The rate reward $\rateReward(M)$ is the reward gained per unit time in
@@ -690,14 +741,13 @@ method. \textbf{TODO Impulzus rewardok szamolasara cikkre hivatkozni?}
       0 & \text{otherwise}
     \end{cases}
   \end{equation}
-  describes the calculations --~represented by places $C_1$ and
-  $C_2$~-- performed successfully. The exprected steady-state reward
-  rate $\lim_{t \to \infty} \Ex R(t)$ equals the number of
+  counts the completed calculations, which are modeled by tokens
+  leaving the places $C_1$ and $C_2$. The exprected steady-state
+  reward rate $\lim_{t \to \infty} \Ex R(t)$ equals the number of
   calculations per unit time in a long-running system, while $Y(t)$ is
   the number of calculations performed until time $t$.
 
-  The reward vectors of the Markov reward models associated with the
-  two \textls{SRNs} above are
+  The reward vectors associated with these \textls{SRNs} are
   \begin{align}
     \begin{blockarray}{l@{\mkern 15mu}*{8}{c}@{\mkern 15mu}r}
       & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & \\
@@ -711,6 +761,197 @@ method. \textbf{TODO Impulzus rewardok szamolasara cikkre hivatkozni?}
       \end{block}
     \end{blockarray}
   \end{align}
+\end{runningExample}
+
+\subsection{Superposed stochastic Petri nets}
+
+\begin{dfn}
+  A \emph{Superposed Stochastic Petri Net} (\textls{SSPN}) is a pair
+  $\SSPN = (\SPN, \partitions)$, where
+  $\partitions = \{ \loc{P}{0}, \loc{P}{1}, \ldots, \loc{P}{J - 1} \}$
+  is partition of the set of places
+  $P = \loc{P}{0} \cup \loc{P}{1} \cup \cdots \cup \loc{P}{J -
+    1}$~\citep{DBLP:conf/apn/Donatelli94}.
+  Superposed stochastic Petri nets with inhibitor arcs
+  $\SSPN_I = (\SPN_I, \partitions)$ are defined analogously.
+\end{dfn}
+
+The $j$th \emph{local net}
+$\LN{j} = ((\loc{P}{j}, \loc{T}{j} = \loc{T_L}{j} \cup \loc{T_S}{j},
+\loc{F}{j}, \loc{W}{j}, \loc{M_0}{j}), \loc{\Lambda}{j})$
+can be constructed as follows:
+\begin{itemize}
+\item $\loc{P}{j}$ is the corresponding set from the partition of the
+  original net.
+\item $\loc{T}{j}$ contains the local transition $\loc{T_L}{j}$ and
+  synchronizing transitions $\loc{T_S}{j}$. A transition is
+  \emph{local} to $\LN{j}$ if it only affects places in $\loc{P}{j}$,
+  that is,
+  \begin{equation}
+    \label{eq:background:sspn:localtran}
+    \loc{T_L}{j} = \{ t \in T : \inarc{t} \cup \outarc{t} \subseteq
+    \loc{P}{j} \} \text.
+  \end{equation}
+  No transition may be local two more than one local net.
+
+  A transition \emph{synchronizes} with $\LN{j}$ if it affects some
+  places in $\loc{P}{j}$ but it is not local to $\LN{j}$,
+  \begin{equation}
+    \label{eq:background:sspn:synctran}
+    \loc{T_S}{j} = \{ t \in T : (\inarc{t} \cup \outarc{t}) \cap
+    \loc{P}{j} \ne \emptyset \} \setminus \loc{T_L}{j} \text.
+  \end{equation}
+\item The relation $\loc{F}{j}$ and the functions $\loc{W}{j}$,
+  $\loc{M_0}{j}$, $\loc{\Lambda}{j}$ are the appropriate restrictions
+  of the original structures,
+  $\loc{F}{j} = F \cap ((\loc{P}{j} \times \loc{T}{j}) \cup
+  (\loc{T}{j} \times \loc{J}{j}))$, $\loc{W}{j} = W |_{\loc{F}{j}}$,
+  $\loc{M_0}{j} = M_0 |_{\loc{P}{j}}$, $\loc{\Lambda}{j} = M_0 |_{\loc{T}{j}}$.
+\end{itemize}
+
+If there are inhibitor arcs in $\SSPN_I$, inhibitor arcs must be
+considered when local net $\LNI{j}$ is constructed. The set
+$\inarc{t} \cup \outarc{t}$ is replaced with
+$\inarc{t} \cup \outarc{t} \cup \inharc{t}$ in
+\cref{eq:background:sspn:localtran,eq:background:sspn:synctran} so
+that the enablement of local transitions only depends on the marking
+of places in $\loc{P}{j}$ and only places in $\loc{P}{j}$ may be
+affected upon firing. In addition, the inhibitor arc relation and
+weight function are restricted as
+$\loc{I}{j} = I \cap (\loc{P}{j} \cap \loc{T}{j})$,
+$\loc{W_I}{j} = W_I |_{\loc{I}{j}}$.
+
+\begin{figure}
+  \centering
+  \begin{tikzpicture}[
+    partition/.style={
+      rounded corners=0.2cm,tdk highlight}
+    ]
+    \runningExamplePetriNet
+    \begin{pgfonlayer}{bg}
+      \draw [partition] ($(S.west)+(-0.65cm,0.5cm)$) rectangle
+      ($(S.east)+(0.65cm,-0.5cm)$);
+      \node [right=0.65cm of S] {$\loc{P}{2}$};
+      \draw [partition] ($(W2.west)+(-0.95cm,0.5cm)$) rectangle
+      ($(r2.east)+(0.95cm,-1.5cm)$);
+      \node [anchor=south east] at ($(r2.east)+(0.95cm,0.52cm)$)
+      {$\loc{P}{1}$};
+      \draw [partition] ($(W1.west)+(-0.95cm,-0.5cm)$) rectangle
+      ($(r1.east)+(0.95cm,1.5cm)$);
+      \node [anchor=north west] at ($(W1.west)+(-0.95cm,-0.52cm)$)
+      {$\loc{P}{0}$};
+    \end{pgfonlayer}
+  \end{tikzpicture}
+  \caption{A partitioning of the \emph{SharedResource} Petri net.}
+  \label{fig:background:sspn:sharedresource}
+\end{figure}
+
+\begin{runningExample}
+  \Cref{fig:background:sspn:sharedresource} shows a possible
+  partitioning of the \emph{Shared\-Resource} \textls{SPN} into a
+  \textls{SSPN}. The components $\loc{P}{0}$ and $\loc{P}{1}$ are the
+  model the two consumers, while $\loc{P}{2}$ contains the unallocated
+  resource $S$.
+
+  The transitions $r_1$ and $r_2$ are local to $\LN{0}$ and $\LN{1}$,
+  respectively, while $a_1$, $d_1$, $a_2$ and $d_2$ synchronize with
+  $\LN{2}$ and the local net associated with their consumers.
+\end{runningExample}
+
+The \emph{local reachable state space} $\loc{\RS}{j}$ of $\LN{j}$ is
+the the set of markings beloning to the state space $\RS$ of the
+original net restricted to the places $\loc{P}{j}$ \paren{duplicates
+  removed},
+\begin{equation}
+  \loc{\RS}{j} = \{ \loc{M}{j} : M \in \RS, \loc{M}{j} = M
+  |_{\loc{P}{j}} \}.
+\end{equation}
+This is a \emph{subset} of the reachable state space of $\LN{j}$, in
+particular, $\LN{j}$ is always finite if $\RS$ is finite, even if
+$\LN{j}$ is not bounded. Analysis techniques for generating local
+state spaces include \emph{partial
+  $P$-invariants}~\citep{DBLP:journals/sigmetrics/BuchholzK98} and
+explicit projection of global reachable
+markings~\citep{DBLP:journals/tse/Buchholz99}.
+
+The \emph{potential state space} $\PS$ of an \textls{SSPN} is the
+Descares product of the local reachable state spaces of its components
+\begin{equation}
+  \PS = \loc{\RS}{0} \times \loc{\RS}{1} \times \cdots \times
+  \loc{\RS}{J - 1} \text,
+\end{equation}
+which is a (possibly not proper) superset of the global reachable
+state space $\RS$.
+
+We will associate the natural numbers
+$\loc{S}{j} = \{ 0, 1, \ldots, n_j - 1 \}$ with the local reachable
+markings $\loc{\RS}{j} = \{M_0, M_1, \ldots, M_{n_j - 1}\}$ to aid the
+construction of Markov chains and use them interchangably. The
+notation
+\begin{gather}
+  M = \vec{x} = (\loc{x}{0}, \loc{x}{1}, \ldots, \loc{x}{J - 1}) \\
+  \intertext{refers to the marking} M(p) =
+  \loc{M_{\loc{x}{j}}}{j}(p)\text, \quad \text{if $p \in \loc{P}{j}$,}
+\end{gather}
+which is the union of the local markings $\loc{M_{\loc{x}{0}}}{0},
+\loc{M_{\loc{x}{1}}}{1}, \ldots, \loc{M_{\loc{x}{J - 1}}}{J - 1}$.
+
+\begin{table}
+  \centering
+  $
+  \loc{\RS}{0} = \left\{\;\text{\small
+      \begin{tabular}{@{}r*{3}{c}@{}}
+        \toprule
+        & $C_1$ & $W_1$ & $S_1$ \\
+        \midrule
+        $\loc{M}{0}_0$ & 1 & 0 & 0 \\
+        $\loc{M}{0}_1$ & 0 & 1 & 0 \\
+        $\loc{M}{0}_2$ & 0 & 0 & 1 \\
+        \bottomrule
+      \end{tabular}\;}\right\},
+  $\\[2ex]
+  $
+  \loc{\RS}{1} = \left\{\;\text{\small
+      \begin{tabular}{@{}r*{3}{c}@{}}
+        \toprule
+        & $C_2$ & $W_2$ & $S_2$ \\
+        \midrule
+        $\loc{M}{1}_0$ & 1 & 0 & 0 \\
+        $\loc{M}{1}_1$ & 0 & 1 & 0 \\
+        $\loc{M}{1}_2$ & 0 & 0 & 1 \\
+        \bottomrule
+      \end{tabular}\;}\right\},\quad
+  \loc{\RS}{2} = \left\{\;\text{\small
+      \begin{tabular}{@{}rc@{}}
+        \toprule
+        & $S$ \\
+        \midrule
+        $\loc{M}{2}_0$ & 1 \\
+        $\loc{M}{2}_1$ & 1 \\
+        \bottomrule
+      \end{tabular}\;}\right\}
+  $
+  \caption{Local reachable markings of the \emph{SharedResouce}
+    \textls{SSPN} from \cref{fig:background:sspn:sharedresource}.}
+  \label{tab:background:sspn:sharedresource-states}
+\end{table}
+
+\begin{runningExample}
+  The local reachable markings of the \emph{SharedResource}
+  \textls{SSPN} are enumerated in
+  \cref{tab:background:sspn:sharedresource-states}.
+
+  The transitions $d_1$ and $d_2$ are always enabled in $\LN{2}$
+  because all their input places are located in other components, thus
+  $\LN{2}$ is an unbounded Petri net. Despite this, $\loc{RS}{2}$ is
+  finite, because it only contain the local markings which are
+  reachable in the original net.
+
+  The potential state space $\PS$ contains $3 \cdot 3 \cdot 2 = 18$
+  potential markings, although only $8$ are reachable
+  (\vref{tab:background:spn:sharedresource-rs}). For example, the
+  marking $(2, 2, 0)$ is not reachable, as it would violate mutual
+  exclusion.
 \end{runningExample}
 
 \section{Kronecker algebra}
@@ -730,6 +971,8 @@ Some properties of the Kroncker product are
   \begin{equation}
     A \krtimes (B \krtimes C) = (A \krtimes B) \krtimes C \text,
   \end{equation}
+  which makes $J$-way Kronecker products $\loc{A}{0} \krtimes
+  \loc{A}{1} \krtimes \cdots \krtimes \loc{A}{J - 1}$ well-defined.
 \item Distributivity over matrix addition:
   \begin{equation}
     (A + B) \krtimes (C + D) = A \krtimes C + B \krtimes C + A
@@ -743,3 +986,76 @@ Some properties of the Kroncker product are
   \end{gather}
   for appropriately-sized identity matrices $I_1$ and $I_2$.
 \end{enumerate}
+
+We will occasionally employ multi-index notation to refer to elements
+of Kronecker product matrices. For example, we will write
+\begin{multline}
+  b[\vec{x}, \vec{y}] = b[(\loc{x}{0}, \loc{x}{1}, \ldots, \loc{x}{J -
+    1}), (\loc{y}{0}, \loc{y}{1}, \ldots, \loc{y}{J - 1})] = \\
+  \loc{a}{0}[\loc{x}{0}, \loc{y}{0}] \loc{a}{1}[\loc{x}{1},
+  \loc{y}{1}] \cdots \loc{a}{J - 1}[\loc{x}{J - 1}, \loc{y}{J - 1}]
+  \text,
+\end{multline}
+where $\vec{x} = (\loc{x}{0}, \loc{x}{1}, \ldots, \loc{x}{J - 1})$,
+$\vec{y} = (\loc{y}{0}, \loc{y}{1}, \ldots, \loc{y}{J - 1})$ and $B$
+is the $J$-way Kronecker product
+$\loc{A}{0} \krtimes \loc{A}{1} \krtimes \cdots \krtimes \loc{A}{J -
+  1}$.
+
+\begin{dfn}
+  The \emph{Kronecker sum} of matrices
+  $A \in \RR^{n_1 \times m_1}$ and $B \in \RR^{n_2 \times m_2}$ is the
+  matrix $C = A \krplus B \in \RR^{n_1 n_2 \times m_1 m_3}$, where
+  \begin{equation}
+    C = A \krtimes I_2 + I_1 \krtimes B \text,
+  \end{equation}
+  where $I_1 \in \RR^{n_1 \times m_1}$ and $I_2 \in \RR^{n_2 \times
+    m_2}$ are identity matrices.
+\end{dfn}
+
+\begin{example}
+  Consider the matrices
+  \begin{align}
+    A &= \begin{pmatrix}
+      1 & 2 \\
+      3 & 4
+    \end{pmatrix} \text,
+    & B &= \begin{pmatrix}
+      0 & 1 \\
+      2 & 0
+    \end{pmatrix} \text.
+  \end{align}
+  Their Kronecker product is
+  \begin{equation}
+    A \krtimes B = \begin{pmatrix}
+      1 \cdot 0 & 1 \cdot 1 & 2 \cdot 0 & 2 \cdot 1 \\
+      1 \cdot 2 & 1 \cdot 0 & 2 \cdot 2 & 2 \cdot 0 \\
+      3 \cdot 0 & 3 \cdot 1 & 4 \cdot 0 & 4 \cdot 1 \\
+      3 \cdot 2 & 3 \cdot 0 & 4 \cdot 2 & 4 \cdot 0
+    \end{pmatrix} = \begin{pmatrix}
+      0 & 1 & 0 & 2 \\
+      2 & 0 & 4 & 0 \\
+      0 & 3 & 0 & 4 \\
+      6 & 0 & 8 & 0
+    \end{pmatrix}\text,
+  \end{equation}
+  while their Kronecker sum is
+  \begin{equation}
+    A \krplus B = \begin{pmatrix}
+      1 & 0 & 2 & 0 \\
+      0 & 1 & 0 & 2 \\
+      3 & 0 & 4 & 0 \\
+      0 & 3 & 0 & 4
+    \end{pmatrix} + \begin{pmatrix}
+      0 & 1 & 0 & 0 \\
+      2 & 0 & 0 & 0 \\
+      0 & 0 & 0 & 1 \\
+      0 & 0 & 2 & 0
+    \end{pmatrix} = \begin{pmatrix}
+      1 & 1 & 2 & 0 \\
+      2 & 1 & 0 & 2 \\
+      3 & 0 & 4 & 1 \\
+      0 & 3 & 2 & 4
+    \end{pmatrix}\text.
+  \end{equation}
+\end{example}
