@@ -1,0 +1,28 @@
+\chapter{Overview of the approach}
+\label{chap:overview}
+
+\section{General workflow}
+
+\begin{figure}
+  \centering
+  \begin{tikzpicture}[
+    start chain,
+    every node/.style={
+      on chain,join,
+      text width=2cm,align=center,
+      draw,tdk highlight,rounded corners},
+    every join/.style={-{Latex},draw}]
+
+    \node {State space exploration};
+    \node {Descriptor generation};
+    \node {Numerical solution};
+    \node {Reward calculation};
+  \end{tikzpicture}
+  \caption{The general stochastic analysis workflow.}
+  \label{fig:overview:general:workflow}
+\end{figure}
+
+\section{Problems}
+
+\section{Out workflow}
+
