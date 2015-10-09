@@ -361,7 +361,8 @@ at time $t$ can be calculated as
   \Ex R(t) = \sum_{i = 0}^{n - 1} \pi(t)[i] r[i] = \vec{\uppi}(t)
   \, \vec{r}^\T \text,
 \end{equation}
-which requires the solution of the initial value problem
+which requires the solution of the initial value problem%
+~\citep{DBLP:journals/cor/Grassmann77,reibman1989markov}
 \begin{equation}
   \frac{\dd \vec{\uppi}(t)}{\dd t} = \vec{\uppi}(t) \, Q, \quad
   \vec{\uppi}(0) = \vec{\uppi}_0
@@ -383,7 +384,8 @@ The expected value of the accumulated reward is
              \vec{L}(t) \, \vec{r}^\T \text,
 \end{align}
 where $\vec{L}(t) = \int_0^t \vec{\uppi}(t) \,\dd\tau$ is the accumulated
-probability vector, which is the solution of the initial value problem
+probability vector, which is the solution of the initial value
+problem~\citep{reibman1989markov}
 \begin{equation}
   \frac{\dd \vec{L}(t)}{\dd t} = \vec{\uppi}(t), \quad \frac{\dd
     \vec{\uppi}(t)}{\dd t} = \vec{\uppi}(t) \, Q, \quad
@@ -447,16 +449,16 @@ solution of the initial value problem
   \text,
 \end{equation}
 where $V_i = \partial Q(\vec{\uptheta}) / \partial \theta[i]$ is the
-partial derivative of the generator matrix. A similar initial value
-problem can be derived for the sensitivity of
-$\vec{L}(t)$~\citep{DBLP:conf/sigmetrics/BlakeRT88}.
+partial derivative of the generator
+matrix~\citep{DBLP:conf/sigmetrics/RameshT93}. A similar initial value
+problem can be derived for the sensitivity of $\vec{L}(t)$ and $Y(t)$.
 
 To obtain the sensitivity $\vec{s}_i$ of the steady-state probability
 vector $\vec{\uppi}$, the system of linear equations
 \begin{equation}
   \vec{s}_i Q = -\vec{\uppi} V_i, \quad \vec{s}_i \vec{1}^T = 0
 \end{equation}
-is solved.
+is solved~\citep{DBLP:conf/sigmetrics/BlakeRT88}.
 
 Another type of sensitivty analysis considers \emph{unstructured}
 small perturbations of the infinitesimal generator matrix $Q$ instead
@@ -478,8 +480,8 @@ The matrix
     \vec{0} & 0
   \end{pmatrix}
 \end{equation}
-is the generator matrix of a \CTMC\ $X_{UD}(t)$ in which all the
-failures states $D$ were merged into a single state $n_U$ and all
+is the infinitesimal generator of a \CTMC\ $X_{UD}(t)$ in which all
+the failures states $D$ were merged into a single state $n_U$ and all
 outgoing transitions from $D$ were removed. The matrix $Q_{UU}$ is the
 $n_U \times n_U$ upper left submatrix of $Q$, while the vector
 $\vec{q}_{UD} \in \RR^{n_U}$ is defined as
@@ -515,10 +517,11 @@ $y$. \textbf{TODO Hivatkozas a PH-eloszlashoz es a szamitasokhoz}.
 While reward processes based continous-time Markov chains allow the
 study of dependability or reliability measurements, the explicit
 specification of stochastic processes and rewards is often
-cumbersome. More expressive formalisms include queing networks,
-stochastic process algebras, Stochastic Automata Networks, Stochastic
-Activity Networks~(\textls{SAN}) and Stochastic Petri Nets
-(\textls{SPN}). \textbf{TODO Kanonikus hivatkozasokat keresni}
+cumbersome. More expressive formalisms include queueing networks,
+stochastic process algebras such as
+\textls{PEPA}~\citep{DBLP:conf/cpe/GilmoreH94,donatelli1993superposed},
+Stochastic Automata Networks~\citep{DBLP:conf/mascots/FernandesPS95}
+and Stochastic Petri Nets (\textls{SPN}).
 
 Stochastic Petri Nets extend Petri nets by assigning random
 exponentially distributed random delays to
@@ -681,8 +684,21 @@ A finite \CTMC\ can be associated with a bounded stochastic Petri net
   irreducible, therefore it has a well-defined steady-state distribution.
 \end{runningExample}
 
-\textbf{TODO GSPN-ekre hivatkozni, de csak roviden -- vagy csak future
-  workben?}
+Extensions of stochastic Petri nets include transition with general or
+phase-type delay
+distributions~\citep{DBLP:journals/tse/MarsanBBCCC89,Longo:2015:TSR:2767455.2767457},
+Generalized Stochastic Petri Nets~(\textls{GSPN}) with immediate
+transitions~\citep{DBLP:journals/tocs/MarsanCB84,DBLP:journals/tse/TeruelFP03}
+and Deterministic Stochastic Petri Nets~(\textls{DSPN}) with
+deterministic firing delays~\citep{DBLP:conf/apn/1986}. Among these,
+only phase-type distributed delays and \textls{GSPNs} can be handled
+with purely Markovian analysis. Stochastic Well-formed
+Nets~(\textls{SWN}) are a class a colored Petri nets especially
+amenable to stochastic analysis%
+~\citep{DBLP:journals/tc/ChiolaDFH93}. Stochastic Activity
+Networks~(\textls{SAN}) also allow colored places, moreover, they
+introduce input and output gates for more flexible
+modeling~\citep{DBLP:conf/pnpm/1985}.
 
 \subsection{Stochastic reward nets}
 
@@ -717,8 +733,9 @@ performed on reward process $(X, \vec{r})$,
   r[x] = \rateReward(M_x) + \sum_{\mathclap{t \in T, M_x
       \tranto{t}}} \Lambda(t) \, \impulseReward(t, M_x) \text,
 \end{equation}
-where the summation is taken over all enabled transitions. In general,
-the distributions of $R(t)$ and $Y(t)$ cannot be derived by this
+where the summation is taken over all enabled
+transitions~\citep{DBLP:journals/pe/CiardoMT91}. In general, the
+distributions of $R(t)$ and $Y(t)$ cannot be derived by this
 method. \textbf{TODO Impulzus rewardok szamolasara cikkre hivatkozni?}
 
 \begin{runningExample}
