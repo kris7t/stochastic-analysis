@@ -150,7 +150,7 @@ is bounded.
 \subsection{Petri nets extended with inhibitor arcs}
 
 One of the most frequently used extensions of Petri nets is the
-addition of inhibitor arcs, which modifies the rule for transition
+addition of inhibitor arcs, which constrains the rule for transition
 enablement. This modification gives Petri nets expressive power
 equivalent to Turing
 machines~\citep{DBLP:conf/apn/Chrzastowski-Wachtel99}.
@@ -397,7 +397,7 @@ problem~\citep{reibman1989markov}
   unit time of the long-running system.
 \end{example}
 
-\subsection{Sensitivty}
+\subsection{Sensitivity}
 
 Consider a reward process $(X(t), \vec{r})$ where both the
 infinitesimal generator matrix $Q(\vec{\uptheta})$ and the reward rate
@@ -498,7 +498,7 @@ particular, the \emph{Mean Time to First Failure} is
 
 The probability of a $y$-mode failure ($y \in D$) is
 \begin{equation}
-  \Pr(X(\TFF + 0) = y) = - \vec{\pi}_D Q_{UU}^{-1} \vec{q}_{Uy}^\T \text,
+  \Pr(X(\TFF_{+ 0}) = y) = - \vec{\pi}_D Q_{UU}^{-1} \vec{q}_{Uy}^\T \text,
 \end{equation}
 where $\vec{q}_{Uy} \in \RR^{n_U}$, $q_{Uy}[x] = Q[x, y]$ is the
 vector of transition rates from operational states to the failure
@@ -556,7 +556,7 @@ A finite \CTMC\ can be associated with a bounded stochastic Petri net
       1 & 0 & 0 & \cdots & 0
     \end{pmatrix}
   \end{equation}
-  in the analysis steps ($\pi_0[x] = \delta_{0x}$).
+  in the analysis steps ($\pi_0[x] = \delta_{0,x}$).
 \item The generator matrix $Q \in \RR^{n \times n}$ encodes the
   possible state transitions of the Petri net and the associated
   transition rate $\Lambda(\,\cdot\,)$ as
@@ -639,9 +639,9 @@ A finite \CTMC\ can be associated with a bounded stochastic Petri net
 \end{figure}
 
 \begin{runningExample}
-  \Cref{fig:background:spn:sharedresource} shows the \textls{SPN}
-  \emph{SharedResouce} model, which is the Petri net
-  from~\vref{fig:background:petri:sharedresource} extended with
+  \Cref{fig:background:spn:sharedresource} shows the \textls{SPN} 
+  model for \emph{SharedResouce}, which is the Petri net
+  from \vref{fig:background:petri:sharedresource} extended with
   exponential transition rates.
 
   The transitions $a_1$, $d_1$, $a_2$ and $d_2$ have rates $1.0$,
@@ -698,7 +698,7 @@ modeling~\citep{DBLP:conf/pnpm/1985}.
 \begin{dfn}
   A \emph{Stochastic Reward Net} is a triple
   $\SRN = (\SPN, \rateReward, \impulseReward)$, where $\SPN$ is a
-  stochastic Petri net or a stochastic Petri net,
+  stochastic Petri net,
   $\rateReward: \NN^P \to \RR$ is a \emph{rate reward function} and
   $\impulseReward: T \times \NN^P \to \RR$ is an \emph{impulse reward}
   function. A stochastic Reward net with inhibitor arcs is a triple
@@ -877,7 +877,7 @@ original net restricted to the places $\loc{P}{j}$ \paren{duplicates
   |_{\loc{P}{j}} \}.
 \end{equation}
 This is a \emph{subset} of the reachable state space of $\LN{j}$, in
-particular, $\RS{j}$ is always finite if $\RS$ is finite, even if
+particular, $\loc{\RS}{j}$ is always finite if $\RS$ is finite, even if
 $\LN{j}$ is not bounded. Analysis techniques for generating local
 state spaces include \emph{partial
   $P$-invariants}~\citep{DBLP:journals/sigmetrics/BuchholzK98} and
@@ -901,7 +901,7 @@ notation
 \begin{equation}
   M = \vec{x} = (\loc{x}{0}, \loc{x}{1}, \ldots, \loc{x}{J - 1})
 \end{equation}
-refers to the global state $\vec{x}$ composed from the local marking
+refers to the global state $\vec{x}$ composed from the local markings
 $\loc{x}{j}$, i.e.~the marking
 \begin{equation}
   M(p) = \loc{M_{\loc{x}{j}}}{j}(p)\text, \quad \text{if $p \in \loc{P}{j}$,}
