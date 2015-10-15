@@ -1,21 +1,541 @@
 \chapter{Algorithms for stochastic analysis}
 \label{chap:algorithm}
 
-\section{Steady-state analysis}
+Steady state, transient, accumulated and sensitivity analysis problems
+pose several numerical challanges, especially when the state space of
+the \CTMC\ and the vectors and matrices involved in the computation are
+extemely large.
 
-\subsection{Explicit solution by LU decomposition}
+In steady-state and sensitivty analysis, linear equations of the form
+$\vec{x} A = \vec{b}$ are solved, such as%
+~\vref{eq:background:ctmc:steadystate,eq:background:ctmc:sensitvity:s}. The
+steady-state probability vector is the solution of the linear system
+\begin{equation}
+  \frac{\dd \vec{\uppi}}{\dd t} = \vec{\uppi} \, Q = \vec{0},
+  \quad \vec{\uppi} \vec{1}^\T = 1 \text,
+  \tag{\ref{eq:background:ctmc:steadystate}~revisited}
+\end{equation}
+where the infinitesimal generator $Q$ is a rank-deficient
+matrix. Therefore, steady-state solution methods must handle various
+generator matrix decompositions and homogenous linear equation with
+rank deficient matrices. Convergence and compuation times of linear
+equations solvers depend on the numerical properties of the $Q$
+matrices, thus different solvers may be preferred for different
+models.
 
-\subsection{Stationary iterative methods}
+In transient analysis, initial value problems with first-order linear
+differetial equations such as%
+~\vref{eq:background:ctmc:diffeq,eq:background:ctmc:L-ivp} are
+considered. The decomposed generator matrix $Q$ must handled
+efficiently. Another difficulty is caused by the \emph{stiffness} of
+differential equations arising from some models, which may
+significantly increase computation times.
+
+To facilitate configurable stochastic analysis, we implemented several
+linear equation solvers and transient analysis methods. Where it is
+reasonable, the implementation is independent of the form of the
+generator matrix $Q$. Genericity is achieved by defining an interface
+between the algorithms and the data structures with operations including
+\begin{asparaitem}
+\item multiplication of a matrix with a vector from left or right,
+\item scalar product of vectors with other vectors and columns of
+  matrices,
+\item specialized operations like accessing the diagonal or
+  off-diagonal parts of a matrix and replacing columns of matrices.
+\end{asparaitem}
+
+The implementation of these low-level operations is also decoupled
+from the data structure. This strategy enables further configurability
+by replacing the operations at runtime, for example, switching between
+sequential and parallel execution for different parts of the analysis
+workflow.
+
+While high level configurability allows the modeler to select analysis
+algorithms appropriate for the model and performance measures under
+study, low leven configurability of the operations enables additional
+customization of algorithm execution for the structure of the model as
+well as the hardware in use. Benchmark results for this workflow are
+discussed in \vref{sec:evaluation:results}.
+
+\section{Linear equation solvers}
+
+\subsection{Explicit solution by \textls[30]{LU} decomposition}
+
+\subsection{Iterative methods}
+
+\begin{algorithm}
+  \KwIn{matrix $A \in \RR^{n \times n}$, right vector $\vec{b} \in
+    \RR^n$, initial guess $\vec{x} \in \RR^n$, tolerance $\tau > 0$}
+  \KwOut{approximate solution of $\vec{x}A = \vec{b}$ and its residual
+    norm}
+  \KwAllocate{$\vec{x}' \in \mathbb{R}^n$}
+  \tcp*{Previous iterate for convergence test}
+  \Repeat{$\|\vec{x}' - \vec{x}\| \le \tau$}{
+    \nllabel{ln:algorithms:iterative:basic:loopbeg}
+    $\vec{x}' \gets \vec{x}$\tcp*{Save the previous vector}
+    $\vec{x} \gets f(\vec{x}')$\;
+  }
+  \nllabel{ln:algorithms:iterative:basic:loopend}
+  \KwRet{$\vec{x}$ and $\| \vec{x}Q - \vec{b} \|$}\;
+  \caption{Basic iterative scheme for solving linear equations.}
+  \label{alg:algorithms:iterative:basic}
+\end{algorithm}
+
+Iterative methods express the solution of the linear equation $\vec{x}
+A = \vec{b}$ as a recurrence
+\begin{equation}
+  \vec{x}_{k} = f(\vec{x}_{k - 1}) \text,
+\end{equation}
+where $\vec{x}_0$ is an initial guess vector. The iteration converges
+to a solution vector when $\lim_{k \to \infty} \vec{x}_k = \vec{x}$
+exists and $\vec{x}$ equals the true solution vector $\vec{x}^*$. The
+iteration is illustrated in \cref{alg:algorithms:iterative:basic}.
+
+The process is assumed to have converged if subsequent iterates are
+sufficiently close, i.e.~the stopping criterion at the $k$th iteration
+is
+\begin{equation}
+  \label{eq:algorithms:iterative:convergence}
+  \| \vec{x}_{k} - \vec{x}_{k - 1} \| \le \tau
+\end{equation}
+for some prescribed tolerance $\tau$. In our implementation, we
+selected the $L^1$-norm
+\begin{equation}
+  \| \vec{x}_{k} - \vec{x}_{k - 1} \| = \sum_{i} \bigl\lvert x_{k}[i] - x_{k -
+    1}[i] \bigr\rvert
+\end{equation}
+as the vector norm used for detecting convergence.
+
+Premature termination may be avoided if iterates spaced $m > 1$
+iterations apart are used for convergence test
+($\| \vec{x}_k - \vec{x}_{k - m} \| \le \tau$), but only at the
+expense of additional memory required for storing $m$ previous
+iterates. In order to handle large Markov chains with reasonable
+memory consumption, we only used the convergence test with a single
+previous iterate.
+
+Correctness of the solution can be checked by observing the norm of
+the residual $\vec{x}_{k} A - \vec{b}$, since the error vector
+$\vec{x}_k - \vec{x}^*$ is generally not available. Because the
+additional matrix multiplication may make the latter check costly, it
+is performed only after detecting convergence by
+\cref{eq:algorithms:iterative:convergence}. Unfortunately, the
+residual norm may not be representative of the error norm if the
+problem is ill-conditioned.
+
+For a detailed discussion stopping criterions and iterate
+normalization in steady-state \CTMC\ analysis, we refer
+to~\citep[Section~10.3.5]{stewart2009probability}.
 
 \subsubsection{Power iteration}
 
-\subsubsection{Jacobi iteration and Jacobi over-relaxation}
+Power iteration is the one of the simplest iterative methods for
+Markovian analysis. Its iteration function has the form
+\begin{equation}
+  \vec{x}_k = f(\vec{x}_{k - 1}) = \vec{x}_{k - 1} + \frac{1}{\alpha} \mleft(
+  \vec{x}_{k - 1} A - \vec{b} \mright) \text.
+\end{equation}
 
-\subsubsection{Gauss--Seidel iteration and successive over-relaxation}
+The iteration converges if the diagonal elements $a[i,i]$ of $A$ are
+strictly negative, the off-diagonal elements $a[i,j]$ are nonnegative
+and $0 < \alpha \le \min_{i} \lvert a[i,i] \rvert$. The matrix $A$
+satisfies these properties if it is an inifinitesimal generator matrix
+of an irreducible \CTMC. The fastest convergence is achieved when
+$\alpha = \min_{i} \lvert a[i,i] \rvert$.
 
-\subsection{Krylov subspace methods}
+\begin{algorithm}
+  $\alpha^{-1} \gets 1 / \min_{i} \lvert a[i,i] \rvert$\;
+  \Repeat{$\epsilon \le \tau$}{
+    $\vec{x}' \gets \vec{x} A$
+    \tcp*{Vector-matrix product}
+    $\vec{x}' \gets \vec{x}' + (-1) \cdot \vec{x}$
+    \tcp*{In-place scaled vector addition}
+    $\epsilon \gets \alpha^{-1} \| \vec{x}' \|$
+    \tcp*{Vector norm calculation}
+    $\vec{x} \gets \vec{x} + \alpha^{-1} \vec{x}'$
+    \tcp*{In-place scaled vector addition}
+  }
+  \caption{Power iteration.}
+  \label{alg:algorithms:iterative:power}
+\end{algorithm}
 
-\subsubsection{Biconjugate gradient stabilized (BiCGSTAB)}
+Power iteration can be realized by replacing lines%
+~\ref{ln:algorithms:iterative:basic:loopbeg}%
+--\ref{ln:algorithms:iterative:basic:loopend} in
+\cref{alg:algorithms:iterative:basic} with the loop in
+\cref{alg:algorithms:iterative:power}.
+
+This realization uses memory efficiently, because it only requires the
+allocation of a single vector $\vec{x}'$ in addition to the initial
+guess $\vec{x}$.
+
+\begin{obs}
+  If $\vec{b} = 0$ and $A$ is an inifitesimal generator matrix, then
+  \begin{align}
+    \vec{x}_k \vec{1}^\T &= \mleft[ \vec{x}_{k - 1} + \frac{1}{\alpha}
+                           \mleft( \vec{x}_{k - 1} A - \vec{b}
+                           \mright) \mright] \vec{1}^\T \\
+                         &= \vec{x}_{k - 1} \vec{1}^\T +
+                           \frac{1}{\alpha} \vec{x}_{k - 1} A
+                           \vec{1}^T - \vec{b} \vec{1}^\T \\
+                         &= \vec{x}_{k - 1} \vec{1}^\T +
+                           \frac{1}{\alpha} \vec{x}_{k - 1} \vec{0}^\T
+                           - \vec{0} \vec{1}^\T = \vec{x}_{k - 1} \vec{1}^\T.
+  \end{align}
+  This means the sum of the elements of the result vector $\vec{x}$
+  and the initial guess vector $\vec{x}_0$ are equal, because the
+  iteration leaves the sum unchanged.
+\end{obs}
+
+To solve an equation of the form
+\begin{equation}
+  \label{eq:algorithms:iterative:homogenous-prob}
+  \vec{x} Q = \vec{0},\quad \vec{x} \vec{1}^\T = 1
+\end{equation}
+where $Q$ is an infinitesimal generator matrix, the initial guess
+$\vec{x}_0$ is selected such that $\vec{x}_0 \vec{1}^\T = 1$. If the
+\CTMC\ described by $Q$ is irreducible, we may select
+\begin{equation}
+  x_0[i] \equiv \frac{1}{n} \text,
+\end{equation}
+where $n$ is the dimensionality of $\vec{x}$. After the initial guess
+is selected, the equation $\vec{x} \vec{1}^\T$ may be ignored to solve
+$\vec{x} Q = \vec{0}$ with the power method. This process yields the
+solution of the original problem%
+~\eqref{eq:algorithms:iterative:homogenous-prob}.
+
+\subsubsection{Jacobi and Gauss--Seidel iteration}
+
+Jordan and Gauss--Seidel iterative methods repeatedly solve a system
+of simultaneous equations of a specific form.
+
+In Jordan iteration, the system
+{\small\begin{equation} \left.
+      \begin{array}{r@{${} = {}$}*{2}{r@{\kern1pt}l@{${} + {}$}}c@{${} + {}$}r@{\kern1pt}l}
+        b[0] & x_{k}[0] & a[0,0] & x_{k - 1}[1] & a[1,0] & \cdots & x_{k - 1}[n - 1] & a[n - 1,0] \text,\\
+        b[1] & x_{k - 1}[0] & a[0,1] & x_{k}[1] & a[1,1] & \cdots & x_{k - 1}[n - 1] & a[n - 1,1] \text,\\
+        \multicolumn{8}{c}{$\vdots$} \\
+        b[n - 1] & x_{k - 1}[0] & a[0,n - 1] & x_{k - 1}[1] & a[1,n - 1] & \cdots & x_{k}[n - 1] & a[n - 1,n - 1] \text,\\
+      \end{array}
+    \right\}
+  \end{equation}}%
+is solved for $\vec{x}_{k}$ at each iteration, i.e.~there is a
+single unknown in each row and the rest of the variables are taken
+from the previous iterate. In vector form, the iteration can be
+expressed as
+\begin{equation}
+  \vec{x}_{k} = A_D^{-1} (\vec{b} - A_O \vec{x}_{k - 1}) \text,
+\end{equation}
+where $A_D$ and $A_O$ are the diagonal (all off-diagonal elements are
+zero) and off-diagonal (all diagonal elements are zero) parts of $A =
+A_D + A_O$.
+
+In Gauss--Seidel iteration, the linear system
+{\small\begin{equation}
+    \left.
+      \begin{array}{r@{${} = {}$}*{2}{r@{\kern1pt}l@{${} + {}$}}c@{${} + {}$}r@{\kern1pt}l}
+        b[0] & x_{k}[0] & a[0,0] & x_{k - 1}[1] & a[1,0] & \cdots & x_{k - 1}[n - 1] & a[n - 1,0] \text,\\
+        b[1] & x_{k}[0] & a[0,1] & x_{k}[1] & a[1,1] & \cdots & x_{k - 1}[n - 1] & a[n - 1,1] \text,\\
+        \multicolumn{8}{c}{$\vdots$} \\
+        b[n - 1] & x_{k}[0] & a[0,n - 1] & x_{k}[1] & a[1,n - 1] & \cdots & x_{k}[n - 1] & a[n - 1,n - 1] \text,\\
+      \end{array}
+    \right\}
+  \end{equation}}%
+is considered, i.e.~the $i$th equation contains the first $i$ elements
+of $\vec{x}_k$ as unknowns. The equations are solved for successive
+elements of $\vec{x}_k$ from top to bottom.
+
+\begin{algorithm}
+  \KwIn{matrix $A \in \RR^{n \times n}$, right vector $\vec{b} \in
+    \RR^n$, initial guess $\vec{x} \in \RR^n$, tolerance $\tau > 0$,
+    over-relaxation parameter $\omega > 0$}
+  \KwOut{approximate solution of $\vec{x}A = \vec{b}$}
+  \KwAllocate{$\vec{x}' \in \RR^n$}\;
+  Let $A_O$ refer to the off-diagonal part of $A$.\;
+  \Repeat{$\epsilon \le \tau$}{
+    $\vec{x}' \gets \vec{x} A_O$
+    \tcp*{Matrix-vector product}\label{ln:algorithms:jacobi:product}
+    $\vec{x}' \gets \vec{x}' + (-1) \cdot \vec{b}$\label{ln:algorithms:jacobi:addition}
+    \tcp*{In-place scaled vector addition}
+    $\epsilon \gets 0$\;
+    \For{$i \gets 0$ \KwTo $n - 1$}{
+      \label{ln:algorithms:jacobi:innerloop}
+      $y \gets (1 - \omega) x[i] - \omega x'[i] / a[i, i]$\;
+      $\epsilon \gets \epsilon + \lvert y - x[i] \rvert$\;
+      $x[i] \gets y$\;
+    }
+  }
+  \KwRet{$\vec{x}$}\;
+  \caption{Jacobi over-relaxation.}
+  \label{alg:algorithms:iterative:jacobi}
+\end{algorithm}
+
+Jacobi over-relaxation, a generalized form of Jacobi iteraion, is
+realized in \cref{alg:algorithms:iterative:jacobi}. The value $1$ of
+the over-relaxation paramter $\omega$ corresponds to ordinary Jacobi
+iteration. Values $\omega > 1$ may accelerate convergence, while
+$0 < \omega < 1$ may help diverging Jacobi iteration converge.
+
+Jacobi over-relaxation has many parallelization opportunities. The
+matrix multiplication in line~\ref{ln:algorithms:jacobi:product} and
+the vector addition in line~\ref{ln:algorithms:jacobi:addition} can be
+parallelized, as well as the for loop in
+line~\ref{ln:algorithms:jacobi:innerloop}. Our implementation takes
+advantage of the configurable linear algebra operations framework to
+execute lines~\ref{ln:algorithms:jacobi:product} and
+\ref{ln:algorithms:jacobi:addition} with possible paralellization
+considering the structures of both the vectors $\vec{x}, \vec{x}'$ and
+the matrix $A$. However, the inner loop is left sequential to reduce
+implementation complexity, as it represents only a small fraction of
+execution time compared to the matrix-vector product.
+
+\begin{algorithm}
+  \KwIn{matrix $A \in \RR^{n \times n}$, right vector $\vec{b} \in
+    \RR^n$, initial guess $\vec{x} \in \RR^n$, tolerance $\tau > 0$,
+    over-relaxation parameter $\omega > 0$}
+  \KwOut{approximate solution of $\vec{x}A = \vec{b}$}
+  \KwAllocate{$\vec{x}' \in \RR^n$}\;
+  Let $A_O$ refer to the off-diagonal part of $A$.\;
+  \Repeat{$\epsilon \le \tau$}{
+    $\epsilon \gets 0$\;
+    \For{$i \gets 0$ \KwTo $n - 1$}{
+      $\textit{scalarProduct} \gets \vec{x} \cdot \vec{a}_O[\cdot, i]$
+      \tcp*{Scalar product with column of matrix}
+      $y \gets \omega (b[i] - \textit{scalarProduct}) / a[i, i] + (1 -
+      \omega) \cdot x[i]$\;
+      $\epsilon \gets \epsilon + \lvert y - x[i] \rvert$\;
+      $x[i] \gets y$\;
+    }
+  }
+  \KwRet{$\vec{x}$}\;
+  \caption{Gauss--Seidel successive over-relaxatation.}
+  \label{alg:algorithms:iterative:gs}
+\end{algorithm}
+
+\Cref{alg:algorithms:iterative:gs} shows an implementation of
+successive over-relaxation for Gauss--Seidel iteration, where the
+notation $\vec{a}_O[\cdot, i]$ refers to the $i$th column of $A_O$.
+
+Gauss--Seidel iteration cannot easily be parallelized, because
+calculation of successive elements $x[0], x[1], \ldots$ depend on all
+of the prior elements. However, in contrast with Jacobi iteration, no
+memory is required in addition to the vectors $\vec{x}$, $\vec{b}$ and
+the matrix $X$, which makes the algorithm suitable for very large
+vectors and memory-constrained situations. In addition, convergence is
+often significantly faster.
+
+The sum of elements $\vec{x} \vec{1}^\T$ does not stay constant during
+Jacobi or Gauss--Seidel iteration. Thus, when solving equations of the
+form $\vec{x} Q = \vec{0}, \vec{x} \vec{1}^\T = 1$, normalization
+cannot be entierly handled by the initial guess. We instead transform
+the equation into the form
+\begin{equation}
+  \vec{x} \begin{pmatrix}
+    q[0,0] & q[0,1] & \cdots & q[0,n - 2] & 1 \\
+    q[1,0] & q[1,1] & \cdots & q[1,n - 2] & 1 \\
+    \vdots & \vdots & \ddots & \vdots & \vdots \\
+    q[n - 2,0] & q[n - 2,1] & \cdots & q[n - 2,n - 2] & 1 \\
+    q[n - 1,0] & q[n - 1,1] & \cdots & q[n - 2,n - 1] & 1 \\
+  \end{pmatrix} = \begin{pmatrix}
+    0 \\ 0 \\ \vdots \\ 0 \\ 1
+  \end{pmatrix} \text,
+\end{equation}
+where we take advantage of the fact that the infinitesimal generator
+matrix is not of full rank, therefore one of the columns is redundant
+and can be replaced with the condition $\vec{x} \vec{1}^\T = 1$. While
+this transformation may affect the convergence behavior of the
+algorithm, it allows uniform handling of homogenous and non-homogenous
+linear equations.
+
+\subsubsection{Group iterative methods}
+
+\emph{Group} or \emph{block} iterative methods assume the block
+structure for the vectors $\vec{x}$, $\vec{b}$ and the matrix $A$
+\begin{equation}
+  \vec{x}[i] \in \RR^{n_i}, \vec{b}[j] \in \RR^{n_j}, A[i, j] \in
+  \RR^{n_i \times n_j} \text{ for all $i, j \in \{0, 1, \ldots,
+    N - 1\}$,}
+\end{equation}
+Infinitesimal generator matrices in the block Kronecker decomposition
+along with appropriately partitioned vectors match this structure
+\textbf{TODO ref az elozo fejezetre}. Each block of $\vec{x}$
+corresponds to a group a variables that are simultaneously solved
+for.
+
+Group Jacobi iteration solves the linear system
+{\small\begin{equation}
+    \left.
+      \begin{array}{r@{${} = {}$}*{2}{r@{\kern1pt}l@{${} + {}$}}c@{${} + {}$}r@{\kern1pt}l}
+        \vec{b}[0] & \vec{x}_{k}[0] & A[0,0] & \vec{x}_{k - 1}[1] & A[1,0] & \cdots & \vec{x}_{k - 1}[n - 1] & A[n - 1,0] \text,\\
+        \vec{b}[1] & \vec{x}_{k - 1}[0] & A[0,1] & \vec{x}_{k}[1] & A[1,1] & \cdots & \vec{x}_{k - 1}[n - 1] & A[n - 1,1] \text,\\
+        \multicolumn{8}{c}{$\vdots$} \\
+        \vec{b}[n - 1] & \vec{x}_{k - 1}[0] & A[0,n - 1] & \vec{x}_{k - 1}[1] & A[1,n - 1] & \cdots & \vec{x}_{k}[n - 1] & A[n - 1,n - 1] \text,\\
+      \end{array}
+    \right\}
+  \end{equation}}%
+while group Gauss--Seidel considers
+{\small\begin{equation}
+    \left.
+      \begin{array}{r@{${} = {}$}*{2}{r@{\kern1pt}l@{${} + {}$}}c@{${} + {}$}r@{\kern1pt}l}
+        \vec{b}[0] & \vec{x}_{k}[0] & A[0,0] & \vec{x}_{k - 1}[1] & A[1,0] & \cdots & \vec{x}_{k - 1}[n - 1] & A[n - 1,0] \text,\\
+        \vec{b}[1] & \vec{x}_{k}[0] & A[0,1] & \vec{x}_{k}[1] & A[1,1] & \cdots & \vec{x}_{k - 1}[n - 1] & A[n - 1,1] \text,\\
+        \multicolumn{8}{c}{$\vdots$} \\
+        \vec{b}[n - 1] & \vec{x}_{k}[0] & A[0,n - 1] & \vec{x}_{k}[1] & A[1,n - 1] & \cdots & \vec{x}_{k}[n - 1] & A[n - 1,n - 1] \text.\\
+      \end{array}
+    \right\}
+  \end{equation}}
+
+\begin{algorithm}
+  \KwIn{block matrix $A$, block right vector $\vec{b}$, block initial
+    guess $\vec{n}$, tolerance $\tau > 0$, over-relaxation parameter
+    $\omega > 0$}
+  \KwOut{approximate solution of $\vec{x}A = \vec{b}$ and its residual
+    norm}
+  \KwAllocate{$\vec{x}'$ and $\vec{c}$ with the same block structure
+    as $\vec{x}$ and $\vec{b}$}\;
+  Let $A_{OB}$ represent the off-diagonal part of the block matrix $A$
+  with the blocks along the diagonal set to zero.\;
+  \Repeat{$\epsilon \le \tau$}{
+    $\vec{x}' \gets \vec{x}, \vec{c} \gets \vec{b}$\;
+    $\vec{c} \gets \vec{c} + (-1) \cdot \vec{x}' A_{OB}$
+    \tcp*{Scaled accumulation of vector-matrix product}
+    \ParFor(\tcp*[f]{Loop over all blocks}){$i \gets 0$ \KwTo $N - 1$}{
+      Solve $\vec{x}[i] A[i,i] = \vec{c}[i]$ for $\vec{x}[i]$\;
+    }
+    $\epsilon \gets 0$\;
+    \For(\tcp*[f]{Loop over all elements}){$k \gets 0$ \KwTo $n - 1$}{
+      $y \gets \omega x[k] + (1 - \omega) x'[k]$\;
+      $\epsilon \gets \epsilon + \lvert y - x'[k] \rvert$\;
+      $x[k] \gets y$\;
+    }
+  }
+  \caption{Group Jacobi over-relaxation.}
+  \label{alg:algorithms:iterative:group-jacobi}
+\end{algorithm}
+
+\begin{algorithm}
+  \KwIn{block matrix $A$, block right vector $\vec{b}$, block initial
+    guess $\vec{n}$, tolerance $\tau > 0$, over-relaxation parameter
+    $\omega > 0$}
+  \KwOut{approximate solution of $\vec{x}A = \vec{b}$ and its residual
+    norm}
+  \KwAllocate{$\vec{x}'$ and $\vec{c}$ large enough to store a single
+    block of $\vec{x}$ and $\vec{b}$.}\;
+  \Repeat{$\epsilon \le \tau$}{
+    $\epsilon \gets 0$\;
+    \For(\tcp*[f]{Loop over all blocks}){$i \gets 0$ \KwTo $N - 1$}{
+      $\vec{x}' \gets \vec{x}[i], \vec{c} \gets \vec{b}[i]$\;
+      \For{$j \gets 0$ \KwTo $N - 1$}{
+        \If(\tcp*[f]{Scaled accumulation of vector-matrix product}){$i \ne j$}{
+          $\vec{c} \gets \vec{c} + (-1) \cdot \vec{x}[j] A[i, j]$\;
+        }
+      }
+      Solve $\vec{x}[i] A[i,i] = \vec{c}$ for $\vec{x}[i]$\;
+      \For{$k \gets 0$ \KwTo $n_i - 1$}{
+        $y \gets \omega x[i][k] + (1 - \omega) x'[k]$\;
+        $\epsilon \gets \epsilon + \lvert y - x'[k] \rvert$\;
+        $x[i][k] \gets y$\;
+      }
+    }
+  }
+  \caption{Group Gauss--Seidel successive over-relaxation.}
+  \label{alg:algorithms:iterative:group-gs}
+\end{algorithm}
+
+Implementations of group Jacobi over-relaxation and group Gauss--Seidel
+successive over-relaxation are shown in
+\cref{alg:algorithms:iterative:group-jacobi,alg:algorithms:iterative:group-gs}.
+The inner linear equations of the form $\vec{x}[i] A[i,i] = \vec{c}$
+may be solved by any algorithm, for example, LU decomposition,
+iterative methods, or even block-iterative methods if $A$ has a
+two-level block structure. The choice of the inner algorithm may
+significantly affect performance and care must be taken to avoid
+diverging inner solutions in an iterative solver is used.
+
+
+In Jacobi over-relaxation, paralellization of both the matrix
+multiplication and the inner loop is possible. However, two vectors of
+the same size as $\vec{x}$ are required for temporary storage.
+
+Gauss--Seidel successive over-relaxation cannot be parallelized easily,
+but it requires only two temporary vectors of size equal to the largest
+block of $\vec{x}$, much less than Jacobi over-relaxation. Moreover, it
+often requires fewer steps to converge, making it preferable over
+Jacobi iteration.
+
+\subsubsection{BiConjugate Gradient Stabilized (\textls[30]{BiCGSTAB})}
+
+BiConjugate Gradient Stabilized~(\textls{BiCGSTAB}) is an iterative
+algorithm belonging to the class of Krylov subspace methods, which
+includes other algorithms such as the Generalized Minimum
+Residual~(\textls{GMRES}), the the Conjugate Gradient and Conjugate
+Residual methods, the BiConjugate Gradient algorithm and Conjugate
+Gradient Squared~(\textls{CGS}). \textbf{TODO Cite}
+
+\begin{algorithm}
+  \KwIn{matrix $A \in \RR^{n \times n}$, right vector $\vec{b} \in
+    \RR^n$, initial guess $\vec{x} \in \RR^n$, tolerance $\tau > 0$}
+  \KwOut{approximate solution of $\vec{x}A = \vec{b}$}
+  \KwAllocate{$\vec{r}, \vec{r}_0, \vec{v}, \vec{p}, \vec{s}, \vec{t}
+    \in \RR^n$}\;
+  $\vec{r} \gets \vec{b}$\;
+  $\vec{r} \gets \vec{r} + (-1) \cdot \vec{x} A$
+  \tcp*{Scaled accumulation of vector-matrix product}
+  \If{$\| \vec{r} \| \le \tau$}{
+    \KwMessage{initial guess is correct, skipping iteration}\;
+    \KwRet{$\vec{x}$}\;
+  }
+  $\vec{r}_0 \gets \vec{r}, \vec{v} \gets \vec{0}, \vec{p} \gets
+  \vec{0}, \rho' \gets 1, \alpha \gets 1, \omega \gets 1$\;
+  \While{\textsf{true}}{
+    $\rho \gets \vec{r_0} \cdot \vec{r}$
+    \tcp*{Scalar product}
+    \lIf{$\rho \approx 0$}{%
+      \KwError{breakdown: $\vec{r} \perp \vec{r}_0$}
+    }
+    $\beta \gets \rho / \rho' \cdot \alpha / \omega$\;
+    $\vec{p} \gets \vec{r} + \beta \cdot \vec{p}$
+    \tcp*{Scaled vector addition}
+    $\vec{p} \gets \vec{p} + (-\beta \omega) \cdot \vec{v}$
+    \tcp*{In-place scaled vector addition}
+    $\alpha \gets \rho / (\vec{r}_0 \cdot \vec{v})$
+    \tcp*{Scalar product}
+    $\vec{r} \gets \vec{s} + (-\alpha) \cdot \vec{s}$
+    \tcp*{Scaled vector addition}
+    \If{$\| \vec{s} \| < \tau$}{
+      $\vec{x} \gets \vec{x} + \alpha \cdot \vec{p}$
+      \tcp*{In-place scaled vector addition}
+      \KwMessage{early return with vanishing $\vec{s}$}\;
+      \KwRet{$\vec{x}$}\;
+    }
+    $\vec{t} \gets \vec{s} A$
+    \tcp*{Vector-matrix multiplication}
+    $\textit{tLengthSquared} \gets \vec{t} \cdot \vec{t}$
+    \tcp*{Scalar product}
+    \lIf{$\textit{tLengthSquared} \approx 0$}{%
+      \KwError{breakdown: $\vec{t} \approx \vec{0}$}
+    }
+    $\omega \gets (\vec{t} \cdot \vec{s}) / \textit{tLengthSquared}$
+    \tcp*{Scalar product}
+    \lIf{$\omega \approx 0$}{%
+      \KwError{breakdown: $\omega \approx 0$}
+    }
+    $\epsilon \gets 0$\;
+    \For{$i \gets 0$ \KwTo $n - 1$}{
+      $\textit{change} \gets \alpha p[i] + \omega s[i]$\;
+      $\epsilon \gets \epsilon + \lvert \textit{change} \rvert$\;
+      $x[i] \gets x[i] + \textit{change}$\;
+    }
+    \lIf{$\epsilon \le \tau$}{%
+      \KwRet{$\vec{x}$}
+    }
+    $\vec{s} \gets \vec{t} + (-\omega) \cdot \vec{r}$
+    \tcp*{Scaled vector addition}
+    $\rho' \gets \rho$\;
+  }
+  \caption{\textls{BiCGSTAB} iteration without preconditioning.}
+  \label{alg:algorithms:iterative:bicgstab}
+\end{algorithm}
 
 \section{Transient analysis}
 
@@ -29,6 +549,10 @@
 \end{itemize}
 
 \subsubsection{Steady-state detection}
+
+\subsection{\textls*[35]{TR-BDF2}}
+
+\section{Mean time to failure}
 
 \section{Processing results}
 

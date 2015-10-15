@@ -257,8 +257,8 @@ of~\cref{eq:background:ctmc:diffeq}, therefore it satisfies the linear
 equation
 \begin{equation}
   \label{eq:background:ctmc:steadystate}
-  \frac{\dd \vec{\uppi}}{\dd t} = \vec{\uppi} \, Q = \vec{0}
-  \text.
+  \frac{\dd \vec{\uppi}}{\dd t} = \vec{\uppi} \, Q = \vec{0},
+  \quad \vec{\uppi} \vec{1}^\T = 1 \text.
 \end{equation}
 
 \begin{figure}
@@ -378,6 +378,7 @@ where $\vec{L}(t) = \int_0^t \vec{\uppi}(t) \,\dd\tau$ is the accumulated
 probability vector, which is the solution of the initial value
 problem~\citep{reibman1989markov}
 \begin{equation}
+  \label{eq:background:ctmc:L-ivp}
   \frac{\dd \vec{L}(t)}{\dd t} = \vec{\uppi}(t), \quad \frac{\dd
     \vec{\uppi}(t)}{\dd t} = \vec{\uppi}(t) \, Q, \quad
   \vec{L}(0) = \vec{0}, \quad \vec{\uppi}(0) = \vec{\uppi}_0.
@@ -447,6 +448,7 @@ problem can be derived for the sensitivity of $\vec{L}(t)$ and $Y(t)$.
 To obtain the sensitivity $\vec{s}_i$ of the steady-state probability
 vector $\vec{\uppi}$, the system of linear equations
 \begin{equation}
+  \label{eq:background:ctmc:sensitvity:s}
   \vec{s}_i Q = -\vec{\uppi} V_i, \quad \vec{s}_i \vec{1}^T = 0
 \end{equation}
 is solved~\citep{DBLP:conf/sigmetrics/BlakeRT88}.

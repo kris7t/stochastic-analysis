@@ -26,14 +26,6 @@
 \RequirePackage[scr=boondoxo]{mathalfa}
 \let\mathcal\mathscr
 
-% \RequirePackage[theoremfont]{newpxtext}
-% \RequirePackage{textcomp}
-% \RequirePackage[scaled=0.85]{berasans}
-% \RequirePackage[scaled=0.84]{beramono}
-% \RequirePackage[cmintegrals,vvarbb]{newpxmath}
-% \usepackage{bm}
-% \useosf
-
 % Improve microtypography and add tracking to small-caps text
 \RequirePackage[final,babel,kerning,tracking,letterspace=75]{microtype}
 
@@ -231,6 +223,7 @@
 \newshadedtheorem{prop}[thm]{Proposition}
 \newshadedtheorem{lem}[thm]{Lemma}
 \newshadedtheorem{dfn}[thm]{Definition}
+\newshadedtheorem{obs}[thm]{Observation}
 
 \theoreminframepreskip{1pt}
 \theoreminframepostskip{1pt}
@@ -254,11 +247,32 @@
 % Algorithms
 %
 
-\RequirePackage{algorithm,algpseudocode}
+\RequirePackage[ruled,algochapter,vlined,linesnumbered,commentsnumbered]{algorithm2e}
 
-% Number algorithms inside chapters
-\@addtoreset{algorithm}{chapter}
-\renewcommand{\thealgorithm}{\thechapter.\arabic{algorithm}} 
+% Integration with cleveref
+\crefname{algocf}{Algorithm}{Algorithms}
+\Crefname{algocf}{Algorithm}{Algorithms}
+
+% Algorithm style
+\DontPrintSemicolon
+\SetAlgoCaptionSeparator{\kern1em\unskip}
+\SetCommentSty{textnormal}
+\SetFuncSty{textnormal}
+\SetArgSty{textnormal}
+\newcommand*{\textalcapsty}[1]{{\sffamily\bfseries#1}}
+\SetAlCapSty{textalcapsty}
+
+% New keywords
+\newcommand*{\KwAllocate}[1]{\KwSty{allocate} \ArgSty{#1}}
+\newcommand*{\KwMessage}[1]{\KwSty{message} \ArgSty{\enquote{#1}}}
+\newcommand*{\KwError}[1]{\KwSty{error} \ArgSty{\enquote{#1}}}
+\SetKwFor{ParFor}{parallel for}{do}{end for}
+
+% Floating algorithms
+\newenvironment{algorithmhere}{}{}
+\let\algorithmhere\algorithm
+\let\endalgorithmhere\endalgorithm
+\renewenvironment{algorithm}{\algorithmhere[t]}{\endalgorithmhere}
 
 %
 % Bibliography
