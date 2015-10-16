@@ -27,7 +27,7 @@
 \let\mathcal\mathscr
 
 % Improve microtypography and add tracking to small-caps text
-\RequirePackage[final,babel,kerning,tracking,letterspace=75]{microtype}
+\RequirePackage[final,babel,kerning,tracking,letterspace=50]{microtype}
 
 % Microtypographic settings for Hungarian text (see Hungarian babel
 % 1.5 manual, p. 5)
@@ -117,7 +117,7 @@
 \RequirePackage[ntheorem]{empheq}
 
 %
-% References
+% References I
 %
 
 % Varioref and hyperref MUST be loaded before ntheorem!
@@ -140,29 +140,6 @@
   pdfpagelabels=true,
   hidelinks
 ]{hyperref}
-
-% Cleveref adds the type of the referred entity (eg. Section~1.1) to
-% the reference. 
-\RequirePackage[capitalise,noabbrev]{cleveref}
-% Protect pages and equations from capitalization
-\crefname{page}{{p}age}{{p}ages}
-\crefname{equation}{{e}q.}{{e}qs.}
-
-% Make \labelref varioref-aware
-\DeclareRobustCommand{\labelvref}{\cref@vref{labelcref}}
-\DeclareRobustCommand{\labelfullref}{\cref@fullref{labelcref}}
-
-% Only number referred equations
-\RequirePackage{autonum}
-% Make autonum cleveref- and varioref-aware
-\autonum@generatePatchedReferenceCSL{Cref}
-\autonum@generatePatchedReferenceCSL{labelcref}
-\autonum@generatePatchedReferenceCSL{vref}
-\autonum@generatePatchedReferenceCSL{Vref}
-\autonum@generatePatchedReferenceCSL{labelvref}
-\autonum@generatePatchedReferenceCSL{fullref}
-\autonum@generatePatchedReferenceCSL{Fullref}
-\autonum@generatePatchedReferenceCSL{labelfullref}
 
 %
 % Mathematics II: Theorems
@@ -217,6 +194,41 @@
 \theoremframepostskip{0.5\baselineskip}
 \def\theoremframecommand{{\color{black!15}\vrule width 4pt\hspace{7pt}}}
 
+%
+% References II
+%
+
+% Cleveref must be loaded after ntheorem
+
+
+% Cleveref adds the type of the referred entity (eg. Section~1.1) to
+% the reference. 
+\RequirePackage[capitalise,noabbrev]{cleveref}
+% Protect pages and equations from capitalization
+\crefname{page}{{p}age}{{p}ages}
+\crefname{equation}{{e}q.}{{e}qs.}
+
+% Make \labelref varioref-aware
+\DeclareRobustCommand{\labelvref}{\cref@vref{labelcref}}
+\DeclareRobustCommand{\labelfullref}{\cref@fullref{labelcref}}
+
+% Only number referred equations
+\RequirePackage{autonum}
+% Make autonum cleveref- and varioref-aware
+\autonum@generatePatchedReferenceCSL{Cref}
+\autonum@generatePatchedReferenceCSL{labelcref}
+\autonum@generatePatchedReferenceCSL{vref}
+\autonum@generatePatchedReferenceCSL{Vref}
+\autonum@generatePatchedReferenceCSL{labelvref}
+\autonum@generatePatchedReferenceCSL{fullref}
+\autonum@generatePatchedReferenceCSL{Fullref}
+\autonum@generatePatchedReferenceCSL{labelfullref}
+
+%
+% Mathematics III
+%
+
+% We must define theorems after cleveref.
 
 % Define theorem-like environments
 \newshadedtheorem{thm}{Theorem}[chapter]
@@ -267,6 +279,7 @@
 \newcommand*{\KwMessage}[1]{\KwSty{message} \ArgSty{\enquote{#1}}}
 \newcommand*{\KwError}[1]{\KwSty{error} \ArgSty{\enquote{#1}}}
 \SetKwFor{ParFor}{parallel for}{do}{end for}
+\SetKw{KwDownto}{downto}
 
 % Floating algorithms
 \newenvironment{algorithmhere}{}{}
@@ -339,6 +352,16 @@
 % Use upright parentheses only in the bibliography and references
 \renewcommand*{\bibopenparen}{\textup(}
 \renewcommand*{\bibcloseparen}{\textup)}
+
+% Hack for complex citations
+\DeclareCiteCommand{\nakedcite}
+  {\usebibmacro{cite:init}%
+   \usebibmacro{prenote}}
+  {\usebibmacro{citeindex}%
+   \usebibmacro{cite:comp}}
+  {}
+  {\usebibmacro{cite:dump}%
+   \usebibmacro{postnote}}
 
 %
 % Miscellaneous

@@ -26,6 +26,31 @@ Column major versus row major storage
 
 \subsection{Block Kronecker decomposition}
 
+\begin{figure}
+  \centering
+  \begin{tikzpicture}
+    \matrix [every node/.append style={
+      text width=2.1cm,minimum height=1.2cm,align=center,
+      draw,tdk highlight
+    },column sep=1cm,row sep=0.3cm] {
+      \node (block) {Block\\Matrix}; & \node (lin) {Linear\\Combination};
+      & \node (kr) {Kronecker\\Matrix}; & \node (sparse) {Sparse\\Matrix}; \\
+      & & & \node (id) {Identity\\Matrix}; \\
+      & & \node (diag) {Diagonal Matrix}; & \node (vec) {Vector}; \\
+    };
+    \draw [{Diamond[length=10pt]}-,
+    every node/.append style={at end,above,anchor=south east}]
+    (block) edge node {$\ast$} (lin) (lin) edge node {$\ast$} (kr)
+    (kr) edge node {$\ast$} (sparse)
+    (diag) edge node [below,anchor=north east,yshift=-1] {1} (vec);
+    \draw [every node/.append style={at end,below,anchor=north east,yshift=-1pt}]
+    ($(lin.east)+(0.5cm,0)$) |- node {0..1} (diag)
+    ($(kr.east)+(0.5cm,0)$) |- node {$\ast$} (id);
+  \end{tikzpicture}
+  \caption{Data structure for block Kronecker matrices.}
+  \label{fig:genstor:kronecker:datastructure}
+\end{figure}
+
 \section{Matrix composition}
 
 \subsection{Generating sparse matrices from symbolic state spaces}
