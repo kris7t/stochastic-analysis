@@ -335,15 +335,15 @@ measures associated with intervals of time, such as total downtime.
 
 The element $r[x]$ of the reward vector is a momentary reward rate in
 state $x$, therefore the reward rate random variable can be written as
-$R(t) = r[X(t)]$. The accumulated reward until time $t$ is calculated
-by integration as
+$R(t) = r[X(t)]$. The accumulated reward until time $t$ is defined by
 \begin{equation}
   Y(t) = \int_{0}^t R(\tau) \, \dd \tau \text.
 \end{equation}
 
-\textbf{TODO Valamit írni és hivatkozni arról, hogy az $R(t)$ és
-  $Y(t)$ eloszlásait nehéz meghatározni, mi csak a várható értékekkel
-  foglalkozunk + behivatkozni valamit a várható értékhez.}
+The computation of the distribution function of Y(t) is a
+computationally intensive task (a summary is available at \citep[Table
+1]{RACZ02h}), while its mean, $\Ex Y(t)$, can be computed
+efficiently as discussed below.
 
 Given the initial probability distribution vector
 $\vec{\uppi}(0) = \vec{\uppi}_0$ the expected value of the reward rate
@@ -453,7 +453,7 @@ vector $\vec{\uppi}$, the system of linear equations
 \end{equation}
 is solved~\citep{DBLP:conf/sigmetrics/BlakeRT88}.
 
-Another type of sensitivty analysis considers \emph{unstructured}
+Another type of sensitivity analysis considers \emph{unstructured}
 small perturbations of the infinitesimal generator matrix $Q$ instead
 of dependecies on parameters%
 ~\citep{funderlic1986sensitivity,ipsen1994uniform}. This latter,
@@ -490,8 +490,8 @@ states (i.e.~$\pi_0[x] = 0$ for all $x \in D$), the \emph{Time
   \TFF = \inf \{ t \ge 0 : X(t) \in D \} = \inf \{ t \ge 0 : X_{UD}(t)
   = n_U \}
 \end{equation}
-has \emph{phase-type distribution} with parameters
-$(Q_{UU}, \vec{q}_{UD}, \vec{\pi}_{U})$, where $\vec{\uppi}_U$ is the
+is \emph{phase-type distributed} with parameters
+$(\vec{\pi}_{U}, Q_{UU})$~\citep{NEUT75}, where $\vec{\uppi}_U$ is the
 vector containing the first $n_U$ elements of $\vec{\pi}_0$. In
 particular, the \emph{Mean Time to First Failure} is
 \begin{equation}
@@ -504,8 +504,7 @@ The probability of a $y$-mode failure ($y \in D$) is
 \end{equation}
 where $\vec{q}_{Uy} \in \RR^{n_U}$, $q_{Uy}[x] = Q[x, y]$ is the
 vector of transition rates from operational states to the failure
-state $y$. \textbf{TODO Hivatkozas a PH-eloszlashoz es a
-  szamitasokhoz}.
+state $y$.
 
 \section{Stochastic Petri nets}
 
@@ -588,7 +587,7 @@ A finite \CTMC\ can be associated with a bounded stochastic Petri net
   $\mathllap{\RS = }\left\{\;\text{\small%
     \begin{tabular}{@{}r*{7}{c}l@{}}
       \toprule
-      & $S$ & $C_1$ & $W_1$ & $S_1$ & $C_2$ & $W_2$ & $S_2$ & \\
+      \multicolumn{1}{@{}c}{$P$:} & $S$ & $C_1$ & $W_1$ & $S_1$ & $C_2$ & $W_2$ & $S_2$ & \\
       \midrule
       $M_0$ & 1 & 1 & 0 & 0 & 1 & 0 & 0 & initial \\
       $M_1$ & 1 & 0 & 1 & 0 & 1 & 0 & 0 & client 1 waiting \\
@@ -710,9 +709,7 @@ modeling~\citep{DBLP:conf/pnpm/1985}.
 
 The rate reward $\rateReward(M)$ is the reward gained per unit time in
 marking $M$, while $\impulseReward(t, M)$ is the reward gained when
-the transition $t$ fires in marking $M$. The instantaneous reward rate
-and accumulated reward at time $t$ is denoted by $R(t)$ and $Y(t)$,
-respectively.
+the transition $t$ fires in marking $M$.
 
 If $\impulseReward(t, M) \equiv 0$, the \textls{SRN} is
 equivalent to the Markov reward process $(X(t), \vec{r})$, where
@@ -730,8 +727,8 @@ performed on reward process $(X, \vec{r})$,
 \end{equation}
 where the summation is taken over all enabled
 transitions~\citep{DBLP:journals/pe/CiardoMT91}. In general, the
-distributions of $R(t)$ and $Y(t)$ cannot be derived by this
-method. \textbf{TODO Impulzus rewardok szamolasara cikkre hivatkozni?}
+distribution of $Y(t)$ cannot be derived by this
+method~\citep{RACZ99a}.
 
 \begin{runningExample}
   The \textls{SRN} model
@@ -917,7 +914,7 @@ which is the union of the local markings $\loc{M_{\loc{x}{0}}}{0},
   \loc{\RS}{0} = \left\{\;\text{\small
       \begin{tabular}{@{}r*{3}{c}@{}}
         \toprule
-        & $C_1$ & $W_1$ & $S_1$ \\
+        \multicolumn{1}{@{}c}{$P$:} & $C_1$ & $W_1$ & $S_1$ \\
         \midrule
         $\loc{M}{0}_0$ & 1 & 0 & 0 \\
         $\loc{M}{0}_1$ & 0 & 1 & 0 \\
@@ -929,7 +926,7 @@ which is the union of the local markings $\loc{M_{\loc{x}{0}}}{0},
   \loc{\RS}{1} = \left\{\;\text{\small
       \begin{tabular}{@{}r*{3}{c}@{}}
         \toprule
-        & $C_2$ & $W_2$ & $S_2$ \\
+        \multicolumn{1}{@{}c}{$P$:} & $C_2$ & $W_2$ & $S_2$ \\
         \midrule
         $\loc{M}{1}_0$ & 1 & 0 & 0 \\
         $\loc{M}{1}_1$ & 0 & 1 & 0 \\
@@ -939,7 +936,7 @@ which is the union of the local markings $\loc{M_{\loc{x}{0}}}{0},
   \loc{\RS}{2} = \left\{\;\text{\small
       \begin{tabular}{@{}rc@{}}
         \toprule
-        & $S$ \\
+        \multicolumn{1}{@{}c}{$P$:}  & $S$ \\
         \midrule
         $\loc{M}{2}_0$ & 1 \\
         $\loc{M}{2}_1$ & 1 \\
