@@ -1,5 +1,5 @@
 \chapter{Algorithms for stochastic analysis}
-\label{chap:algorithm}
+\label{chap:algorithms}
 
 Steady state, transient, accumulated and sensitivity analysis problems
 pose several numerical challanges, especially when the state space of
@@ -57,7 +57,13 @@ customization of algorithm execution for the structure of the model as
 well as the hardware in use. Benchmark results for the workflow are
 discussed in \vref{sec:evaluation:results}.
 
+In this chapter, we describe the algorithms implemented in our
+stochastic analysis framework. The pseudocode of the algorithms is
+annotated with the low level operations performed on the configurable
+data structure by the high level algorithms.
+
 \section{Linear equation solvers}
+\label{sec:algorithms:solvers}
 
 \subsection{Explicit solution by \textls[30]{LU} decomposition}
 
@@ -250,13 +256,13 @@ Markovian analysis. Its iteration function has the form
 
 The iteration converges if the diagonal elements $a[i,i]$ of $A$ are
 strictly negative, the off-diagonal elements $a[i,j]$ are nonnegative
-and $0 < \alpha \le \min_{i} \lvert a[i,i] \rvert$. The matrix $A$
+and $\alpha \ge \max_{i} \lvert a[i,i] \rvert$. The matrix $A$
 satisfies these properties if it is an inifinitesimal generator matrix
 of an irreducible \CTMC. The fastest convergence is achieved when
 $\alpha = \min_{i} \lvert a[i,i] \rvert$.
 
 \begin{algorithm}
-  $\alpha^{-1} \gets 1 / \min_{i} \lvert a[i,i] \rvert$\;
+  $\alpha^{-1} \gets 1 / \max_{i} \lvert a[i,i] \rvert$\;
   \Repeat{$\epsilon \le \tau$}{
     $\vec{x}' \gets \vec{x} A$
     \tcp*{Vector-matrix product}
@@ -610,7 +616,7 @@ Conjugate Gradient Squared~(\textls{CGS}). \textbf{TODO Cite}
   }
   $\vec{r}_0 \gets \vec{r}, \vec{v} \gets \vec{0}, \vec{p} \gets
   \vec{0}, \rho' \gets 1, \alpha \gets 1, \omega \gets 1$\;
-  \While{\textsf{true}}{
+  \While{\KwTrue}{
     $\rho \gets \vec{r_0} \cdot \vec{r}$
     \tcp*{Scalar product}
     \lIf{$\rho \approx 0$}{%
@@ -687,18 +693,380 @@ satisfying homogenous equations by the initialization in%
 
 \subsection{Uniformization}
 
-\subsubsection{Calculation of uniformization weights}
+The \emph{uniformization} or \emph{randomization} method solves the
+initial value problem
+\begin{gather}
+  \frac{\dd \vec{\uppi}(t)}{\dd t} = \vec{\uppi}(t) \, Q, \quad
+  \vec{\uppi}(t) = \vec{\uppi}{0}
+  \tag{\ref{eq:background:ctmc:diffeq}~revisited}\\
+  \shortintertext{by computing}
+  \vec{\uppi}(t) = \sum_{k = 0}^{\infty} \vec{\uppi}_0 P^k e^{-\alpha
+    t} \frac{(\alpha t)^k}{k!}\text,
+  \label{eq:algorithms:transient:uniformization}
+\end{gather}
+where $P = \alpha^{-1} Q + I$,
+$\alpha \ge \max_{i} \lvert a[i, i] \rvert$ and
+$e^{-\alpha t} \frac{(\alpha t)^k}{k!}$ is the value of the Poisson
+probabilty function with rate $\alpha t$ at $k$.
 
-\begin{itemize}
-\item Weights for transient probability with \emph{trimming}
-\item Weights for accumulated probability
-\end{itemize}
+Integrating both sides of
+\cref{eq:algorithms:transient:uniformization} to compute $\vec{L}(t)$
+yields~\citep{reibman1989markov}
+\begin{align}
+  \int_{0}^t \vec{\uppi}(u) \,\dd u = \vec{L}(t)
+  &= \sum_{k = 0}^{\infty} \vec{\uppi}_0 P^k \int_{0}^{t} e^{-\alpha
+    u} \frac{(\alpha u)^k}{k!} \,\dd u \\
+  &= \sum_{k = 0}^{\infty} \vec{\uppi}_0 P^k \frac{1}{\alpha} \sum_{l
+    = k + 1}^{\infty} e^{-\alpha t} \frac{(\alpha t)^l}{l!} \\
+  &= \frac{1}{\alpha} \sum_{k = 0}^{\infty} \vec{\uppi}_0 P^k \mleft(
+    1 - \sum_{l = 0}^{k} e^{-\alpha t} \frac{(\alpha t)^l}{l!}
+    \mright) \text.
+    \label{eq:algorithms:transient:aggregate-uniformization}
+\end{align}
 
-\subsubsection{Steady-state detection}
+Both \cref{eq:algorithms:transient:uniformization,%
+eq:algorithms:transient:aggregate-uniformization} can be realized
+as
+\begin{equation}
+  \vec{x} = \frac{1}{W} \mleft(\; \sum_{k = 0}^{k_{\text{left}} - 1} w_{\text{left}}
+  \vec{\uppi}_0 P^k + \sum_{k = k_{\text{left}}}^{k_{\text{right}}}
+  w[k - k_{\text{left}}] \vec{\uppi}_0 P^k \!\mright) \text,
+  \label{eq:algorithms:transient:uniformization-impl}
+\end{equation}
+where $\vec{x}$ is either $\vec{\uppi}(t)$ or $\vec{L}(t)$,
+$k_{\text{left}}$ and $k_{\text{right}}$ are \emph{trimming constants}
+selected based on the required precision, $\vec{w}$ is a vector of
+(possibly accumulated) Poisson weights and $W$ is a scaling
+factor. The weight before the left cutoff $w_{\text{left}}$ is $1$ if
+the accumulated probability vector $\vec{L}(t)$ is calculated, $0$
+otherwise.
+
+\begin{algorithm}
+  \KwIn{infinitesimal generator $Q \in \RR^{n \times n}$, initial
+    probability vector $\vec{\uppi}_0 \in \RR^n$, truncation
+    parameters $k_{\text{left}}, k_{\text{right}} \in \NN$, weights
+    $w_{\text{left}} \in \RR$,
+    $\vec{w} \in \RR^{k_{\text{right}} - k_{\text{left}}}$, scaling
+    constant $W \in \RR$, tolerance $\tau > 0$}
+  \KwOut{instantenous or accumulated probability vector $\vec{x} \in
+    \RR^n$}
+  \KwAllocate{$\vec{x}, \vec{p}, \vec{q} \in \RR^n$}\;
+  $\alpha^{-1} \gets 1 / \max_{i} \lvert a[i,i] \rvert$
+  \label{ln:algorithms:transient:uniformization:alpha}\;
+  $\vec{p} \gets \vec{\uppi}_0$\;
+  \leIf(\tcp*[f]{Vector scaling})
+  {$w_{\text{left}} = 0$}{$\vec{x} \gets \vec{0}$}
+  {$\vec{x} \gets w_{\text{left}} \cdot \vec{p}$}
+  \For{$k \gets 1$ \KwTo $k_{\text{right}}$}{
+    $\vec{q} \gets \vec{p} Q$
+    \tcp*{Vector-matrix product}
+    $\vec{q} \gets \alpha^{-1} \cdot \vec{q}$
+    \tcp*{In-place vector scaling}
+    $\vec{q} \gets \vec{q} + \vec{q}$
+    \tcp*{In-place vector addition}
+    \If{$\| \vec{q} - \vec{p} \| \le \tau$}{
+      \label{ln:algorithms:transient:uniformization:steadystate-det}
+      $\vec{x} \gets \vec{x} + \mleft( \sum_{l = k}^{k_\text{right}}
+      w[l - k_{\text{left}}] \mright) \cdot \vec{q}$
+      \tcp*{In-place scaled vector addition}
+      \KwSty{break}\;
+    }
+    \lIf(\tcp*[f]{In-place scaled vector addition})
+    {$k < k_{\text{left}} \land w_{\text{left}} \ne 0$}{%
+      $\vec{x} \gets \vec{x} + w_{\text{left}} \cdot \vec{q}$
+    }
+    \lElseIf(\tcp*[f]{In-place scaled vector addition})
+    {$k \ge k_{\text{left}}$}{%
+      $\vec{x} \gets \vec{x} + w[k - k_{\text{left}}] \cdot \vec{q}$
+    }
+    Swap the references to $\vec{p}$ and $\vec{q}$
+  }
+  $\vec{x} \gets W^{-1} \cdot \vec{x}$
+  \tcp*{In-place vector scaling}
+  \KwRet{$\vec{x}$}\;
+  \caption{Uniformization.}
+  \label{alg:algorithms:transient:uniformization}
+\end{algorithm}
+
+\Cref{eq:algorithms:transient:uniformization-impl} is implemented by
+\cref{alg:algorithms:transient:uniformization}. The algorithm performs
+\emph{steady-state} detection in line%
+~\ref{ln:algorithms:transient:uniformization:steadystate-det} to avoid
+unneccessary work once the iteration vector $\vec{p}$ reaches the
+steady-state distribution $\vec{\uppi}(\infty)$,
+i.e.~$\vec{p} \approx \vec{p} P$. If the initial distribution
+$\vec{\uppi}_0$ is not further needed or can be generated efficiently
+(as it is the case with a single initial state), the result vector
+$\vec{x}$ may share the same storing, resulting in a memory overhead
+of only two vectors $\vec{p}$ and $\vec{q}$.
+
+\begin{algorithm}
+  \KwIn{Poisson rate $\lambda = \alpha t$, tolerance $\tau >
+    10^{-50}$}
+  \KwOut{truncation parameters $k_{\text{left}}, k_{\text{right}} \in
+    \NN$, weights $\vec{w} \in \RR^{k_{\text{right}} -
+      k_{\text{left}}}$, scaling constant $W \in \RR$}
+  $M_w \gets 30, M_a \gets 44, M_s \gets 21$\;
+  $m \gets \lfloor \lambda \rfloor, \textit{tSize} \gets \lfloor
+  M_w \sqrt{\lambda} + M_a \rfloor, \textit{tStart} \gets \max
+  \{m + M_s - \lfloor \textit{tSize} / 2 \rfloor, 0 \}$\;
+  \KwAllocate{$\textbf{tWeights} \in \RR^{\textit{tSize}}$}\;
+  $\textit{tWeights}[m - \textit{tStart}] \gets 2^{176}$\;
+  \lFor{$j \gets m - \textit{tStart}$ \KwDownto $1$}{%
+    $\textit{tWeights}[j - 1] = (j + \textit{tStart})\,
+    \textit{tWeights}[j] / \lambda$
+  }
+  \lFor{$j \gets m - \textit{tStart} + 1$ \KwTo $\textit{tSize}$}{%
+    $\textit{tWeights}[j + 1] = \lambda\, \textit{tWeights}[j] / (j +
+    \textit{tStart})$
+  }
+  $W \gets 0$\;
+  \lFor{$j \gets 0$ \KwTo $m - \textit{tStart} - 1$}{%
+    $W \gets W + \textit{tWeights}[j]$
+  }
+  $\textit{sum1} \gets 0$
+  \tcp*{Avoid adding small numbers to larger numbers}
+  \lFor{$j \gets \textit{tSize} - 1$ \KwDownto $m -
+    \textit{tStart}$}{%
+    $\textit{sum1} \gets \textit{sum1} + \textit{tWeights}[j]$
+  }
+  $W \gets W + \textit{sum1}, \textit{threshold} \gets W \tau / 2,
+  \textit{cdf} \gets 0, i \gets 0$\;
+  \lWhile{$\textit{cdf} < \textit{threshold}$}{%
+    $\textit{cdf} \gets \textit{cdf} + \textit{tWeights}[i], i \gets i
+    + 1$
+  }
+  $k_{\text{left}} \gets \textit{tStart} + i, \textit{cdf} \gets 0, i
+  \gets \textit{tSize} - 1$\;
+  \lWhile{$\textit{cdf} < \textit{threshold}$}{%
+    $\textit{cdf} \gets \textit{cdf} + \textit{tWeights}[i], i \gets i
+    - 1$
+  }
+  $k_{\text{right}} \gets \textit{tStart} + i$\;
+  \KwAllocate{$\vec{w} \in \RR^{k_{\text{right}} -
+      k_{\text{left}}}$}\;
+  \lFor{$j \gets k_{\text{left}}$ \KwTo $k_{\text{right}}$}{%
+    $w[j - k_{\text{left}}] \gets \textit{tWeights}[j - \textit{tStart}]$
+  }
+  \KwRet{$k_{\text{left}}, k_{\text{right}}, \vec{w}, W$}\;
+  \caption{\citeauthor{DBLP:journals/corr/Burak14}'s algorithm for
+    calculating the Poisson weights.}
+  \label{alg:algorithms:transient:poisson}
+\end{algorithm}
+
+The weights and trimming constants may be calculated by the famous
+algorithm of \citet{DBLP:journals/cacm/FoxG88}. However, their
+algorithm is extremely complicated due to the limitations of
+single-precision floating-point arithmetic%
+~\citep{jansen2011understanding}. We implemented
+\citeauthor{DBLP:journals/corr/Burak14}'s significantly simpler
+algorithm~\citep{DBLP:journals/corr/Burak14} in double precision
+instead (\cref{alg:algorithms:transient:poisson}), which avoids
+underflow by a scaling factor $W \gg 1$.
 
 \subsection{\textls*[35]{TR-BDF2}}
 
-\section{Mean time to failure}
+A weakness of the uniformization algorithm is the poor tolerance of
+\emph{stiff} Markov chains. The \CTMC\ is called stiff if the
+$\lvert \lambda_{\min} \rvert \ll \lvert \lambda_{\max} \rvert$, where
+$\lambda_{\min}$ and $\lambda_{\max}$ are the nonzero eigenvalues of
+the infinitesimal generator matrix $Q$ of minimum and maximum absolute
+value~\citep{DBLP:journals/cor/ReibmanT88}. In other words, stiff
+Markov chains have behaviors on drastically different timescales, for
+example, clients are served frequently while failures happen
+infrequently.
+
+Stiffness leads to very large small rates $\alpha$
+in line~\label{ln:algorithms:transient:uniformization:alpha} of
+\cref{alg:algorithms:transient:uniformization}, thus a large right
+cutoff $k_{\text{right}}$ is required for computing the transient
+solution with sufficient accuracy. Moreover, the slow stabilization
+results in taking many iterations before steady-state detection
+in line~\ref{ln:algorithms:transient:uniformization:steadystate-det}.
+
+Some methods that can handle stiff \textls{CTMCs} efficiently are
+stochastic complementation~\citep{meyer1989stochastic}, which
+decouples the slow and fast behaviors of the system, and adaptive
+uniformization~\citep{van1994adaptive}, which varies the uniformization
+rate $\alpha$. Alternatively, an $L$-stable differential equation
+solver may be used to solve \vref{eq:background:ctmc:diffeq}, such as
+\mbox{\textls{TR-BDF2}}~\citep{DBLP:journals/cor/ReibmanT88,%
+DBLP:journals/tcad/BankCFGRS85}.
+
+\textls{TR-BDF2} is an implicit integrator with alternating trapezoid
+rule (\textls{TR}) steps
+\begin{equation}
+  \vec{\uppi}_{k + \gamma} (2I + \gamma h_k Q) = 2 \vec{\uppi}_{k} +
+  \gamma h_k \vec{\uppi}_k Q
+\end{equation}
+and second order backward difference steps
+\begin{equation}
+  \vec{\uppi}_{k + 1} [(2 - \gamma) I - (1 - \gamma) h_k Q] =
+  \frac{1}{\gamma} \vec{\uppi}_{k + \gamma} - \frac{(1 -
+    \gamma)^2}{\gamma} \vec{\uppi}_k \text,
+\end{equation}
+which advance the time together by $h_k$. The constant
+$0 < \gamma < 1$ sets the breakpoint between the two steps. We set it
+to $\gamma = 2 - \sqrt{2} \approx 0.59$ following the recommendation
+of \citet{DBLP:journals/tcad/BankCFGRS85}.
+
+As a guess for the initial step size $h_0$, we chose the
+uniformization rate of $Q$. The $k$th step size $h_k > 0$, including
+the $0$th one, is selected such that the local error estimate
+\begin{equation}
+  \label{eq:algorithms:transient:trbdf-lte}
+  \textit{\textls{LTE}}_{k + 1} = \mleft\| 2 \frac{-3\gamma^4 + 4\gamma - 2}{24 -
+    12\gamma} h_k \mleft[ -\frac{1}{\gamma} \vec{\uppi}_k +
+  \frac{1}{\gamma (1 - \gamma)} \vec{\uppi}_{k + \gamma} - \frac{1}{1
+    - \gamma} \vec{\uppi}_{k + 1} \mright] \mright\|
+\end{equation}
+is bounded by the local error tolerance
+\begin{equation}
+  \textit{\textls{LTE}}_{k + 1} \le \mleft( \frac{ \tau - \sum_{i = 0}^k
+    \textit{\textls{LTE}}_{i} }{ t - \sum_{i = 0}^k k_i } \mright) h_{k + 1}
+  \text.
+\end{equation}
+This Local Error per Unit Step (\textls{LEPUS}) error control
+\enquote{produces excellent results for many problems}, but is usually
+costly~\citep{DBLP:journals/cor/ReibmanT88}. Moreover, the accumulated
+error at the end of integration may be larger than the prescribed
+tolerance $\tau$, since \cref{eq:algorithms:transient:trbdf-lte} is
+only an approximation of the true error.
+
+\begin{algorithm}
+  \KwIn{infinitesimal generator $Q \in \RR^{n \times n}$, initial
+    distribution $\vec{\uppi}_0$, mission time $t > 0$, tolerance
+    $\tau > 0$}
+  \KwOut{transient distribution $\vec{\uppi}(t)$}
+  \KwAllocate{$\vec{\uppi}_k, \vec{\uppi}_{k + \gamma}, \vec{\uppi}_{k +
+      1}, \vec{d}_k, \vec{d}_{k + 1}, \vec{y} \in \RR^n$}\;
+  $\textit{maxIncrease} \gets 10, \textit{leastDecrease} \gets 0.9$\;
+  $\textit{timeLeft} \gets t, h \gets 1 / \max_{i} \lvert a[i,i]
+  \rvert, \gamma \gets 2 - \sqrt{2}, C \gets \mleft\lvert \frac{-3\gamma^4 +
+    4\gamma - 2}{24 - 12\gamma} \mright\rvert, \textit{errorSum} \gets 0$\;
+  $\vec{\uppi}_k \gets \vec{\pi}_0$\;
+  $\vec{d}_k \gets \vec{\uppi}_k Q$
+  \tcp*{Vector-matrix product}
+  \While{$\textit{timeLeft} > 0$}{%
+    $\textit{stepFailed} \gets \KwFalse, h \gets \min \{h,
+    \textit{timeLeft}\}$\;
+    \While{$\KwTrue$}{
+      \tcc{\textls{TR} step}
+      $\vec{y} \gets 2 \cdot \vec{\uppi}_k$
+      \tcp*{Vector scaling}
+      $\vec{y} \gets \vec{y} + \gamma h \cdot \vec{d}_k$
+      \tcp*{In-place vector addition}
+      Solve $\vec{\uppi}_{k + \gamma} (2I + -\gamma h Q) = \vec{y}$
+      for $\vec{\uppi}_{k + \gamma}$ with initial guess
+      $\vec{\uppi}_k$\label{ln:algorithms:transient:trbdf2:solve1}\;
+      \tcc{\textls{BDF2} step}
+      $\vec{y} \gets -\frac{(1 - \gamma)^2}{\gamma} \cdot
+      \vec{\uppi}_k$
+      \tcp*{Vector scaling}
+      $\vec{y} \gets \frac{1}{\gamma} \cdot \vec{\uppi}_{k + \gamma}$
+      \tcp*{In-place scaled vector addition}
+      Solve $\vec{\uppi}_{k + 1} ( (2 - \gamma) I + (\gamma - 1) h Q ) =
+      \vec{y}$ for $\vec{\uppi}_{k + 1}$ with initial guess
+      $\vec{\uppi}_{k + \gamma}$\label{ln:algorithms:transient:trbdf2:solve2}\;
+      \tcc{Error control and step size estimation}
+      $\vec{y} \gets -\frac{1}{\gamma} \vec{d}_k$
+      \tcp*{Vector scaling}
+      $\vec{y} \gets \vec{y} + \frac{1}{\gamma (1 - \gamma)}
+      \vec{\uppi}_{k + \gamma} Q$
+      \tcp*{In-place scaled addition of vector-matrix product}
+      $\vec{d}_{k + 1} \gets \vec{\uppi}_{k + 1} Q$
+      \tcp*{Vector-matrix product}
+      $\vec{y} \gets \vec{y} + \mleft(-\frac{1}{1 - \gamma}\mright)
+      \vec{d}_{k + 1}$
+      \tcp*{In-place scaled vector addition}
+      $\textit{\textls{LTE}} \gets 2 C h \| \vec{y} \|, \textit{localTol} \gets
+      (\tau - \textit{errorSum}) / \textit{timeLeft} \cdot h$\;
+      \If(\tcp*[f]{Successful step}){$\textit{\textls{LTE}} < \textit{localTol}$}{%
+        $\textit{timeLeft} \gets \textit{timeLeft} - h,
+        \textit{errorSum} \gets \textit{errorSum} +
+        \textit{\textls{LTE}}$\;
+        \tcp{Do not try to increase $h$ after a failed step}
+        \lIf{$\neg \textit{stepFailed}$}{%
+          $h \gets h \cdot \min\{ \textit{maxIncrease},
+          \sqrt[3]{\textit{localTol} / \textit{\textls{LTE}}} \}$
+        }
+        \KwSty{break}\;
+      }
+      $\textit{stepFailed} \gets \KwTrue, h \gets h \cdot \min\{
+      \textit{leastDecrease}, \sqrt[3]{\textit{localTol} /
+        \textit{\textls{LTE}}} \}$\;
+    }
+    Swap the references to $\vec{\uppi}_k, \vec{\uppi}_{k + 1}$ and
+    $\vec{d}_k, \vec{d_{k + 1}}$\;
+  }
+  \KwRet{$\vec{\uppi}_k$}\;
+  \caption{\textls{TR-BDF2} for transient analysis.}
+  \label{alg:algorithms:transient:trbdf2}
+\end{algorithm}
+
+An implementation of \textls{TR-BDF2} based on the pseudocode of
+\citet{DBLP:journals/cor/ReibmanT88} is shown in
+\cref{alg:algorithms:transient:trbdf2}.
+
+In lines~\ref{ln:algorithms:transient:trbdf2:solve1} and~%
+\ref{ln:algorithms:transient:trbdf2:solve2} any linear equation solver
+from \cref{sec:algorithms:solvers} may be used except power iteration,
+since the matrices, in general, do not have strictly negative
+diagonals. Due to the way the matrices, which are linear combinations
+of $I$ and $Q$, are passed to the inner solvers, our \textls{TR-BDF2}
+integrator is currently limited to $Q$ matrices which are not in block
+form.
+
+The vectors $\vec{\uppi}_0, \vec{\uppi}_k$ and
+$\vec{\uppi}_{k + \gamma}, \vec{d}_{k + 1}$ may share storage,
+respectively, therefore only 4 state-space sized vectors are required
+in addition to the initial distribution $\vec{\uppi}_0$.
+
+The most computationally intensive part is the solution of two linear
+equation per every attempted step, which may make \textls{TR-BDF2}
+extremely slow. However, its performance does \emph{not} depend on the
+stiffness of the Markov chain, which may make it better suited to stiff
+\textls{CTMCs} than uniformization%
+~\citep{DBLP:journals/cor/ReibmanT88}.
+
+\section{Mean time to first failure}
+
+In \textls{MTFF} calculation (\vref{ssec:background:mtff}), quantities
+of the forms
+\begin{equation}
+  \MTFF = - \underbrace{\vec{\uppi}_U Q_{UU}^{-1}}_{\vec{\upgamma}} \vec{1}^\T, \quad
+  \Pr(X(\TFF_{+ 0}) = y) = - \underbrace{\vec{\uppi}_U Q_{UU}^{-1}}_{\vec{\upgamma}} \vec{q}_{UD'}^\T
+  \tag{\ref{eq:background:mtff}, \ref{eq:background:failure-mode}
+    revisited}
+\end{equation}
+are computed, where $U, D, D'$ are the set of operations states,
+failure states and a specific failure mode $D' \subsetneq D$,
+respectively.
+
+The vector $\vec{\upgamma} \in \RR^{\lvert U \rvert}$ is the solution
+of the linear equation
+\begin{equation}
+  \label{eq:algorithms:mtff:gamma}
+  \vec{\upgamma} Q_{UU} = \vec{\uppi}_{U}
+\end{equation}
+and may be obtained by any linear equation solver.
+
+The sets $U, D = D_1 \cup D_2 \cup \cdots$ are constructed by the
+evaluation of \CTL\ expressions. If the failure mode $D_i$ is
+described by $\varphi_i$, then the sets $D$ and $U$ are described by
+\CTL\ formulas
+$\varphi_D = \neg \ctlAX \KwTrue \lor \varphi_1 \lor \varphi_2 \lor
+\cdots$
+and $\varphi_U = \neg \varphi_D$, where the deadlock condition
+$\neg \ctlAX \KwTrue$ is added to make \ref{eq:algorithms:mtff:gamma}
+irreducible.
+
+After the set $U$ is generated symbolically, the matrix $Q_{UU}$ may be
+decomposed in the same way as the whole state space $S$. Thus, the
+vector-matrix operations required for solving
+\eqref{eq:algorithms:mtff:gamma}.
+
+\section{Efficient matrix-vector products}
 
 \section{Processing results}
 

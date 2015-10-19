@@ -461,6 +461,7 @@ unstructured analysis may be used to study the numerical stability and
 conditioning of the solutions of the Markov chain.
 
 \subsection{Time to first failure}
+\label{ssec:background:mtff}
 
 Let $D \subsetneq S$ be a set of \emph{failure states} of the \CTMC\ 
 $X(t)$ and $U = S \setminus D$ be a set of operating states. We will
@@ -495,16 +496,18 @@ $(\vec{\pi}_{U}, Q_{UU})$~\citep{NEUT75}, where $\vec{\uppi}_U$ is the
 vector containing the first $n_U$ elements of $\vec{\pi}_0$. In
 particular, the \emph{Mean Time to First Failure} is
 \begin{equation}
-  \MTFF = \Ex[\TFF] = - \vec{\pi}_D Q_{UU}^{-1} \vec{1}^\T \text.
+  \label{eq:background:mtff}
+  \MTFF = \Ex[\TFF] = - \vec{\uppi}_U Q_{UU}^{-1} \vec{1}^\T \text.
 \end{equation}
 
-The probability of a $y$-mode failure ($y \in D$) is
+The probability of a $D'$-mode failure ($D' \in D$) is
 \begin{equation}
-  \Pr(X(\TFF_{+ 0}) = y) = - \vec{\pi}_D Q_{UU}^{-1} \vec{q}_{Uy}^\T \text,
+  \label{eq:background:failure-mode}
+  \Pr(X(\TFF_{+ 0}) = y) = - \vec{\uppi}_DUQ_{UU}^{-1} \vec{q}_{UD'}^\T \text,
 \end{equation}
-where $\vec{q}_{Uy} \in \RR^{n_U}$, $q_{Uy}[x] = Q[x, y]$ is the
-vector of transition rates from operational states to the failure
-state $y$.
+where $\vec{q}_{UD'} \in \RR^{n_U}$,
+$q_{UD'}[x] = \sum_{y \in D'} q[x, y]$ is the vector of transition
+rates from operational states to failure states $D'$.
 
 \section{Stochastic Petri nets}
 
