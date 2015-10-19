@@ -107,12 +107,13 @@ then $\vec{x}$ is computed by back substitution from
   $L \gets A_L + A_D$\;
   $U \gets A_U + I$\;
   \KwRet{$L, U$}\;
-  \caption{Crout's \textls{LU} decomposition.}
+  \caption{Crout's \textls{LU} decomposition without pivoting.}
   \label{alg:algorithms:lu:crout}
 \end{algorithm}
 
-We used Crout's \textls{LU} decomposition
-(\cref{alg:algorithms:lu:crout}), which ensures
+We used Crout's \textls{LU} decomposition%
+~\citep[Section~2.3.1]{press2007numerical}, presented in
+\cref{alg:algorithms:lu:crout}), which ensures
 \begin{equation}
   u[i, i] = 1 \text{ for all $i = 0, 1, \ldots, n - 1$,}
 \end{equation}
@@ -247,8 +248,9 @@ to~\citep[Section~10.3.5]{stewart2009probability}.
 
 \subsubsection{Power iteration}
 
-Power iteration is the one of the simplest iterative methods for
-Markovian analysis. Its iteration function has the form
+Power iteration~\citep[Section~10.3.1]{stewart2009probability} is the
+one of the simplest iterative methods for Markovian analysis. Its
+iteration function has the form
 \begin{equation}
   \vec{x}_k = f(\vec{x}_{k - 1}) = \vec{x}_{k - 1} + \frac{1}{\alpha} \mleft(
   \vec{x}_{k - 1} A - \vec{b} \mright) \text.
@@ -326,8 +328,9 @@ solution of the original problem%
 
 \subsubsection{Jacobi and Gauss--Seidel iteration}
 
-Jordan and Gauss--Seidel iterative methods repeatedly solve a system
-of simultaneous equations of a specific form.
+Jordan and Gauss--Seidel iterative methods%
+~\citep[Section~10.3.2--3]{stewart2009probability} repeatedly solve a
+system of simultaneous equations of a specific form.
 
 In Jordan iteration, the system
 {\small\begin{equation} \left.
@@ -591,15 +594,26 @@ transformation for homogenous equations
 normalization $\vec{\uppi} = \vec{x} / \vec{x}\vec{1}^\T$ is performed
 only after finding any nonzero solution of $\vec{x} Q = \vec{0}$.
 
+For a detailed analysis of the convergence behaviour of group
+iterative methods, we refer to
+\citet[Chapter~14]{greenbaum1997iterative} and \citet{}
+
 \subsubsection{BiConjugate Gradient Stabilized (\textls[30]{BiCGSTAB})}
 
 BiConjugate Gradient Stabilized~(\textls{BiCGSTAB})%
 ~\mkbibbrackets{\nakedcite[Section~7.4.2]{saad2003iterative};~\nakedcite{van1992bi}}
 is an iterative algorithm belonging to the class of Krylov subspace
 methods, which includes other algorithms such as the Generalized
-Minimum Residual~(\textls{GMRES}), the the Conjugate Gradient and
-Conjugate Residual methods, the BiConjugate Gradient algorithm and
-Conjugate Gradient Squared~(\textls{CGS}). \textbf{TODO Cite}
+Minimum Residual~(\textls{GMRES})~\citep{saad1986gmres}, Conjugate Gradient
+Squared~(\textls{CGS})~\citep{sonneveld1989cgs} and
+IDR$(s)$~\citep{sonneveld2008idr}.
+
+We selected \textls{BiCGSTAB} as the Krylov subspace solver in our
+framework because of its good convergence behaviour and low memory
+requirements. \textls{BiCGSTAB} only requires the storage of 7
+vectors, which makes it suitable even for large state spaces with
+large states vectors, unlike e.g.~\textls{GMRES}, which allocates an
+additional vector every iteration.
 
 \begin{algorithm}
   \KwIn{matrix $A \in \RR^{n \times n}$, right vector $\vec{b} \in
@@ -812,40 +826,40 @@ of only two vectors $\vec{p}$ and $\vec{q}$.
   \{m + M_s - \lfloor \textit{tSize} / 2 \rfloor, 0 \}$\;
   \KwAllocate{$\textbf{tWeights} \in \RR^{\textit{tSize}}$}\;
   $\textit{tWeights}[m - \textit{tStart}] \gets 2^{176}$\;
-  \lFor{$j \gets m - \textit{tStart}$ \KwDownto $1$}{%
+  \For{$j \gets m - \textit{tStart}$ \KwDownto $1$}{%
     $\textit{tWeights}[j - 1] = (j + \textit{tStart})\,
     \textit{tWeights}[j] / \lambda$
   }
-  \lFor{$j \gets m - \textit{tStart} + 1$ \KwTo $\textit{tSize}$}{%
+  \For{$j \gets m - \textit{tStart} + 1$ \KwTo $\textit{tSize}$}{%
     $\textit{tWeights}[j + 1] = \lambda\, \textit{tWeights}[j] / (j +
     \textit{tStart})$
   }
   $W \gets 0$\;
-  \lFor{$j \gets 0$ \KwTo $m - \textit{tStart} - 1$}{%
+  \For{$j \gets 0$ \KwTo $m - \textit{tStart} - 1$}{%
     $W \gets W + \textit{tWeights}[j]$
   }
   $\textit{sum1} \gets 0$
   \tcp*{Avoid adding small numbers to larger numbers}
-  \lFor{$j \gets \textit{tSize} - 1$ \KwDownto $m -
+  \For{$j \gets \textit{tSize} - 1$ \KwDownto $m -
     \textit{tStart}$}{%
     $\textit{sum1} \gets \textit{sum1} + \textit{tWeights}[j]$
   }
   $W \gets W + \textit{sum1}, \textit{threshold} \gets W \tau / 2,
   \textit{cdf} \gets 0, i \gets 0$\;
-  \lWhile{$\textit{cdf} < \textit{threshold}$}{%
-    $\textit{cdf} \gets \textit{cdf} + \textit{tWeights}[i], i \gets i
-    + 1$
+  \While{$\textit{cdf} < \textit{threshold}$}{%
+    $\textit{cdf} \gets \textit{cdf} + \textit{tWeights}[i]$\;
+    $i \gets i + 1$
   }
   $k_{\text{left}} \gets \textit{tStart} + i, \textit{cdf} \gets 0, i
   \gets \textit{tSize} - 1$\;
-  \lWhile{$\textit{cdf} < \textit{threshold}$}{%
-    $\textit{cdf} \gets \textit{cdf} + \textit{tWeights}[i], i \gets i
-    - 1$
+  \While{$\textit{cdf} < \textit{threshold}$}{%
+    $\textit{cdf} \gets \textit{cdf} + \textit{tWeights}[i]$\;
+    $i \gets i - 1$
   }
   $k_{\text{right}} \gets \textit{tStart} + i$\;
   \KwAllocate{$\vec{w} \in \RR^{k_{\text{right}} -
       k_{\text{left}}}$}\;
-  \lFor{$j \gets k_{\text{left}}$ \KwTo $k_{\text{right}}$}{%
+  \For{$j \gets k_{\text{left}}$ \KwTo $k_{\text{right}}$}{%
     $w[j - k_{\text{left}}] \gets \textit{tWeights}[j - \textit{tStart}]$
   }
   \KwRet{$k_{\text{left}}, k_{\text{right}}, \vec{w}, W$}\;
@@ -905,7 +919,7 @@ and second order backward difference steps
   \frac{1}{\gamma} \vec{\uppi}_{k + \gamma} - \frac{(1 -
     \gamma)^2}{\gamma} \vec{\uppi}_k \text,
 \end{equation}
-which advance the time together by $h_k$. The constant
+which advance the time together by a step of size $h_k$. The constant
 $0 < \gamma < 1$ sets the breakpoint between the two steps. We set it
 to $\gamma = 2 - \sqrt{2} \approx 0.59$ following the recommendation
 of \citet{DBLP:journals/tcad/BankCFGRS85}.
@@ -1064,7 +1078,8 @@ irreducible.
 After the set $U$ is generated symbolically, the matrix $Q_{UU}$ may be
 decomposed in the same way as the whole state space $S$. Thus, the
 vector-matrix operations required for solving
-\eqref{eq:algorithms:mtff:gamma}.
+\eqref{eq:algorithms:mtff:gamma} can be executed as in steady-state
+analysis.
 
 \section{Efficient matrix-vector products}
 
