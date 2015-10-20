@@ -113,7 +113,7 @@ then $\vec{x}$ is computed by back substitution from
 
 We used Crout's \textls{LU} decomposition%
 ~\citep[Section~2.3.1]{press2007numerical}, presented in
-\cref{alg:algorithms:lu:crout}), which ensures
+\vref{alg:algorithms:lu:crout}), which ensures
 \begin{equation}
   u[i, i] = 1 \text{ for all $i = 0, 1, \ldots, n - 1$,}
 \end{equation}
@@ -158,7 +158,7 @@ needed other than $A$ itself.
 \end{algorithm}
 
 The forward and back substitution process is shown in
-\cref{alg:algorithms:lu:substitution}. If multiple equations are
+\vref{alg:algorithms:lu:substitution}. If multiple equations are
 solver with the same matrix, its \textls{LU} decomposition may be
 cached.
 
@@ -208,7 +208,7 @@ A = \vec{b}$ as a recurrence
 where $\vec{x}_0$ is an initial guess vector. The iteration converges
 to a solution vector when $\lim_{k \to \infty} \vec{x}_k = \vec{x}$
 exists and $\vec{x}$ equals the true solution vector $\vec{x}^*$. The
-iteration is illustrated in \cref{alg:algorithms:iterative:basic}.
+iteration is illustrated in \vref{alg:algorithms:iterative:basic}.
 
 The process is assumed to have converged if subsequent iterates are
 sufficiently close, i.e.~the stopping criterion at the $k$th iteration
@@ -238,7 +238,7 @@ the residual $\vec{x}_{k} A - \vec{b}$, since the error vector
 $\vec{x}_k - \vec{x}^*$ is generally not available. Because the
 additional matrix multiplication may make the latter check costly, it
 is performed only after detecting convergence by
-\cref{eq:algorithms:iterative:convergence}. Unfortunately, the
+\vref{eq:algorithms:iterative:convergence}. Unfortunately, the
 residual norm may not be representative of the error norm if the
 problem is ill-conditioned.
 
@@ -282,8 +282,8 @@ $\alpha = \min_{i} \lvert a[i,i] \rvert$.
 Power iteration can be realized by replacing lines%
 ~\ref{ln:algorithms:iterative:basic:loopbeg}%
 --\ref{ln:algorithms:iterative:basic:loopend} in
-\cref{alg:algorithms:iterative:basic} with the loop in
-\cref{alg:algorithms:iterative:power}.
+\vref{alg:algorithms:iterative:basic} with the loop in
+\vref{alg:algorithms:iterative:power}.
 
 This realization uses memory efficiently, because it only requires the
 allocation of a single vector $\vec{x}'$ in addition to the initial
@@ -394,7 +394,7 @@ elements of $\vec{x}_k$ from top to bottom.
 \end{algorithm}
 
 Jacobi over-relaxation, a generalized form of Jacobi iteraion, is
-realized in \cref{alg:algorithms:iterative:jacobi}. The value $1$ of
+realized in \vref{alg:algorithms:iterative:jacobi}. The value $1$ of
 the over-relaxation paramter $\omega$ corresponds to ordinary Jacobi
 iteration. Values $\omega > 1$ may accelerate convergence, while
 $0 < \omega < 1$ may help diverging Jacobi iteration converge.
@@ -435,7 +435,7 @@ execution time compared to the matrix-vector product.
   \label{alg:algorithms:iterative:gs}
 \end{algorithm}
 
-\Cref{alg:algorithms:iterative:gs} shows an implementation of
+\Vref{alg:algorithms:iterative:gs} shows an implementation of
 successive over-relaxation for Gauss--Seidel iteration, where the
 notation $\vec{a}_O[\cdot, i]$ refers to the $i$th column of $A_O$.
 
@@ -569,7 +569,7 @@ while group Gauss--Seidel considers
 
 Implementations of group Jacobi over-relaxation and group Gauss--Seidel
 successive over-relaxation are shown in
-\cref{alg:algorithms:iterative:group-jacobi,alg:algorithms:iterative:group-gs}.
+\vref{alg:algorithms:iterative:group-jacobi,alg:algorithms:iterative:group-gs}.
 The inner linear equations of the form $\vec{x}[i] A[i,i] = \vec{c}$
 may be solved by any algorithm, for example, LU decomposition,
 iterative methods, or even block-iterative methods if $A$ has a
@@ -680,7 +680,7 @@ additional vector every iteration.
   \label{alg:algorithms:iterative:bicgstab}
 \end{algorithm}
 
-\Cref{alg:algorithms:iterative:bicgstab} shows the pseudocode for
+\Vref{alg:algorithms:iterative:bicgstab} shows the pseudocode for
 \textls{BiCGSTAB}. Our implementation is based on the \textsc{Matlab}
 code\footnote{\url{http://www.netlib.org/templates/matlab//bicgstab.m}}
 by \citet{barrett1994templates}.
@@ -701,7 +701,7 @@ Similar to \vref{obs:algorithms:iterative:power-keepnorm}, it can be
 seen that the sum $\vec{x} \vec{1}^\T$ stays constant throughout
 \textls{BiCGSTAB} iteration. Thus, we can find probability vectors
 satisfying homogenous equations by the initialization in%
-~\cref{eq:algorithms:iterative:power-init}.
+~\vref{eq:algorithms:iterative:power-init}.
 
 \section{Transient analysis}
 
@@ -724,7 +724,7 @@ $e^{-\alpha t} \frac{(\alpha t)^k}{k!}$ is the value of the Poisson
 probabilty function with rate $\alpha t$ at $k$.
 
 Integrating both sides of
-\cref{eq:algorithms:transient:uniformization} to compute $\vec{L}(t)$
+\vref{eq:algorithms:transient:uniformization} to compute $\vec{L}(t)$
 yields~\citep{reibman1989markov}
 \begin{align}
   \int_{0}^t \vec{\uppi}(u) \,\dd u = \vec{L}(t)
@@ -738,7 +738,7 @@ yields~\citep{reibman1989markov}
     \label{eq:algorithms:transient:aggregate-uniformization}
 \end{align}
 
-Both \cref{eq:algorithms:transient:uniformization,%
+Both \vref{eq:algorithms:transient:uniformization,%
 eq:algorithms:transient:aggregate-uniformization} can be realized
 as
 \begin{equation}
@@ -802,8 +802,8 @@ otherwise.
   \label{alg:algorithms:transient:uniformization}
 \end{algorithm}
 
-\Cref{eq:algorithms:transient:uniformization-impl} is implemented by
-\cref{alg:algorithms:transient:uniformization}. The algorithm performs
+\Vref{eq:algorithms:transient:uniformization-impl} is implemented by
+\vref{alg:algorithms:transient:uniformization}. The algorithm performs
 \emph{steady-state} detection in line%
 ~\ref{ln:algorithms:transient:uniformization:steadystate-det} to avoid
 unneccessary work once the iteration vector $\vec{p}$ reaches the
@@ -875,7 +875,7 @@ single-precision floating-point arithmetic%
 ~\citep{jansen2011understanding}. We implemented
 \citeauthor{DBLP:journals/corr/Burak14}'s significantly simpler
 algorithm~\citep{DBLP:journals/corr/Burak14} in double precision
-instead (\cref{alg:algorithms:transient:poisson}), which avoids
+instead (\vref{alg:algorithms:transient:poisson}), which avoids
 underflow by a scaling factor $W \gg 1$.
 
 \subsection{\textls*[35]{TR-BDF2}}
@@ -892,7 +892,7 @@ infrequently.
 
 Stiffness leads to very large small rates $\alpha$
 in line~\label{ln:algorithms:transient:uniformization:alpha} of
-\cref{alg:algorithms:transient:uniformization}, thus a large right
+\vref{alg:algorithms:transient:uniformization}, thus a large right
 cutoff $k_{\text{right}}$ is required for computing the transient
 solution with sufficient accuracy. Moreover, the slow stabilization
 results in taking many iterations before steady-state detection
@@ -944,7 +944,7 @@ This Local Error per Unit Step (\textls{LEPUS}) error control
 \enquote{produces excellent results for many problems}, but is usually
 costly~\citep{DBLP:journals/cor/ReibmanT88}. Moreover, the accumulated
 error at the end of integration may be larger than the prescribed
-tolerance $\tau$, since \cref{eq:algorithms:transient:trbdf-lte} is
+tolerance $\tau$, since \vref{eq:algorithms:transient:trbdf-lte} is
 only an approximation of the true error.
 
 \begin{algorithm}
@@ -1020,11 +1020,11 @@ only an approximation of the true error.
 
 An implementation of \textls{TR-BDF2} based on the pseudocode of
 \citet{DBLP:journals/cor/ReibmanT88} is shown in
-\cref{alg:algorithms:transient:trbdf2}.
+\vref{alg:algorithms:transient:trbdf2}.
 
 In lines~\ref{ln:algorithms:transient:trbdf2:solve1} and~%
 \ref{ln:algorithms:transient:trbdf2:solve2} any linear equation solver
-from \cref{sec:algorithms:solvers} may be used except power iteration,
+from \vref{sec:algorithms:solvers} may be used except power iteration,
 since the matrices, in general, do not have strictly negative
 diagonals. Due to the way the matrices, which are linear combinations
 of $I$ and $Q$, are passed to the inner solvers, our \textls{TR-BDF2}
@@ -1081,7 +1081,163 @@ vector-matrix operations required for solving
 \eqref{eq:algorithms:mtff:gamma} can be executed as in steady-state
 analysis.
 
-\section{Efficient matrix-vector products}
+\section{Efficient vector-matrix products}
+
+\begin{algorithm}
+  \KwIn{block vector $\vec{b} \in \RR^{n_0 + n_1 + \cdots + n_{k -
+        1}}$,\\block matrix $A \in \RR^{(n_0 + n_1 + \cdots + n_{k -
+        1}) \times (m_0 + m_1 + \cdots + m_{l - 1})}$}
+  \KwOut{$\vec{c} = \vec{b} A \in \RR^{m_0 + m_1 + \cdots + m_{l -
+        1}}$}
+  \KwAllocate{$\vec{c}\in \RR^{m_0 + m_1 + \cdots + m_{l - 1}}$}\;
+  \ParFor{$j \gets 0$ \KwTo $l - 1$}{
+    $\vec{c}[j] \gets \vec{0}$\;
+    \For{$i \gets 0$ \KwTo $k - 1$}{
+      $\vec{c}[j] \gets \vec{c}[j] + \vec{b}[i] A[i, j]$
+      \tcp*{Scaled addition of vector-matrix product}
+    }
+  }
+  \caption{Parallel block vector-matrix product.}
+  \label{alg:algorithms:matmul:block}
+\end{algorithm}
+
+\begin{algorithm}
+  \KwIn{$\vec{b} \in \RR^n$, $A = \nu_0 A_0 + \nu_1 A_1 + \cdots +
+    \nu_{k - 1} A_{k - 1}$, where $A_h \in \RR^{n \times m}$}
+  \KwOut{$\vec{c} = \vec{b} A \in \RR^m$}
+  \KwAllocate{$\vec{c} \in \RR^m$ if no target buffer is provided}\;
+  $\vec{c} \gets \vec{0}$\;
+  \For{$h \gets 0$ \KwTo $k - 1$}{
+    $\vec{c} \gets \nu_h \cdot \vec{b} A_h$
+    \tcp*{In-place scaled addition of vector-matrix product}
+  }
+  \KwRet{$\vec{c}$}\;
+  \caption{Product of a vector with a linear combination matrix.}
+  \label{alg:algorithms:matmul:lincomb}
+\end{algorithm}
+
+\begin{algorithm}
+  \KwIn{$\vec{b} \in \RR^{n_0 n_1 \cdots n_{k - 1}}$, $A = \loc{A}{0}
+    \krtimes \loc{A}{1} \krtimes \cdots \krtimes \loc{A}{k - 1}$,
+    where $\loc{A}{h} \in \RR^{n_h \times m_h}$}
+  \KwOut{$\vec{c} = \vec{b} A \in \RR^{m_0 m_1 \cdots m_{k - 1}}$}
+  $n \gets n_0 n_1 \cdots n_{k - 1},\quad m \gets m_0 m_1 \cdots m_{k - 1}$\;
+  $\textit{tempLength} \gets \max_{h = -1, 0, 1, \ldots, k - 1} \prod_{f =
+    0}^h m_f \prod_{f = h + 1}^{k - 1} n_f$\;
+  \KwAllocate{$\vec{x}, \vec{x}'$ with at least $\textit{tempLength}$
+    elements}\;
+  $\vec{x}[0{:}1{:}n] \gets \vec{b},\quad
+  i_{\text{left}} \gets 1,\quad
+  i_{\text{right}} \gets \prod_{h = 1}^{k - 1} n_h$\;
+  \For{$h \gets 0$ \KwTo $k - 1$}{
+    \If{$\loc{A}{h}$ is not an identity matrix}{
+      $i_{\text{base}} \gets 0, j_{\text{base}} \gets 0$\;
+      \For{$\textit{il} \gets 0$ \KwTo $i_{\text{left}} - 1$}{
+        \label{ln:algorithms:matmul:shuffle:innerloop}
+        \For{$\textit{ir} \gets 0$ \KwTo $i_{\text{right}} - 1$}{
+          $\vec{x}'[j_{\text{base}}{:}m_h{:}i_{\text{right}}] \gets
+          \vec{x}[i_{\text{base}}{:}n_h{:}i_{\text{right}}] \loc{A}{h}$\;
+          $i_{\text{base}} \gets i_{\text{base}} + n_h
+          i_{\text{right}},\quad
+          j_{\text{base}} \gets j_{\text{base}} + m_h
+          i_{\text{right}}$\;
+        }
+      }
+      Swap the references to $\vec{x}$ and $\vec{x}'$\;
+    }
+    $i_{\text{left}} \gets i_{\text{left}} \cdot m_h$\;
+    \lIf{$h \ne k - 1$}
+    {$i_{\text{right}} \gets i_{\text{right}} / n_{h + 1}$}
+  }
+  \KwRet{$\vec{c} = \vec{x}[0{:}1{:}m]$}\;
+  \caption{The \textsc{Shuffle} algorithm for vector-matrix
+    multiplication.}
+  \label{alg:algorithms:matmul:shuffle}
+\end{algorithm}
+
+Iterative linear equation and transient distribution solvers require
+several vector-matrix products per iteration. Therefore, efficient
+vector-matrix multiplication algorithms are required for the various
+matrix storage methods (i.e.~dense, sparse and block Kronecker
+matrices) to support configurable stochastic analysis.
+
+Our data structure supports run-time reconfiguration of operations,
+for example, to switch between parallel and sequential matrix
+multiplication implementations for different parts of an
+algorithm, depending on the characteristics of the model and the
+hardware which runs the analysis.
+
+Implemented matrix multiplication for the data structure
+(see~\vref{fig:genstor:kronecker:datastructure}) routines are
+\begin{itemize}
+\item Multiplication of vectors with dense and sparse matrices. Sparse
+  matrix multiplication may be parallelized by splitting the columns
+  of the matrix into chunck and submitting each chunk to the executor
+  thread pool.
+
+  Operations with vectors and sparse matrices are implemented in an
+  \texttt{unsafe}%
+  \footnote{\url{https://msdn.microsoft.com/en-us/library/chfa2zb8.aspx}}
+  context. The elements of the data structures are not under the
+  influence of the Garbage Collector runtime, but stored in natively
+  allocated memory. This allows the handling of large matrices without
+  adversely impacting the performance of other parts of the program,
+  albeit the cost of allocations in increased.
+\item Multiplication with block matrices by delegation to the
+  constituent blocks of the matrix%
+  ~(\vref{alg:algorithms:matmul:block}). The input and output vectors
+  are converted to block vectors before multiplication. If parallel
+  execution is required, each block of the output vector can be
+  computed in a different task, since it is independent from the
+  others.
+\item Multiplication by a linear combination of matrices is delegated
+  to the constituent matrices
+  (\vref{alg:algorithms:matmul:lincomb}). An in-place scaled addition
+  of vector-matrix product to a vector operation is required for this
+  delegation. To facilitate this, each vector-matrix multiplication
+  algorithm is implemented also as an in-place addition and in-place
+  scaled addition of vector-matrix product, and the appropriate
+  implementation is selected based on the function call aruments.
+\item Multiplications $\vec{b} \cdot \diag\{\vec{a}\}$ by diagonal
+  matrices are executed as elementwise product
+  $\vec{b} \eltimes \vec{a}$. The special case of multiplication by an
+  identity matrix is equivalent to a vector copy.
+\item Multiplications by Kronecker products is performed by the
+  \textsc{Shuffle} algorithm~%
+  \citep{DBLP:journals/informs/BuchholzCDK00,benoit2001memory} as
+  shown in \vref{alg:algorithms:matmul:shuffle}.
+
+  The algorithm requires access to slices of a vector, denoted as
+  $\vec{x}[i_0{:}s{:}l]$, which refers to the elements
+  $x[i], x[i + s], x[i + 2s], \ldots, x[i + (l - 1)s]$. Thus, slices
+  were integrated into the operations framework as first-class
+  elements, and multiplication algorithms are implemented with support
+  for vector slice indexing.
+
+  \textsc{Shuffle} rewrites the Kronecker products as
+  \begin{equation}
+    \bigkrtimes_{h = 0}^{k - 1} \loc{A}{h} = \prod_{h = 0}^{k - 1}
+    I_{\prod_{f = 0}^{h - 1} n_f \times \prod_{f = 0}^{h - 1} n_f} \krtimes
+    \loc{A}{h} \krtimes I_{\prod_{f = h + 1}^{k - 1} m_f \times
+      \prod_{f = h + 1}^{k - 1} m_f} \text,
+  \end{equation}
+  where $I_{a \times a}$ denotes an $a \times a$ identity matrix.
+  Multiplications by terms of the form
+  $I_{N \times N} \otimes \loc{A}{h} \otimes I_{M \times M}$ are
+  carried out in the loop at line%
+  ~\ref{ln:algorithms:matmul:shuffle:innerloop} of
+  \cref{alg:algorithms:matmul:shuffle}.
+
+  The temporary vectors $\vec{x}, \vec{x}'$ are large enough store the
+  results of the successive matrix multiplications. They are cached
+  for every worker thread to avoid repeated allocations.
+
+  Other algorithms for vector-Kronecker product multiplication are the
+  \textsc{Slice}~\citep{fernandes2005alternative} and \textsc{Split}~%
+  \citep{DBLP:conf/springsim/CzeksterRFLW10} algorithms, which are
+  more amenable to parallel execution than \textsc{Shuffle}. Their
+  implementation is in the scope of our future work.
+\end{itemize}
 
 \section{Processing results}
 
