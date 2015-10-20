@@ -125,9 +125,7 @@
 % Varioref prints intelligent references that refer to a page number
 % if the referred label is on a different page.
 \RequirePackage{varioref}
-% Do not print anything if the referred label is on the opposite page.
-\renewcommand*{\reftextfacebefore}{}
-\renewcommand*{\reftextfaceafter}{}
+
 % Use cleveref for labels far away (loaded after hyperref)
 \renewcommand*{\reftextfaraway}[1]{on~\cpageref{#1}}
 
@@ -223,6 +221,23 @@
 \autonum@generatePatchedReferenceCSL{fullref}
 \autonum@generatePatchedReferenceCSL{Fullref}
 \autonum@generatePatchedReferenceCSL{labelfullref}
+
+% Do not print anything if the referred label is near.
+\renewcommand*{\reftextfaceafter}{}
+\renewcommand*{\reftextfacebefore}{}
+\renewcommand*{\reftextbefore}{}
+\renewcommand*{\reftextafter}{}
+\renewcommand*{\reftextcurrent}{}
+
+% http://tex.stackexchange.com/a/44186
+\patchcmd{\cref@old@@vpageref}{\reftextfacebefore}{\unskip}{}{}
+\patchcmd{\cref@old@@vpageref}{\reftextfaceafter}{\unskip}{}{}
+\patchcmd{\cref@old@@vpageref}{\reftextbefore}{\unskip}{}{}
+\patchcmd{\cref@old@@vpageref}{\reftextbefore}{\unskip}{}{}
+\patchcmd{\cref@old@@vpageref}{\reftextafter}{\unskip}{}{}
+\patchcmd{\cref@old@@vpageref}{\reftextafter}{\unskip}{}{}
+\patchcmd{\cref@old@@vpageref}{\reftextcurrent}{\unskip}{}{}
+
 
 %
 % Mathematics III
