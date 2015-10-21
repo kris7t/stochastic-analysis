@@ -527,6 +527,7 @@ with an enabled transition is elapsed the transition fires
 \emph{atomically} are transitions delays are reset.
 
 \begin{dfn}
+  \label{dfn:background:spn}
   A Stochastic Petri Net is a pair $\SPN = (\PN, \Lambda)$, where
   $\PN$ is a Petri net $(P, T, F, W, M_0)$ and $\Lambda: T \to \RRpos$
   is a transition rate function.
@@ -700,6 +701,7 @@ modeling~\citep{DBLP:conf/pnpm/1985}.
 \subsection{Stochastic reward nets}
 
 \begin{dfn}
+  \label{dfn:background:srn}
   A \emph{Stochastic Reward Net} is a triple
   $\SRN = (\SPN, \rateReward, \impulseReward)$, where $\SPN$ is a
   stochastic Petri net,
@@ -778,6 +780,7 @@ method~\citep{RACZ99a}.
 \subsection{Superposed stochastic Petri nets}
 
 \begin{dfn}
+  \label{dfn:background:sspn}
   A \emph{Superposed Stochastic Petri Net} (\textls{SSPN}) is a pair
   $\SSPN = (\SPN, \partitions)$, where
   $\partitions = \{ \loc{P}{0}, \loc{P}{1}, \ldots, \loc{P}{J - 1} \}$

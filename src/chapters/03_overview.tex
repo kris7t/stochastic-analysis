@@ -231,4 +231,49 @@ freely selected by the modeler to suit the application.
   linear solver are shown in \cref{tab:overview:our:transient}.
 \end{itemize}
 
-\subsection{Supported formalism}
+\subsection{Supported formalisms}
+
+Our stochastic analysis framework targets models in the Stochastic
+Petri Net with inhibitor arcs formalism (see
+\vref{dfn:background:spn}). Structured models are handled as
+Superposed Stochastic Petri Nets (see
+\vref{dfn:background:sspn}). However, any modeling formalism can be
+processed by integrating the appropriate state space exploration
+algorithms with the workflow.
+
+Transition rates in the \textls{SPNs} can be arbitrary algebraic
+expressions containing references to \emph{sensitivity
+  variables}. These variables correspond to the parameter vector
+$\vec{\theta}$ in Markov chain sensitivity analysis. However, the rate
+expression may not depend on the marking of the net.
+
+Rewards structures are defined as Stochastic Reward Nets (see
+\vref{dfn:background:srn}). An \textls{SRN} reward structure may be
+specified by composing any \emph{reward expressions} of the forms
+\begin{enumerate}
+\item $(p, w)$, where $p \in P$ is a place and $w$ is a \emph{reward
+    weight expression}. This reward expression is equivalent to
+  a rate reward $\rateReward(M) = M(p) \cdot w$, i.e.~the value of $w$
+  is multiplied by the numer of tokens on $p$.
+\item $(t, w)$, where $t \in T$ is a transition and $w$ is a reward
+  weight expression. This is equivalent to an impulse reward
+  $\impulseReward(t, M) = w$ gained upon the firing of $t$.
+\item $\varphi \rightarrow w$, where $\varphi$ is a Computational Tree
+  Logic (\textls{CTL}) expression and $w$ is a reward weight
+  expression. This is equivalent to the rate reward $\rateReward(M) =
+  w$ if $\varphi$ holds in $M$, $0$ otherwise.
+\end{enumerate}
+
+A reward weight expression is an algebraic expression that may refer
+to places an transition rates in the net. Refrences to places are
+replaced with the number of tokens upon evaluation. For example, the
+reward expression $(p, w)$ may be written as
+$\KwTrue \rightarrow p \cdot w$ or $p > 0 \rightarrow p \cdot w$ using
+\textls{CTL}.
+
+Reward expressions with \textls{CTL} are only allowed when symbolic
+state spaces representation is in use, as \textls{CTL} evaluation%
+\footnote{The symbolic state space exploration and \textls{CTL}
+  evluation component is currently provided by the
+  \textsc{Petridotnet} \textbf{TODO Cite} tool.} is performed
+symbolically \textbf{TODO Cite}.
