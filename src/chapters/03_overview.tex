@@ -10,7 +10,7 @@
     every node/.style={
       on chain,join,
       text width=2.1cm,minimum height=1.2cm,align=center,
-      draw,tdk highlight,rounded corners},
+      draw,tdk highlight,rounded corners=0.25cm},
     node distance=1cm,
     every join/.style={-{Latex},draw}]
 
@@ -23,7 +23,212 @@
   \label{fig:overview:general:workflow}
 \end{figure}
 
-\section{Problems}
+The tasks performed by stochastic analysis tools that operate on
+higher level formalisms can be often structured as follows
+(\vref{fig:overview:general:workflow}):
+\begin{enumerate}
+\item \emph{State space exploration.} The reachable state space of the
+  higher level model, for example stochastic automata network or
+  stochastic Petri net is explored to enumerate the possible behaviors
+  of the model $S$. If the model is partitioned into a hierarchy of
+  components, this step includes the exploration of the local state
+  spaces of the component as well as the possible global combinations
+  of states.
 
-\section{Out workflow}
+  If the set of reachable states is infinite, only special algorithms,
+  e.g.~matrix geometric methods \textbf{TODO cite} may be employed
+  later in the workflow. In this work, we restrict our attention to
+  finite cases.
+\item \emph{Descriptor generation.} The infinitesimal generator matrix
+  $Q$ of the Markov chain $X(t)$ defined over $S$ is created. If the
+  analyzed formalism is a Markov chain, $Q$ is readily
+  given. Otherwise, this matrix contains the transition rates between
+  reachable states, which are obtained by evaluating rate expressions
+  given in the model.
+\item \emph{Numerical solution.} Numerical algorithms are ran on the
+  matrix $Q$ for steady-state solutions $\vec{\uppi}$, transient
+  solutions $\vec{\uppi}(t)$, $\vec{L}(t)$ or \textls{MTFF} measures.
+\item \emph{Reward calculations.} The studied performance measures are
+  calculated from the output of the previous step. This includes
+  calculation of steady-state and transient rewards and sensitivities
+  of the rewards. Additional algebraic manipulations (for example, the
+  calculation of the ratio of an instantenous and accumulated reward)
+  may be provided to the modeler as convenience.
 
+\end{enumerate}
+
+In stochastic model checking, where the desired system behaviors are
+expressed in stochastic temporal logics \textbf{TODO cite}, these
+analytic steps are called as subrouties to evaluate propositions. In
+the sythesis and optimization of stochastic models \textbf{TODO Cite},
+the workflow is executed as part of the fitness functions.
+
+\subsection{Challenges}
+
+The implementation of the stochastic analysis workflow poses several
+challenges.
+
+Handling of large models is difficult due to the phenomenon of
+\enquote{state space explosion}. As the size of the model grows,
+including the number of components, the number of reachable spaces can
+grow exponentially.
+
+Methods such as the \emph{saturation} algorithm~\citep{Ciardo:2006}
+were developed to efficiently explore and represent large state
+spaces. However, in stochastic analysis, the generator matrix $Q$ and
+several vectors of real numbers with lengths equal to the state space
+size must be stored in addition to the state space. This neccessitates
+the use of further decomposition techniques for data storage.
+
+The convergence of the numerical methods depends on the structure of
+the model and the matrix decomposition in use. In addition, the memory
+requirements of the algorithms may constrain the methods that can be
+employed. As several numerical algorithms for stochastic analysis
+tasks are known with different characteristics, it is important to
+allow the modeler to select the algorithm suitable for the properties
+of the model, as well as the decomposition method and executing
+hardware in use.
+
+The vector operations and vector-matrix products that are preformed by
+the numerical algorithms can also be executed in multiple ways. For
+example, multiplications with matrices can be implemented either
+sequentially or on multiple threads. Large matrices benefit from
+parallelization, while for small matrices, the overhead of managing
+multiple tasks is usually excessive. Distributed or \textls{GPU}
+impelemtations are also possible, albeit they are missing from the
+current version of our framework.
+
+\section{Our workflow}
+
+\begin{figure}
+  \centering
+  \begin{tikzpicture}[
+    data/.style={
+      text width=2.1cm,minimum height=1.2cm,align=center,
+      draw,tdk highlight
+    },
+    activity/.style={rounded corners=0.25cm}
+    ]
+    \matrix [every node/.append style={data},column sep=1cm,row sep=0.65cm] {
+      \node (model) {Stochastic Petri Net};
+      & \node [activity] (sse) {State space exploration};
+      & \node [activity] (gen) {Generator construction};
+      & \node (ds) {Data structure}; \\
+      & & & \node [activity] (numeric) {Numerical algorithms}; \\
+      & & \coordinate (calc-input);
+      & \node [activity] (calc) {Reward calculation}; \\
+    };
+    \node [yshift=0.925cm,data] (reward) at (calc-input)
+    {Reward config.};
+    \node [yshift=-0.925cm,data] (sensitivity) at (calc-input)
+    {Sensitivity parameters};
+    1
+    \draw [-{Latex}] (model) edge (sse) (sse) edge (gen)
+    (gen) edge (ds)
+    (ds) edge [transform canvas={xshift=0.325cm}] (numeric)
+    (numeric) edge [transform canvas={xshift=-0.325cm}] (ds)
+    (numeric) edge (calc) (reward) edge (calc)
+    (sensitivity) edge (calc);
+    \draw ($(ds.south)+(-0.7cm,-0.325cm)$) edge
+    ($(ds.south)+(0.7cm,-0.325cm)$) node [left]
+    {Configurable operations};
+  \end{tikzpicture}
+  \caption{Configurable stochastic analysis workflow.}
+  \label{fig:overview:our:workflow}
+\end{figure}
+
+Our implementation of the general stochastic analysis workflow is
+illustrated in \cref{fig:overview:our:workflow}.
+
+The workflow is fully \emph{configurable}, meaning components can be
+freely selected by the modeler to suit the application.
+
+\begin{table}
+  \caption{Linear equation solvers supported by our framework.}
+  \centering
+  \begin{tabular}{@{}llcccc@{}}
+    \toprule
+    & & memory & parallel & uses inner & block \\[-0.5ex]
+    & \multicolumn{1}{c}{see} & usage & impl. & solver & matrix \\
+    \midrule
+    \textls{LU} decomposition & p.~\pageref{ssec:algorithms:lu} & very high & -- & -- & -- \\
+    Power method & p.~\pageref{ssec:algorithms:power} & moderate & $\checkmark$ & -- & $\checkmark$ \\
+    Jacobi over-relaxation & p.~\pageref{ssec:algorithms:jgs} & moderate & $\checkmark$ & -- & $\checkmark$ \\
+    Gauss--Seidel over-relaxation & p.~\pageref{ssec:algorithms:jgs} & very low & -- & -- & $\checkmark$ \\
+    \textls{BiCGSTAB} & p.~\pageref{ssec:algorithms:bicgstab} & high & $\checkmark$ & -- & $\checkmark$ \\
+    Group Jacobi & p.~\pageref{ssec:algorithms:group-jgs} & moderate & $\checkmark$ & $\checkmark$ & required \\
+    Group Gauss--Seidel & p.~\pageref{ssec:algorithms:group-jgs} & low & -- & $\checkmark$ & required \\
+    \bottomrule
+  \end{tabular}
+  \label{tab:overview:our:linear}
+\end{table}
+
+\begin{table}
+  \caption{Transient solvers supported by our framework.}
+  \centering
+  \begin{tabular}{@{}llcccc@{}}
+    \toprule
+    & & instantenous & accumulated & uses inner & block \\[-0.5ex]
+    & \multicolumn{1}{c}{see} & distribution & distribution & solver & matrix \\
+    \midrule
+    Uniformization & p.~\pageref{ssec:algorithms:uniformization} & $\checkmark$ & $\checkmark$ & -- & $\checkmark$ \\
+    \textls{TR-BDF2} & p.~\pageref{ssec:algorithms:trbdf2} & $\checkmark$ & not impl. & $\checkmark$ & not impl. \\
+    \bottomrule
+  \end{tabular}
+  \label{tab:overview:our:transient}
+\end{table}
+
+\begin{itemize}
+\item The model state space may be explored either by an explicitly
+  enumeration of every reachable space, or by symbolic
+  saturation~\citep{Ciardo:2006}. As symbolic methods are usually much
+  faster and use significantly less memory than explicit enumeration,
+  they are the recommended approach for stochastic analysis. However,
+  the explicit algorithms are provided for benchmarking and software
+  redundancy reason.
+\item The generator matrix may be stored in sparse matrix or block
+  Kronecker decomposition form \textbf{TODO Cite}. The matrix can be
+  build from both explicitly or symbolically stored state spaces.
+
+  To facilitate block Kronecker matrix generation, we propose a purely
+  symbolic algorithm, which avoids any overheads of explicit state
+  space operations.
+\item The resulting matrices, in possibly decomposed form, are part of
+  specialized data structure. Extremely large matrices may be stored
+  as results of linear algebraic operations (e.g.~linear combinations,
+  Kronecker products, contatenations into block structures). The data
+  structure defines generic vector and matrics operations, as well as
+  more specific manipulations performed by stochastic analysis
+  algorithms.
+
+  State space exploration and generator matrix decomposition methods
+  are presented in \cref{chap:genstor}, including our algorithmic
+  contribution for block Kronecker decomposition.
+\item The execution of the operations of the data structure can be
+  modified at runtime. This allows the use of different
+  implementations at the different stages of the workflow, or when
+  different algorithms are employed to calculate multiple performance
+  measures. Whenever possible, both sequential and parallel
+  implementations of the most common operations are available for the
+  supported datatypes.
+\item Several numerical algorithms are provided for steady-state and
+  transient analysis of Markov chains. The user can select the
+  algorithm most suitable for the model under study. For solvers that
+  called nother as a subroutine, any other solver can be passed as an
+  inner algorithm.
+
+  Important considerations in selecting the solver are its convergence
+  behavior and its memory requirements. While matrix decompositions
+  can reduce the storage space occupied by the $Q$ matrix by orders of
+  magnitudes, we store all elements of probability vectors
+  explicitly. Therefore, one should pay close attention to the number
+  of temporary vectors used in the algorithm in order to avoid
+  excessive memory consumption.
+
+  Numerical algorithms supported by our framework are discussed in
+  \cref{chap:algorithms}. Linear equations solvers for steady-state
+  \CTMC\ analysis are shown in \cref{tab:overview:our:linear}, while
+  linear solver are shown in \cref{tab:overview:our:transient}.
+\end{itemize}
+
+\subsection{Supported formalism}

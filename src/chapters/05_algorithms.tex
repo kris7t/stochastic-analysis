@@ -66,6 +66,7 @@ data structure by the high level algorithms.
 \label{sec:algorithms:solvers}
 
 \subsection{Explicit solution by \textls[30]{LU} decomposition}
+\label{ssec:algorithms:lu}
 
 \textls{LU} decomposition is a direct method for solving linear
 equations with forward and backward substitution, i.e.~it does not
@@ -247,6 +248,7 @@ normalization in steady-state \CTMC\ analysis, we refer
 to~\citep[Section~10.3.5]{stewart2009probability}.
 
 \subsubsection{Power iteration}
+\label{ssec:algorithms:power}
 
 Power iteration~\citep[Section~10.3.1]{stewart2009probability} is the
 one of the simplest iterative methods for Markovian analysis. Its
@@ -327,6 +329,7 @@ solution of the original problem%
 ~\eqref{eq:algorithms:iterative:homogenous-prob}.
 
 \subsubsection{Jacobi and Gauss--Seidel iteration}
+\label{ssec:algorithms:jgs}
 
 Jordan and Gauss--Seidel iterative methods%
 ~\citep[Section~10.3.2--3]{stewart2009probability} repeatedly solve a
@@ -472,6 +475,7 @@ algorithm, it allows uniform handling of homogenous and non-homogenous
 linear equations.
 
 \subsubsection{Group iterative methods}
+\label{ssec:algorithms:group-jgs}
 
 \emph{Group} or \emph{block} iterative methods%
 ~\citet[Section~10.4]{stewart2009probability} assume the block
@@ -599,6 +603,7 @@ iterative methods, we refer to
 \citet[Chapter~14]{greenbaum1997iterative} and \citet{}
 
 \subsubsection{BiConjugate Gradient Stabilized (\textls[30]{BiCGSTAB})}
+\label{ssec:algorithms:bicgstab}
 
 BiConjugate Gradient Stabilized~(\textls{BiCGSTAB})%
 ~\mkbibbrackets{\nakedcite[Section~7.4.2]{saad2003iterative};~\nakedcite{van1992bi}}
@@ -706,6 +711,7 @@ satisfying homogenous equations by the initialization in%
 \section{Transient analysis}
 
 \subsection{Uniformization}
+\label{ssec:algorithms:uniformization}
 
 The \emph{uniformization} or \emph{randomization} method solves the
 initial value problem
@@ -879,6 +885,7 @@ instead (\vref{alg:algorithms:transient:poisson}), which avoids
 underflow by a scaling factor $W \gg 1$.
 
 \subsection{\textls*[35]{TR-BDF2}}
+\label{ssec:algorithms:trbdf2}
 
 A weakness of the uniformization algorithm is the poor tolerance of
 \emph{stiff} Markov chains. The \CTMC\ is called stiff if the
@@ -891,7 +898,7 @@ example, clients are served frequently while failures happen
 infrequently.
 
 Stiffness leads to very large small rates $\alpha$
-in line~\label{ln:algorithms:transient:uniformization:alpha} of
+in line~\ref{ln:algorithms:transient:uniformization:alpha} of
 \vref{alg:algorithms:transient:uniformization}, thus a large right
 cutoff $k_{\text{right}}$ is required for computing the transient
 solution with sufficient accuracy. Moreover, the slow stabilization
@@ -1072,7 +1079,7 @@ described by $\varphi_i$, then the sets $D$ and $U$ are described by
 $\varphi_D = \neg \ctlAX \KwTrue \lor \varphi_1 \lor \varphi_2 \lor
 \cdots$
 and $\varphi_U = \neg \varphi_D$, where the deadlock condition
-$\neg \ctlAX \KwTrue$ is added to make \ref{eq:algorithms:mtff:gamma}
+$\neg \ctlAX \KwTrue$ is added to make \eqref{eq:algorithms:mtff:gamma}
 irreducible.
 
 After the set $U$ is generated symbolically, the matrix $Q_{UU}$ may be
