@@ -1,9 +1,33 @@
 \chapter{Evaluation}
 \label{chap:evaluation}
 
-\section{Combinatorial testing}
+\section{Testing}
 
-\section{Software redundancy}
+When developing an algorithm library for formal analysis of safety critical systems it is vital to verify the correctness of the implementation. Since the complexity of the code base makes formal verification difficult we confined ourselves to rigorously testing the functionalities provided by the library.
+
+\subsection{Combinatorial testing}
+
+As described in \cref{chap:algorithms} algorithms use the common vector and matrix interfaces to perform various operations. This makes the used storage techniques transparent which in turn makes the code base more concise, reusable and less prone to errors. 
+
+The most important requirement against the datastructure operations is mathematical correctness regardless of the storage technique used. Considering the number of implementations for a given interface and the previous requirement we used a simple unit testing pattern (sometimes refered to as interface testing pattern \textbf{TODO: reference}) as the core building block for the datastructure testing. 
+
+The basic idea behind this pattern is to write unit tests for interface operations without any knowledge about the concrete implementation. Hiding implemetation details can be achieved in a number of ways. Some unit testing frameworks (like \emph{NUnit}) support the usage of generic test classes and running them for multiple concrete types.
+
+Since most of the time multiple instances of different types of interface implementations are needed in a single unit test we choose a more flexible approach for hiding implementation details. This approach is based on class inheritance and abstract factory methods. Whenever we need an instance for a given interface we delegate the instantiation to an abstract factory method in the test class. 
+
+A drawback of this approach is that the test class itself becomes abstract so we can't run the tests inside it directly. However we can easily inherit from the base test class and implement the abstract factory methods in any way we'd like. But the most important advantage of this approach manifests itself when we apply the virtual modifier to one or more unit tests in the base class. This way we can completely override tests in the inherited classes if needed based on the types of the interface implementations.
+
+\subsubsection{Implementing the tests}
+
+\textbf{TODO: Boundary value analysis, equivalence partitioning, Pex}
+
+\subsubsection{Categorizing the tests}
+
+\textbf{TODO: object roles, test types, group by needed roles}
+
+\subsection{Software redundancy based testing}
+
+asd.
 
 \section{Benchmark models}
 
