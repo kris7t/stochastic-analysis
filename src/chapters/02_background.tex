@@ -423,6 +423,7 @@ of system optimization.
 To calculate the sensivity of $\Ex R(t)$, the partial derivative of
 both sides of \cref{eq:background:ctmc:reward} is taken, yielding
 \begin{equation}
+  \label{eq:background:ctmc:sensitivity:productrule}
   \frac{\partial \Ex R(t)}{\partial \theta[i]} = \frac{\partial
     \vec{\uppi}(t)}{\partial \theta[i]} \vec{r}^\T + \vec{\uppi}(t)
   \mleft(\frac{\partial \vec{r}}{\partial \theta[i]}\mright)^\T =
@@ -736,9 +737,11 @@ distribution of $Y(t)$ cannot be derived by this
 method~\citep{RACZ99a}.
 
 \begin{runningExample}
+  \label{ex:background:srn}
   The \textls{SRN} model
   \begin{equation}
-    \rateReward_1(M) = M(P_{S_1}) + M(P_{S_2}), \quad
+    \label{eq:background:srn:example-1}
+    \rateReward_1(M) = M(p_{S_1}) + M(p_{S_2}), \quad
     \impulseReward_1(t, M) \equiv 0
   \end{equation}
   describes the utilization of the shared resouce in the
@@ -750,6 +753,7 @@ method~\citep{RACZ99a}.
 
   Another reward structure
   \begin{equation}
+    \label{eq:background:srn:example-2}
     \rateReward_2(M) \equiv 0, \quad \impulseReward_2(t, M) = \begin{cases}
       1 & \text{if $t \in \{t_{r_1}, t_{r_2}\}$,} \\
       0 & \text{otherwise}

@@ -36,9 +36,9 @@ higher level formalisms can be often structured as follows
   of states.
 
   If the set of reachable states is infinite, only special algorithms,
-  e.g.~matrix geometric methods \textbf{TODO cite} may be employed
-  later in the workflow. In this work, we restrict our attention to
-  finite cases.
+  e.g.~matrix geometric methods~\citep{haverkort1995matrix} may be
+  employed later in the workflow. In this work, we restrict our
+  attention to finite cases.
 \item \emph{Descriptor generation.} The infinitesimal generator matrix
   $Q$ of the Markov chain $X(t)$ defined over $S$ is created. If the
   analyzed formalism is a Markov chain, $Q$ is readily
@@ -58,10 +58,12 @@ higher level formalisms can be often structured as follows
 \end{enumerate}
 
 In stochastic model checking, where the desired system behaviors are
-expressed in stochastic temporal logics \textbf{TODO cite}, these
-analytic steps are called as subrouties to evaluate propositions. In
-the sythesis and optimization of stochastic models \textbf{TODO Cite},
-the workflow is executed as part of the fitness functions.
+expressed in stochastic temporal logics%
+~\citep{bianco1995model,baier1999approximative}, these analytic steps
+are called as subrouties to evaluate propositions. In the sythesis and
+optimization of stochastic models%
+~\citep{DBLP:journals/jacm/ChatterjeeHJ015}, the workflow is executed
+as part of the fitness functions.
 
 \subsection{Challenges}
 
@@ -114,7 +116,8 @@ current version of our framework.
       & \node [activity] (sse) {State space exploration};
       & \node [activity] (gen) {Generator construction};
       & \node (ds) {Data structure}; \\
-      & & & \node [activity] (numeric) {Numerical algorithms}; \\
+      & \node (sspn) {\textls{SSPN} partition};
+      & & \node [activity] (numeric) {Numerical algorithms}; \\
       & & \coordinate (calc-input);
       & \node [activity] (calc) {Reward calculation}; \\
     };
@@ -122,9 +125,9 @@ current version of our framework.
     {Reward config.};
     \node [yshift=-0.925cm,data] (sensitivity) at (calc-input)
     {Sensitivity parameters};
-    1
+
     \draw [-{Latex}] (model) edge (sse) (sse) edge (gen)
-    (gen) edge (ds)
+    (sspn) edge [dashed] (sse) (gen) edge (ds)
     (ds) edge [transform canvas={xshift=0.325cm}] (numeric)
     (numeric) edge [transform canvas={xshift=-0.325cm}] (ds)
     (numeric) edge (calc) (reward) edge (calc)
@@ -186,8 +189,13 @@ freely selected by the modeler to suit the application.
   they are the recommended approach for stochastic analysis. However,
   the explicit algorithms are provided for benchmarking and software
   redundancy reason.
+
+  For state space exploration algorithms operating on a superposed
+  \textls{SPN}, the component partitions may be provided by the user
+  as part of the model or generated on the fly.
 \item The generator matrix may be stored in sparse matrix or block
-  Kronecker decomposition form \textbf{TODO Cite}. The matrix can be
+  Kronecker decomposition form%
+  ~\citep{DBLP:journals/sigmetrics/BuchholzK98}. The matrix can be
   build from both explicitly or symbolically stored state spaces.
 
   To facilitate block Kronecker matrix generation, we propose a purely
@@ -275,5 +283,139 @@ Reward expressions with \textls{CTL} are only allowed when symbolic
 state spaces representation is in use, as \textls{CTL} evaluation%
 \footnote{The symbolic state space exploration and \textls{CTL}
   evluation component is currently provided by the
-  \textsc{Petridotnet} \textbf{TODO Cite} tool.} is performed
-symbolically \textbf{TODO Cite}.
+  \textsc{Petridotnet}~\citep{Petridotnet} tool.} is performed
+symbolically~\citep{TDK2010_Darvas}.
+
+\begin{runningExample}
+  Consider the reward structures defined over the
+  \emph{Shared\-Resource} Petri net from \vref{ex:background:srn}.
+
+  The utilization of the shared resource can be described by the
+  reward expressions
+  \begin{equation}
+    \textit{resourceUtilization} = \{ (p_{S_1}, 1), (p_{S_2}, 1)\} \text,
+  \end{equation}
+  which are equivalent to the \textls{SRN} reward structure
+  \begin{equation}
+    \rateReward_1(M) = M(p_{S_1}) + M(p_{S_2}), \quad
+    \impulseReward_1(t, M) \equiv 0 \text.
+    \tag{\ref{eq:background:srn:example-1} revisited}
+  \end{equation}
+  This can be also written as
+  \begin{equation}
+    \textit{resourceUtilization} = \{p_{S_1} > 0 \lor p_{S_2} > 0
+    \rightarrow 1\}
+  \end{equation}
+  using \textls{CTL}, because the places $S_1$ and $S_2$ are
+  $1$-bounded in the \emph{Shared\-Resource} model.
+
+  Completed calculations are described by
+  \begin{equation}
+    \textit{completedCalculations} = \{ (t_{s_1}, 1), (t_{r_2}, 1)\} \text,
+  \end{equation}
+  which is equivalent to the reward structure
+  \begin{equation}
+    \rateReward_2(M) \equiv 0, \quad \impulseReward_2(t, M) = \begin{cases}
+      1 & \text{if $t \in \{t_{r_1}, t_{r_2}\}$,} \\
+      0 & \text{otherwise.}
+    \end{cases}
+    \tag{\ref{eq:background:srn:example-2} revisited}
+  \end{equation}
+\end{runningExample}
+
+\subsection{Supported analysis types}
+
+Our framework supports calcuations of
+\begin{itemize*}
+\item expected steady-state reward rates $\Ex R$ for any reward
+  structure defined by reward expressions,
+\item expected transient reward rates $\Ex R(t)$ and accumulated
+  rewards $\Ex Y(t)$,
+\item \emph{complex rewards}, which are algebraic expressions of mean
+  reward rates and accumulated rewards
+  (e.g~$1 + \Ex R(t) / \Ex Y(t)$),
+\item sensitivity of mean steady-state reward rates and complex
+  rewards involving steady-state rates,
+\item mean-time to failure $\MTFF$ and associated failure mode
+  probabilities.
+\end{itemize*}
+A selection fo multiple algorithms is available for each analysis
+type.
+
+\subsection{Reward and sensitivity calculation}
+
+Transition and reward rates are stored as algebraic expression trees
+in the input \textls{SPN} models. Symbolic operations, such as partial
+differentiation may be performed exactly on the trees using algebraic
+laws, as the evaluation of the expressions can be delayed.
+
+In reward and \textls{MTFF} calculations, rate expressions are
+evaluated by replacing sensitivity parameters with their values before
+the matrix $Q$ is composed. Thus, the elements of matrix are not
+expression trees, but floating point numbers and matrix generation
+has to be performed only when sensitivity parameters are changed.
+
+Reward weight expressions may refer to the token counts on places,
+therefore they must be evaluated for every marking individually. If a
+\textls{CTL} reward expression $\varphi \rightarrow w$ is used,
+evaluation is skipped in markings where $\varphi$ is false.
+
+\begin{figure}
+  \centering
+  \begin{tikzpicture}[
+    data/.style={
+      text width=2.1cm,minimum height=1.2cm,align=center,
+      draw,tdk highlight
+    },
+    activity/.style={data,rounded corners=0.25cm},
+    node distance=0pt,inner sep=0pt
+    ]
+    \matrix [every node/.append style={activity},column sep=1cm,
+    row sep=0.65cm] (m) {
+      & \node (partial) {$\displaystyle \frac{\partial}{\partial
+          \theta [i]}$}; \\
+      \node (genq) {$Q$ matrix generation};
+      & \node (genv) {$V_i$ matrix generation}; \\
+      \node (solveq) {Solve for $\vec{p}$};
+      & \node (solvev) {Solve for $\vec{s}_i$}; \\
+      \node (preward) {$\displaystyle \vec{p}
+        \frac{\partial \vec{r}^\T}{\partial \theta[i]}$};
+      & \node (sreward) {Calculate $\vec{s}_i \vec{r}^\T$}; \\
+    };
+    \node [above=0.65cm of m,data] (rates) {Rate expressions};
+    \node [below=0.65cm of m,activity] (sum) {$\displaystyle \sum$};
+    \node [below=0.65cm of sum,data] (result) {Sensitivity value};
+    \node [left=0.65cm of genq,data,yshift=0.925cm] (param)
+    {Parameter bindings};
+    \node [left=0.65cm of preward,data,yshift=0.925cm] (reward)
+    {Reward expressions};
+
+    \begin{scope}[every path/.append style={-{Latex}}]
+      \draw (rates.south) -- ++(0,-0.325cm) -| (genq);
+      \draw (rates.south) ++(0,-0.325cm) -| (partial);
+      \draw (partial) edge (genv) (genv) edge (solvev)
+      (solvev) edge (sreward) (genq) edge (solveq)
+      (solveq) edge (preward) (sum) edge (result);
+      \draw (preward.south) -- ++(0,-0.325cm) -| (sum);
+      \draw [-] (sreward) |- ($(sum.north)+(0,0.325cm)$);
+      \draw (param) -| ($(genv.north)+(-0.5cm,0)$);
+      \draw ($(genq.north)+(-0.5cm,0.325cm)$) --
+      ($(genq.north)+(-0.5cm,0)$);
+      \draw (reward) -| ($(sreward.north)+(-0.5cm,0)$);
+      \draw ($(preward.north)+(-0.5cm,0.325cm)$) --
+      ($(preward.north)+(-0.5cm,0)$);
+      \draw [dashed] (param) -- (reward);
+    \end{scope}
+  \end{tikzpicture}
+  \caption{Reward and sensitivity calculation from expression tree
+    inputs.}
+  \label{fig:overview:sensitivity}
+\end{figure}
+
+Steady-state sensitivity calculation, shown in
+\cref{fig:overview:sensitivity}, is the most complicated
+post-processing in the workflow. Partial derivatives of the transition
+rate expressions and reward weight expressions are taken to calculate
+$\partial \Ex R / \partial \theta[i]$ using
+\cref{eq:background:ctmc:sensitvity:s,%
+eq:background:ctmc:sensitivity:productrule}.
