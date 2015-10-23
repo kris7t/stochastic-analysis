@@ -396,7 +396,7 @@ evaluation is skipped in markings where $\varphi$ is false.
       \draw (partial) edge (genv) (genv) edge (solvev)
       (solvev) edge (sreward) (genq) edge (solveq)
       (solveq) edge (preward) (sum) edge (result);
-      \draw (preward.south) -- ++(0,-0.325cm) -| (sum);
+      \draw (preward.south) |- ($(sum.north)+(0,0.325cm)$) -- (sum);
       \draw [-] (sreward) |- ($(sum.north)+(0,0.325cm)$);
       \draw (param) -| ($(genv.north)+(-0.5cm,0)$);
       \draw ($(genq.north)+(-0.5cm,0.325cm)$) --
