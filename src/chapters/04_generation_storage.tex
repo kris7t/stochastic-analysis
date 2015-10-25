@@ -2,29 +2,568 @@
 \chaptermark{Efficient generation and storage of CTMCs}
 \label{chap:genstor}
 
-\section{State-space exploration}
+\section{Explicit methods}
 
-\subsection{Explicit state-space exploration}
+\subsection{Explicit state space generation}
 
-\subsection{Symbolic methods}
+\subsection{Explicit generator matrices}
 
-\subsubsection{Multivalued decision diagrams}
+\subsection{Block Kronecker generator matrices}
 
-\subsubsection{Edge-labeled decision diagrams}
+\subsubsection{Kronecker generator matrices}
 
-\section{Storage of generator matrices}
+The Kronecker decomposition for a superposed \textls{SPN} with $J$
+components expresses the infinitesimal generator matrix of the
+associated \CTMC\ in the form
+\begin{equation}
+  \label{eq:genstor:explicit:kronecker}
+  Q = Q_O + Q_D, \quad Q_O = \bigkrplus_{j = 0}^{J - 1} \loc{Q_L}{j}
+  + \sum_{t \in T_S} \Lambda(t) \bigkrtimes_{j = 0}^{J - 1}
+  \loc{Q_{t}}{j}, \quad Q_D = -\diag \{ Q_O \vec{1}^\T \} \text,
+\end{equation}
+where $Q_O$ and $Q_D$ are the off-diagonal and diagonal parts of
+$Q$. The matrix
+\begin{equation}
+  \loc{Q_L}{j} = \sum_{t \in \loc{T_L}{j}} \Lambda(t) \, \loc{Q_L}{j}
+\end{equation}
+is the \emph{local} transition matrix of the component $j$, while
+the matrix
+\begin{equation}
+  \loc{Q_t}{j} \in \RR^{n_j \times n_j}, \quad
+  \loc{q_t}{j}[\loc{x}{j},\loc{y}{j}] = \begin{cases}
+    1 & \text{if $\loc{x}{j} \tranto{t} \loc{y}{j}$,} \\
+    0 & \text{otherwise}
+  \end{cases}
+\end{equation}
+describes the effects of the transition $t$ on
+$\LN{j}$. $\loc{Q_t}{j}$ has a nonzero element for every local state
+transition caused by $t$. If $j \notin \supp t$, $\loc{Q_t}{j}$ is
+an $n_j \times n_j$ identity matrix.
 
-\subsection{Explicit matrix storage}
+It can be seen that
+\begin{align}
+  q_O[\vec{x}, \vec{y}]
+  &= \sum_{\vphantom{\loc{T_L}{j}}j = 0}^{J - 1} \,\, \sum_{t \in
+    \loc{T_L}{j}} \Lambda(t) \,
+    \loc{q_t}{j}[\loc{x}{j}, \loc{y}{j}] \, + \sum_{t \in T_S} \Lambda(t)
+    \prod_{\vphantom{T_S}j = 0}^{J - 1}
+    \loc{q_t}{j}[\loc{x}{j}, \loc{y}{j}] \\
+  &= \sum_{\vphantom{\loc{T_L}{j}}j = 0}^{J - 1} \,\,
+    \sum_{\substack{\vphantom{\loc{T_L}{j}}t \in \loc{T_L}{j} \\
+  \mathclap{\loc{x}{j} \tranto{t} \loc{y}{j}}}} \Lambda(t) \, +
+  \sum_{\mathclap{\in T_S, \vec{x} \tranto{t} \vec{y}}} \Lambda(t)
+  = \sum_{\mathclap{\vphantom{T_S}t \in T, \vec{x} \tranto{t}
+  \vec{y}}} \Lambda(t) \text,
+  \label{eq:genstor:explicit:block:qblock}
+\end{align}
+which is the same as \vref{eq:background:spn:q-d}. Indeed,
+\cref{eq:genstor:explicit:kronecker} is a representation of the
+infinitesimal generator matrix.
 
-\subsubsection{Dense matrices}
+The matrices $\loc{Q_L}{j}$ and $\loc{Q_t}{j}$ and the vector
+$-Q_O \vec{1}^\T$ together are usually much smaller than the full
+generator matric $Q$ even when stored in a sparse matrix form. Hence
+Kronecker decomposition may save a significant amount of storage at
+the expense of some computation time.
 
-\subsubsection{Sparse matrices}
+Unfortunately, the Kronecker generator $Q$ is a
+$n_0 n_1 \cdots n_{J - 1} \times n_0 n_1 \cdots n_{J - 1}$ matrix,
+i.e.~in encodes the state transitions in the potential state space
+$\PS$ instead of the reachable state space $\RS$.
 
-Column major versus row major storage
+\emph{Potential Kronecker methods}%
+~\citep{DBLP:journals/informs/BuchholzCDK00} perform computations with
+the $\lvert \PS \rvert \times \lvert \PS \rvert$ $Q$ matrix and
+vectors of length $\lvert \PS \rvert$. In addition to increasing
+storage requirements, this may lead to problems in some numerical
+solution algorithms, because the \CTMC\ over $\PS$ is not neccessarily
+irreducible even if it is irreducible over $\RS$.
 
-\subsection{Kronecker decomposition}
+In contrast, \emph{actual Kronecker methods}~%
+\citep{DBLP:journals/tse/Kemper96,%
+  DBLP:journals/informs/BuchholzCDK00,%
+  DBLP:journals/fgcs/BenoitPS06} work with vectors of length
+$\lvert \RS \rvert$. However, additional conversions must be performed
+between the actual dense indexing of the vectors and the potential
+sparse indexing of the $Q$ matrix, which leads to implementation
+complexities and computational overhead.
 
-\subsection{Block Kronecker decomposition}
+A third approach, which we discuss in the next subsection, imposes a
+hierarchical structure on $\RS$~%
+\citep{DBLP:conf/cpe/BauseBK98,%
+  DBLP:journals/sigmetrics/BuchholzK98,%
+  DBLP:journals/tse/Buchholz99}.
+
+\subsubsection{Macro state construction}
+
+The hierarchical structuring of the reachable state space expresses
+$\RS$ as
+\begin{equation}
+  \RS = \bigcup_{\macro{\vec{x}} \in \Macro{\RS}}
+  \prod_{\vphantom{\Macro{\RS}}j = 0}^{J - 1}
+  \, \loc{\RS}{j}_{\loc{\macro{x}}{j}}, \quad
+  \loc{\RS}{j} = \bigcup_{\mathclap{\loc{\macro{x}}{j} \in \loc{\Macro{\RS}}{j}}}
+  \,\, \loc{\RS}{j}_{\loc{\macro{x}}{j}} \text,
+\end{equation}
+where
+$\Macro{\RS} = \{\macro{0}, \macro{1}_1, \ldots, \Macro{\macro{n} - 1}
+\}$
+a set of \emph{global macro states},
+$\loc{\Macro{\RS}}{j} = \{\loc{\macro{0}}{j}, \loc{\macro{1}}{j},
+\ldots, \loc{\Macro{\macro{n}_j - 1}}{j} \}$ is the set of \emph{local
+macro states} of $\LN{j}$, and $\loc{\RS}{j}_{x} = \{\loc{0}{j}_x,
+\loc{1}{j}_x, \ldots, \loc{(n_{j, x} - 1)}{j}_x \}$ are the
+\emph{local micro states} in the local macro state
+$\loc{\macro{x}}{j}$. The product symbol denotes the composition of
+local markings, as in \vref{eq:background:sspn:concat}.
+
+The local micro states form a partition
+$\loc{\RS}{j} = \bigcup_{x \in \loc{\Macro{RS}}{j}} \loc{\RS}{j}_{x}$
+of the state space of the $j$th \textls{SSPN} component.
+
+Construction of macro states is performed as follows%
+~\citep{DBLP:journals/tse/Buchholz99}:
+\begin{enumerate}
+\item The equivalence relation $\loc{\sim}{j}$ is defined over
+  $\loc{\RS}{j}$ as
+  \begin{equation}
+    \loc{x}{j} \mathbin{\loc{\sim}{j}} \loc{y}{j}
+    \quad\Longleftrightarrow\quad \{ \vec{z} \in \RS : \loc{z}{j} =
+    \loc{x}{j} \} = \{ \vec{z} \in \RS : \loc{z}{j} = \loc{y}{j} \}
+    \text,
+  \end{equation}
+  i.e.~two local states are equivalent if they are reachable in the
+  same combinations of ambient local markings. Therefore, the relation
+  \begin{equation}
+    \vec{x} \sim \vec{y} \quad\Longleftrightarrow\quad \loc{x}{j}
+    \mathbin{\loc{\sim}{j}} \loc{y}{j} \text{ for all $j = 0, 1,
+      \ldots, J - 1$,}
+  \end{equation}
+  defined over $\PS$, has the property that whether
+  $\vec{x} \sim \vec{y}$, either both $\vec{x}$ and $\vec{y}$ are
+  reachable (global) markings, or neither are.
+\item Reachable local macro states are the partitions of
+  $\loc{\RS}{j}$ generated by $\loc{\sim}{j}$. A bijection
+  $\loc{\Macro{\RS}}{j} \leftrightarrow \loc{\RS}{j} / {\loc{\sim}{j}}$
+  is formed between the integers
+  $0, 1, \ldots, \loc{\macro{n}}{j} - 1$ and the local state
+  partitions for each component $\LN{j}$.
+\item The set of potential macro states is
+  \begin{equation}
+    \Macro{\PS} = \prod_{j = 0}^{J - 1} \loc{\Macro{\RS}}{j}
+    \supseteq \Macro{\RS}
+  \end{equation}
+  the Descares product of the local macro states. If macro state
+  $\macro{x} \in \Macro{\PS}$ contains a reachable state, all
+  associated (micro) states are reachable, because $\Macro{\PS}$ is
+  the partition $\RS / {\sim}$ of $\RS$ generated by the relation
+  $\sim$. Thus, $\Macro{\RS}$ is constructed by enumerating the
+  reachable macro states in $\Macro{\PS}$. A bijection is formed
+  between the reachable subset of $\Macro{\PS}$ and the integers
+  $\macro{0}, \macro{1}, \ldots, \Macro{\macro{n} - 1}$.
+\end{enumerate}
+
+\begin{algorithm}
+  \KwIn{Reachable state space $\RS$, reachable local state spaces
+    $\loc{\RS}{j}$}
+  \KwOut{Macro state space $\Macro{RS}$, local macro state spaces
+    $\loc{\Macro{\RS}}{j}$}
+  \KwAllocate{bit vector $\vec{b} \in \{0, 1\}^{n_0 n_1 \cdots n_{J -
+        1}}$ initialized with zeroes}\;
+  \ForEach{$\vec{x} \in \RS$}{
+    \tcp{Fill $\vec{b}$ with ones corresponding to reachable states}
+    $b[n_{J - 1} n_{J - 2} \cdots n_1 \loc{x}{0} + n_{J - 1} n_{J - 2}
+    \cdots n_2 \loc{x}{1} + \cdots + n_{J - 1} \loc{x}{J - 2} +
+    \loc{x}{J - 1}] \gets 1$\;
+  }
+  \For{$j \gets 0$ \KwTo $J - 1$}{
+    Reshape $\vec{b}$ into matrix $B$ with $n_j$ columns\;
+    Partition the columns of $B$ by componentwise equality
+    \label{ln:genstor:explicit:block:macro:partition}\;
+    \ForEach{subset $S$ of the partition $B/{=}$}{
+      Create a new local macro state $\loc{\macro{y}}{j}$ in
+      $\loc{\Macro{\RS}}{j}$\;
+      Assign all local micro states $z \in S$ to $\loc{\macro{y}}{j}$\;
+      Drop all columns of $B$ corresponding to $S$
+      but a single representant of $\loc{\macro{y}}{j}$\;
+    }
+  }
+  \ForEach{$\macro{\vec{x}} \in \loc{\RS}{0} \times \loc{\RS}{1}
+    \times \cdots \times \loc{\RS}{J - 1}$}{
+    \lIf{$b[\macro{\vec{x}}] = 1$}{
+      Add $\macro{\vec{x}}$ to $\Macro{\RS}$ as a global macro state
+    }
+  }
+  \KwRet{$\Macro{\RS}, \bigl\{\loc{\Macro{\RS}}{j}\bigr\}_{j = 0}^{J -
+      1}$}\;
+  \caption{Hiearchical decomposition of the reachable state space into
+    macro states by \citet{DBLP:journals/tse/Buchholz99}.}
+  \label{alg:genstor:explicit:block:macro}
+\end{algorithm}
+
+The pseudocode for this process is shown in
+\cref{alg:genstor:explicit:block:macro}. The decomposition is
+extremely memory intensive due to the allocation of the bit vector
+$\vec{b}$ of length $\lvert \PS \rvert$.
+
+In \citep{DBLP:journals/tse/Buchholz99}, sorting the columns of $B$
+lexicographically was recommended to calculate the partition $B / {=}$
+In our implementation, we insert the rows of $B$ into a bitwise trie
+and detect duplicates instead, so that no mapping between the original
+order and sorted ordering of columns needs to be maintained.
+
+\begin{runningExample}
+  The macro states of the \emph{RunningExample} \textls{SSPN} model
+  (\vref{fig:background:sspn:sharedresource}) are obtained from its
+  component state space
+  (\vref{tab:background:sspn:sharedresource-states}) as follows:
+  \begin{enumerate}
+  \item The bit vector $\vec{b}$ is filled according to the reachable
+    states $\RS$,
+    \begin{equation}
+      \begin{blockarray}{r@{\mkern15mu}*{18}{>{$\bgroup\small$}c<{$\egroup$}}@{\mkern12mu}l}
+        & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 1 & 1 & 1 & 1 & 1 & 2 & 2 & 2 &
+        2 & 2 & 2 & \\[-0.7ex]
+        & 0 & 0 & 1 & 1 & 2 & 2 & 0 & 0 & 1 & 1 & 2 & 2 & 0 & 0 & 1 &
+        1 & 2 & 2 & \\[-0.7ex]
+        & 0 & 1 & 0 & 1 & 0 & 1 & 0 & 1 & 0 & 1 & 0 & 1 & 0 & 1 & 0 &
+        1 & 0 & 1 & \\[-0.5ex]
+        \begin{block}{r@{\mkern15mu}(*{18}{c})@{\mkern12mu}l}
+          \vec{b} = & 1 & 0 & 1 & 0 & 0 & 1 & 1 & 0 & 1 & 0 & 0 & 1 &
+          0 & 1 & 0 & 1 & 0 & 0 & \text, \\
+        \end{block}
+      \end{blockarray}
+    \end{equation}
+    where the mixed indices in small type refer to the states of the
+    local nets $\LN{0}$, $\LN{1}$ and $\LN{2}$.
+  \item We reshape $\vec{b}$ into a matrix $B$ so that each column
+    corresponds to a local state of the component $\LN{0}$,
+    \begin{equation}
+      \begin{blockarray}{r*{2}{@{\mkern5mu}>{$\bgroup\small$}c<{$\egroup$}}*{3}{>{$\bgroup\small$}c<{$\egroup$}}}
+        & & & 0 & 1 & 2 \\[-0.5ex]
+        \begin{block}{r*{2}{@{\mkern5mu}>{$\bgroup\small$}c<{$\egroup$}}(*{3}{c})}
+          \multirow{6}{*}{$B =\,$} & 0 & 0 & 1 & 1 & 0 \\
+          & 0 & 1 & 0 & 0 & 1 \\
+          & 1 & 0 & 1 & 1 & 0 \\
+          & 1 & 1 & 0 & 0 & 1 \\
+          & 2 & 0 & 0 & 0 & 0 \\
+          & 2 & 1 & 1 & 1 & 0 \\
+      \end{blockarray}
+    \end{equation}
+    in order to conclude that
+    \begin{align}
+      \loc{\Macro{\RS}}{0}_0
+      &= \{ \loc{0}{0}_0 = \loc{M}{0}_0, \loc{1}{0}_0 = \loc{M}{0}_1 \},
+      &\loc{\Macro{\RS}}{0}_1
+      &= \{ \loc{0}{0}_1 = \loc{M}{0}_2 \}.
+    \end{align}
+  \item After removing all local states of $\LN{0}$ except
+    representants of $\loc{\Macro{\RS}}{0}$, $\vec{b}$ is reshaped
+    again
+    \begin{equation}
+      \begin{blockarray}{r*{2}{@{\mkern5mu}>{$\bgroup\small$}c<{$\egroup$}}*{3}{>{$\bgroup\small$}c<{$\egroup$}}}
+        & & & 0 & 1 & 2 \\[-0.5ex]
+        \begin{block}{r*{2}{@{\mkern5mu}>{$\bgroup\small$}c<{$\egroup$}}(*{3}{c})}
+          \multirow{4}{*}{$B =\,$} & \macro{0} & 0 & 1 & 1 & 0 \\
+          & \macro{0} & 1 & 0 & 0 & 1 \\
+          & \macro{1} & 0 & 0 & 0 & 0 \\
+          & \macro{1} & 1 & 1 & 1 & 0 \\
+      \end{blockarray}
+    \end{equation}
+    to find that
+    \begin{align}
+      \loc{\Macro{\RS}}{1}_0
+      &= \{ \loc{0}{1}_0 = \loc{M}{1}_0, \loc{1}{1}_0 = \loc{M}{1}_1 \},
+      &\loc{\Macro{\RS}}{0}_1
+      &= \{ \loc{0}{1}_1 = \loc{M}{1}_2 \}.
+    \end{align}
+  \item Finally, we reshape
+    \begin{equation}
+      \begin{blockarray}{r*{2}{@{\mkern5mu}>{$\bgroup\small$}c<{$\egroup$}}*{2}{>{$\bgroup\small$}c<{$\egroup$}}}
+        & & & 0 & 1\\[-0.5ex]
+        \begin{block}{r*{2}{@{\mkern5mu}>{$\bgroup\small$}c<{$\egroup$}}(*{2}{c})}
+          \multirow{4}{*}{$B =\,$} & \macro{0} & \macro{0} & 1 & 0 \\
+          & \macro{0} & \macro{1} & 0 & 1 \\
+          & \macro{1} & \macro{0} & 0 & 1 \\
+          & \macro{1} & \macro{1} & 0 & 0 \\
+      \end{blockarray}
+    \end{equation}
+    and conclude
+    \begin{align}
+      \loc{\Macro{\RS}}{2}_0
+      &= \{ \loc{0}{2}_0 = \loc{M}{2}_0\},
+      &\loc{\Macro{\RS}}{2}_1
+      &= \{ \loc{0}{2}_1 = \loc{M}{2}_1 \}.
+    \end{align}
+  \item Unfolding the matrix $B$
+    \begin{equation}
+      \begin{blockarray}{r@{\mkern15mu}*{8}{>{$\bgroup\small$}c<{$\egroup$}}}
+        & \macro{0} & \macro{0} & \macro{0} & \macro{0} & \macro{1} &
+        \macro{1} & \macro{1} & \macro{1} \\[-0.5ex]
+        & \macro{0} & \macro{0} & \macro{1} & \macro{1} & \macro{0} &
+        \macro{0} & \macro{1} & \macro{1} \\[-0.5ex]
+        & \macro{0} & \macro{1} & \macro{0} & \macro{1} & \macro{0} &
+        \macro{1} & \macro{0} & \macro{1} \\[-0.5ex]
+        \begin{block}{r@{\mkern15mu}(*{8}{c})}
+          \vec{b} = & 1 & 0 & 0 & 1 & 0 & 1 & 0 & 0 \\
+        \end{block}
+      \end{blockarray}
+    \end{equation}
+    shows that the reachable global macro states are
+    \begin{equation}
+      \Macro{\RS} = \{ \macro{0} = ( \loc{\macro{0}}{0},
+      \loc{\macro{0}}{1}, \loc{\macro{0}}{2} ),
+      \macro{1} = ( \loc{\macro{0}}{0},
+      \loc{\macro{1}}{1}, \loc{\macro{1}}{2} ),
+      \macro{2} = ( \loc{\macro{1}}{0},
+      \loc{\macro{0}}{1}, \loc{\macro{1}}{2} ) \} \text,
+    \end{equation}
+    where $\macro{0}$ corresponds to the free state of the resource,
+    while in $\macro{1}$ and $\macro{2}$, the clients $\LN{1}$ and
+    $\LN{0}$ are using the resource, respectively.
+  \end{enumerate}
+\end{runningExample}
+
+\subsubsection{Block kronecker matrix composition}
+
+The \emph{hierarchical} or \emph{block} Kronecker form of $Q$
+expresses the infinitesimal generator of the \CTMC\ over the reachable
+state space by the means of macro state decomposition.
+
+The matrices $\loc{Q_t}{j}[\loc{\macro{x}}{j}, \loc{\macro{x}}{j}]$
+and $\loc{Q_L}{j}[\loc{\macro{x}}{j}, \loc{\macro{x}}{j}] \in
+\RR^{n_{j,x} \times n_{n, y}}$ describe
+the effects of a single transition $t \in T$ and the aggregate effects of
+local transitions on $\LN{j}$ as its state changes from the local
+macro state $\loc{\macro{x}}{j}$ to $\loc{\macro{y}}{j}$,
+respectively. Formally,
+\begin{gather}
+  \loc{q_t}{j}[\loc{\macro{x}}{j},
+  \loc{\macro{y}}{j}][\loc{a_x}{j}, \loc{b_y}{j}] = \begin{cases}
+    1 & \text{if $\loc{a_x}{j} \tranto{t} \loc{b_y}{j}$,} \\
+    0 & \text{otherwise,}
+  \end{cases} \label{eq:genstor:explicit:block:tran-matrix}\\
+  \loc{Q_L}{j}[\loc{\macro{x}}{j}, \loc{\macro{y}}{j}] = \sum_{t \in
+    \loc{T_L}{j}} \Lambda(t) \, \loc{Q_t}{j}[\loc{\macro{x}}{j},
+  \loc{\macro{y}}{j}] \label{eq:genstor:explicit:block:local-matrix} \text.
+\end{gather}
+In the case $j \notin \supp t$, we define $\loc{Q_t}{j}[\loc{\macro{x}}{j},
+\loc{\macro{y}}{j}]$ as an identity matrix if $\loc{\macro{x}}{j} =
+\loc{\macro{y}}{j}$ and a zero matrix otherwise.
+
+Let us call macro state pairs $(\macro{\vec{x}}, \macro{\vec{y}})$
+\emph{single local macro state transitions} (slmst.) at $h$ if $\macro{\vec{x}}$
+and $\macro{\vec{y}}$ differ only in a single index $h$
+($\loc{\macro{x}}{h} \ne \loc{\macro{y}}{j}$).
+
+The off-diagonal part $Q_D$ of $Q$ is written as a block matrix with
+$\macro{n} \times \macro{n}$ blocks. A single block is expressed as
+\begin{equation}
+  Q_O[\macro{\vec{x}}, \macro{\vec{y}}] = \begin{cases}
+    \begin{multlined}[c][7cm]
+      \bigkrplus_{j = 0}^{J - 1}
+      \loc{Q_L}{j}[\loc{\macro{x}}{j}, \loc{\macro{x}}{j}]\\[-4.5ex]
+      + \sum_{t \in T_S} \Lambda(t) \bigkrtimes_{j = 0}^{J - 1}
+      \loc{Q_t}{j}[\loc{\macro{x}}{j}, \loc{\macro{x}}{j}]
+    \end{multlined}
+    & \text{if $\macro{\vec{x}} = \macro{\vec{y}}$,} \\[6.5ex]
+    \begin{multlined}[c][7cm]
+      I_{N_1 \times N_1} \krtimes
+      \loc{Q_L}{h}[\loc{\macro{x}}{h}, \loc{\macro{x}}{h}] \krtimes
+      I_{N_12\times N_2} \\[-1.5ex]
+      + \sum_{t \in T_S} \Lambda(t) \bigkrtimes_{j = 0}^{J - 1}
+      \loc{Q_t}{j}[\loc{\macro{x}}{j}, \loc{\macro{x}}{j}]
+    \end{multlined}
+    & \text{if
+      $(\macro{\vec{x}}, \macro{\vec{y}})$ is slmst.~at $h$,} \\[5ex]
+    \displaystyle \sum_{t \in T_S} \Lambda(t) \bigkrtimes_{j = 0}^{J - 1}
+      \loc{Q_t}{j}[\loc{\macro{x}}{j}, \loc{\macro{x}}{j}] &
+      \text{otherwise,}
+  \end{cases}
+\end{equation}
+where $I_1 = \prod_{f = 0}^{h - 1} n_{h, \loc{x}{h}}$, $I_2 = \prod_{f
+  = h + 1}^{J - 1} n_{h, \loc{x}{h}}$. If $\vec{x} = \vec{y}$, the
+matrix block describes transition which leave the global macro state
+unchanged, therefore any local transition may fire. If
+$(\macro{\vec{x}}, \macro{\vec{y}})$ is slmst.~at $h$, only local
+transitions on the component $h$ may cause the global state
+transition, since no other local transition may affect $\LN{h}$. In
+every other case, only synchronizing transitions may occur.
+
+This expansion of block matrices is equivalent to
+\vref{eq:genstor:explicit:kronecker} except the considerations to the
+hierarchical structure of the state space.
+
+The full $Q$ matrix is written as
+\begin{equation}
+  Q = Q_O + Q_D, \quad Q_D = -\diag\{ Q_O \vec{1}^\T \}
+\end{equation}
+as usual.
+
+\begin{algorithm}
+  \KwIn{State spaces $\loc{\Macro{\RS}}{j} \loc{\RS_x}{j}$,
+    transitions $T$, transition rates $\Lambda$}
+  \KwOut{Transition matrices $\loc{Q_t}{j}, \loc{Q_L}{j}$}
+  \For{$j \gets 0$ \KwTo $J - 1$}{
+    \ForEach{$(\loc{\macro{x}}{j}, \loc{\macro{y}}{j}) \in
+      \loc{\Macro{\RS}}{j} \times \loc{\Macro{\RS}}{j}$}{%
+      \uIf{$j \in \supp t$}{
+        \KwAllocate{$\loc{Q_t}{j}[\loc{\macro{x}}{j},
+          \loc{\macro{y}}{j}] \in \RR^{n_{j,x} \times n_{n,y}}$}\;
+        Fill in $\loc{Q_t}{j}[\loc{\macro{x}}{j},
+          \loc{\macro{y}}{j}]$ according to
+          \vref{eq:genstor:explicit:block:tran-matrix}
+      }
+      \lElseIf{$\loc{\macro{x}}{j} = \loc{\macro{y}}{j}$}{
+        $\loc{Q_t}{j}[\loc{\macro{x}}{j}, \loc{\macro{y}}{j}] \gets
+        I_{n_{j,x} \times n_{j,y}}$
+      }
+      \lElse{$\loc{Q_t}{j}[\loc{\macro{x}}{j}, \loc{\macro{y}}{j}]
+        \gets 0_{n_{j,x} \times n_{j,y}}$}
+    }
+    \KwAllocate{$\loc{Q_L}{j}[\loc{\macro{x}}{j},
+      \loc{\macro{y}}{j}] \in \RR^{n_{j,x} \times n_{n,y}}$}\;
+    \ForEach{$t \in \loc{T_L}{j}$}{
+      $\loc{Q_L}{j}[\loc{\macro{x}}{j}, \loc{\macro{y}}{j}] \gets
+      \loc{Q_L}{j}[\loc{\macro{x}}{j}, \loc{\macro{y}}{j}] +
+      \Lambda(t) \, \loc{Q_t}{j}[\loc{\macro{x}}{j},
+      \loc{\macro{y}}{j}]$
+    }
+  }
+  \caption{Transition matrix construction for block Kronecker
+    matrices}
+  \label{alg:genstor:explicit:block:tranmatrix}
+\end{algorithm}
+
+\begin{algorithm}
+  \KwIn{State spaces $\Macro{\RS},
+    \loc{\Macro{\RS}}{j} \loc{\RS_x}{j}$, transitions $T$, transition
+    rates $\Lambda$,\\matrices $\loc{Q_t}{j}, \loc{Q_L}{j}$}
+  \KwOut{Infinitesimal generator $Q$}
+  \KwAllocate{block matrix $Q$ with $\macro{n} \times \macro{n}$
+    blocks}\;
+  \ForEach{$(\macro{\vec{x}}, \macro{\vec{y}}) \in \Macro{\RS} \times
+    \Macro{\RS}$}{
+    Initialize $Q[\macro{\vec{x}}, \macro{\vec{y}}]$ as a linear
+    combination of matrices\;
+    \uIf{$\macro{\vec{x}} = \macro{\vec{y}}$}{
+      \For{$j \gets 0$ \KwTo $J - 1$}{
+        \If{$\loc{Q_L}{j}[\loc{\macro{x}}{j}, \loc{\macro{y}}{j}] \ne 0$}{
+          $I_1 \gets I_{\prod_{f = 0}^{j - 1} n_{f, \loc{x}{f}} \times
+            \prod_{h = 0}^{j - 1} n_{f, \loc{x}{f}}}, \quad
+          I_2 \gets\text I_{\prod_{g = j + 1}^{J - 1} n_{f, \loc{x}{f}} \times
+            \prod_{f = j + 1}^{J - 1} n_{f, \loc{x}{f}}}$\;
+          $Q[\macro{\vec{x}}, \macro{\vec{x}}] \gets Q[\macro{\vec{x}},
+          \macro{\vec{x}}] + I_1 \krtimes
+          \loc{Q_L}{j}[\loc{\macro{x}}{j}, \loc{\macro{x}}{j}]
+          \krtimes I_2$\;
+        }
+      }
+    }
+    \ElseIf{$(\macro{\vec{x}}, \macro{\vec{y}})$ is a slmst.~at $h$}{
+      $I_1 \gets I_{\prod_{f = 0}^{h - 1} n_{f, \loc{x}{f}} \times
+        \prod_{h = 0}^{h - 1} n_{f, \loc{x}{f}}}, \quad
+      I_2 \gets\text I_{\prod_{f = f + 1}^{J - 1} n_{f, \loc{x}{f}} \times
+        \prod_{f = h + 1}^{J - 1} n_{f, \loc{x}{f}}}$\;
+      $Q[\macro{\vec{x}}, \macro{\vec{x}}] \gets Q[\macro{\vec{x}},
+      \macro{\vec{x}}] + I_1 \krtimes
+      \loc{Q_L}{h}[\loc{\macro{x}}{h}, \loc{\macro{x}}{h}]
+      \krtimes I_2$\;
+    }
+    \ForEach{$t \in T_S$}{
+      Initialize $B$ as an empty Kronecker product\;
+      $\textit{zeroProduct} \gets \KwFalse$\;
+      \For{$j \gets 0$ \KwTo $J - 1$}{
+        \uIf{$\loc{Q}{j}[\vec{x}, \vec{y}] = 0$}{
+          $\textit{zeroProduct} \gets \KwTrue$\;
+          \KwSty{break}\;
+        }
+        \uElseIf{$\loc{Q}{j}[\vec{x}, \vec{y}]$ is an identity
+          matrix}{
+          \uIf{the last term of $B$ is an indentity matrix $I_{N, N}$}{
+            Enlarge the last term of $B$ to $I_{N n_{j,x} \times N
+              n_{j,y}}$
+            \label{ln:genstor:explicit:block:construction:extend}\;
+          }
+          \lElse{
+            $B \gets B \krtimes \loc{Q}{j}[\vec{x}, \vec{y}]$
+          }
+        }
+      }
+      \lIf{$\neg \textit{zeroProduct}$}{
+        $Q[\vec{x}, \vec{y}] \gets Q[\vec{x}, \vec{y}] + \Lambda(t)\,
+        B$ \label{ln:genstor:explicit:block:construction:discard}
+      }
+    }
+  }
+  \KwAllocate{block vector $\vec{d}$ with $\macro{n}$ blocks}\;
+  $\vec{d} \gets -Q \vec{1}^\T$\;
+  \lForEach{$\macro{x} \in \Macro{\RS}$}{
+    $Q[\macro{x}, \macro{x}] \gets Q[\macro{x}, \macro{x}] + \diag
+    \{ \vec{d}[\macro{x}] \}$
+    \label{ln:genstor:explicit:block:construction:diagonal}
+  }
+  \KwRet{$Q$}
+  \caption{Block Kronecker matrix construction.}
+  \label{alg:genstor:explicit:block:construction}
+\end{algorithm}
+
+\Vref{alg:genstor:explicit:block:tranmatrix} shows the construction of
+the local transition matrices according to
+\cref{eq:genstor:explicit:block:tran-matrix,%
+eq:genstor:explicit:block:local-matrix}.
+
+The construction of the block matrix $Q$ is shown in
+\vref{alg:genstor:explicit:block:construction}. The formulation from
+\cref{eq:genstor:explicit:block:qblock} is optimized in several ways:
+\begin{itemize}
+\item If a Kronecker product contains a $0$ matrix term, it is itself
+  zero, therefore, such products are discarded in line%
+  ~\ref{ln:genstor:explicit:block:construction:discard}.
+\item For identity matrices $I_{N \times N} \krtimes I_{n \times n}$
+  holds. This is exploited in line%
+  ~\ref{ln:genstor:explicit:block:construction:extend} to reduce the
+  number of terms in the Kronecker producs.
+\item Instead of constructing $Q_O$ and $Q_D$ separately, the diagonal
+  elements are added to the blocks of $Q$ along its diagonal in line%
+  ~\ref{ln:genstor:explicit:block:construction:diagonal}.
+\end{itemize}
+
+\section{Symbolic methods}
+
+\subsection{Multiple-value decision diagrams}
+
+A Multiple-valued Decision Diagram is a directed acyclic graph
+representing functions of the form
+$\loc{D}{0} \times \loc{D}{1} \times \cdots \times \loc{D}{J -
+  1} \to \{\KwTrue, \KwFalse\}$,
+where $\loc{D}{j} = \{0, 1, \ldots, m_j - 1\}$.
+
+\subsection{Symbolic state space generation}
+
+Kronecker matrices, Breath-first search, Saturation
+
+\subsection{Sparse matrix construction from \textls[30]{MDDs}}
+
+\subsubsection{Symbolic state and state index mapping}
+
+\subsubsection{\textls{EDD} matrix filling}
+
+\subsection{Symbolic block Kronecker decomposition}
+
+\section{Matrix storage}
+
+Ref to linear algebra libraries, why not used
+
+\subsection{Simple matrix formats}
+
+Dense, column sparse
+
+Native implementation
+
+Ref to other sparse formats
+
+\subsection{Compound matrices as expression trees}
 
 \begin{figure}
   \centering
@@ -50,11 +589,3 @@ Column major versus row major storage
   \caption{Data structure for block Kronecker matrices.}
   \label{fig:genstor:kronecker:datastructure}
 \end{figure}
-
-\section{Matrix composition}
-
-\subsection{Generating sparse matrices from symbolic state spaces}
-
-\subsection{Explicit block Kronecker decomposition}
-
-\subsection{Symbolic block Kronecker decomposition}

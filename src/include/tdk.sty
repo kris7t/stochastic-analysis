@@ -98,8 +98,14 @@
 % Tables and lists
 %
 
-\RequirePackage{array,booktabs,mdwlist,paralist}
-\renewcommand*{\arraystretch}{1.2}
+\RequirePackage{array,booktabs,mdwlist,paralist,multirow}
+
+% Make tabulars looser, but do not affect matrices
+\newenvironment{tighttabular}{}{}
+\let\tighttabular\tabular\let\endtighttabular\endtabular
+\renewenvironment{tabular}{%
+  \renewcommand*{\arraystretch}{1.2}
+  \tighttabular}{\endtighttabular}
 
 %
 % Mathematics I

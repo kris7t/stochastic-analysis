@@ -568,7 +568,8 @@ A finite \CTMC\ can be associated with a bounded stochastic Petri net
   transition rate $\Lambda(\,\cdot\,)$ as
   \begin{gather}
     q_O[x, y] = \sum_{\mathclap{\substack{t \in T \\ M_{x} \tranto{t} M_y}}}
-    \Lambda(t) \quad \text{if $x \ne y$} \text, \\
+    \Lambda(t) \quad \text{if $x \ne y$} \text,
+    \label{eq:background:spn:q-d}\\
     q_O[x, x] = 0 \text, \\
     Q = Q_O - \diag \{ Q_O \vec{1}^\T \} \text,
   \end{gather}
@@ -840,6 +841,11 @@ weight function are restricted as
 $\loc{I}{j} = I \cap (\loc{P}{j} \cap \loc{T}{j})$,
 $\loc{W_I}{j} = W_I |_{\loc{I}{j}}$.
 
+The set of all synchronizing transitions is denoted as
+$T_S = \bigcup_{j = 0}^{J - 1} \loc{T_S}{j}$. The \emph{support} of
+the transition $t \in T$ is the set of components it
+is adjacent to, $\supp t = \{j : t \in \loc{T}{j}\}$.
+
 \begin{figure}
   \centering
   \begin{tikzpicture}[
@@ -908,6 +914,7 @@ markings $\loc{\RS}{j} = \{M_0, M_1, \ldots, M_{n_j - 1}\}$ to aid the
 construction of Markov chains and use them interchangably. The
 notation
 \begin{equation}
+  \label{eq:background:sspn:concat}
   M = \vec{x} = (\loc{x}{0}, \loc{x}{1}, \ldots, \loc{x}{J - 1})
 \end{equation}
 refers to the global state $\vec{x}$ composed from the local markings
@@ -949,7 +956,7 @@ which is the union of the local markings $\loc{M_{\loc{x}{0}}}{0},
         \multicolumn{1}{@{}c}{$P$:}  & $S$ \\
         \midrule
         $\loc{M}{2}_0$ & 1 \\
-        $\loc{M}{2}_1$ & 1 \\
+        $\loc{M}{2}_1$ & 0 \\
         \bottomrule
       \end{tabular}\;}\right\}
   $
