@@ -15,19 +15,36 @@ The basic idea behind this pattern is to write unit tests for interface operatio
 
 Since most of the time multiple instances of different types of interface implementations are needed in a single unit test we choose a more flexible approach for hiding implementation details. This approach is based on class inheritance and abstract factory methods. Whenever we need an instance for a given interface we delegate the instantiation to an abstract factory method in the test class. 
 
-A drawback of this approach is that the test class itself becomes abstract so we can't run the tests inside it directly. However we can easily inherit from the base test class and implement the abstract factory methods in any way we'd like. But the most important advantage of this approach manifests itself when we apply the virtual modifier to one or more unit tests in the base class. This way we can completely override tests in the inherited classes if needed based on the types of the interface implementations.
+A drawback of this approach is that the test class itself becomes abstract so we can't run the tests inside it directly. However we can easily inherit from the base test class and implement the abstract factory methods in any way we'd like. But the most important advantage of this approach manifests itself when we apply the virtual modifier to one or more unit tests in the base class. This way we can completely override tests in the derived classes if needed based on the types of the interface implementations. So the first step in testing the datastructure library was to implement these abstract unit tests that operate on an interface level.
 
-\subsubsection{Implementing the tests}
+\subsubsection{Abstract tests}
 
-\textbf{TODO: Boundary value analysis, equivalence partitioning, Pex}
+In order to make sure we cover the most possible usage scenarios of the datastructure we followed some common testing techniques. As a first step we used equivalence partitioning to identify the valid and invalid ranges of the parameters of the operations. Next we implemented the parameter value checks in interface code contract classes using Microsoft's Code Contract library. This enabled us to implement the parameter check logic in one place for an operation making the code more maintainable. Moreover every class implementing a datastructure interface and it's operations will automatically contain these logics if code contracts are enabled. Code contracts can be disabled if needed resulting in a perfomance boost for the datastructure library since the parameter checks are skipped.
 
-\subsubsection{Categorizing the tests}
+Writing unit tests for valid parameter values was straighforward since it's possible to cover multiple valid parameter ranges with a single unit test. However testing for invalid parameter values requires some care. We must ensure that there is only one invalid parameter per unit test so one error doesn't obscure the other. This significantly increases the number of unit tests and the possibility that we forget to test an invalid parameter range. Therefore we aimed to gather every possible invalid parameter range automatically. 
 
-\textbf{TODO: object roles, test types, group by needed roles}
+For this purpose we used Microsoft's IntelliTest tool which assists in automating white-box and unit-testing. IntelliTest automatically generates unit tests using constraint satisfaction problem solving based on the source code of the method under test. Using IntelliTest on our interface code contract classes provided us with many invalid parameter values which we could use in our abstract unit tests.
+
+\subsubsection{Concrete tests}
+
+Once the abstract unit tests were implemented the next step was to create the derived classes for every storage combination and implement the abstract factory methods. Since the number of possible combinations were too many to implement manually we used Microsoft's Text Template Transformation Toolkit (T4) to generate the derived classes. The created template files provide ways to modify the behavior of abstract tests (through simple regular expression based configuration files) and to decrease the number of generated test by using pairwise testing instead of full combinatorial testing of implementation combinations. To generate the combinations for pairwise testing we used the ACTS tool. 
+
+As a result of this testing process more than $78\;000$ unit tests were generated using full combinatorial testing (more than $18\;000$ with pairwise testing) which together with the behavior configuration files serve as a quasi-formal specification for the expected behavior of future and modified implementations (e.g.\ perfomance optimization). Breaking changes in implementation should either be rejected or the test suite and configuration files should be revised as specification change. Every unit test was executed sucessfully for both sequential and parallel operation implementations.
 
 \subsection{Software redundancy based testing}
 
-asd.
+Apart from testing the datastructure operation implementations it is vital to test the correctness of higher level algorithms used in the analysis workflow, e.g.\ the linear equation solver algorithms. Testing every implemented algorithm one by one with unit tests would be tremendous work and it can't be easily automated (or maintained in case of manual testing). Moreover every algorithm is used as part of a bigger workflow which raises the question of compatibility of algorithms during an analysis. 
+
+As described in \cref{chap:overview:sec:our-workflow} for almost every step of the workflow numerous algorithms are available.
+
+\begin{obs}
+  \label{obs:evaluation:reward-results}
+  The result of a performance analysis (e.g.\ reward calculation) is mathematically independent of the used analysis workflow. It only depends on the possible behaviors of the system and the definition of the required performance measure. Two results calculated by using two different analysis methods can only differ from eachother due to the numercial precision properties of the used algorithms.
+\end{obs}  
+
+Combining our fully configurable workflow with \cref{obs:evaluation:reward-results} presents a new approach for testing the algorithm implementations in a maintainable and almost automatic manner. We can take advantage of the concept of software redundancy commonly used in safety critical applications. The main idea behind software redundancy is to perform a calculation multiple times with usually fundamentally different algorithms (often developed by independent teams) thus minimizing the possibility of common mode failures. After the calculations a voting component examines whether every algorithm calculated the same result. If that's not the case then one or more of the algorithms are incorrect.
+
+The building block for this testing phase consists of running our analysis workflow for a given configuration and saving the calculated results (reward and sensitivity values). We generated $588$ mathematically consistent configurations in total, executed them for our running example (\cref{fig:background:spn:sharedresource}), multiple benchmark models and case studies. Finally we examined the maximum absolute difference of the calculated results as an error indicator for each performance measure in each model as presented in the next sections.
 
 \section{Benchmark models}
 
