@@ -531,25 +531,317 @@ The construction of the block matrix $Q$ is shown in
 
 \section{Symbolic methods}
 
-\subsection{Multiple-value decision diagrams}
+\subsection{Multivalued decision diagrams}
 
-A Multiple-valued Decision Diagram is a directed acyclic graph
-representing functions of the form
-$\loc{D}{0} \times \loc{D}{1} \times \cdots \times \loc{D}{J -
-  1} \to \{\KwTrue, \KwFalse\}$,
-where $\loc{D}{j} = \{0, 1, \ldots, m_j - 1\}$.
+Multivalued decision diagrams (\textls{MDDs}) \textbf{TODO Cite}
+provide a compact, graph-based representation for functions of the
+form $\NN^J \to \{0, 1\}$.
 
-\subsection{Symbolic state space generation}
+\begin{dfn}
+  A quasi-reduced ordered \emph{multivalued decision diagram}
+  (\textls{MDD}) encoding the function
+  $f(\loc{x}{0}, \loc{x}{1}, \ldots, \loc{x}{J - 1}) \in \{0, 1\}$
+  (where the domain of each variable $\loc{x}{j}$ is
+  $\loc{D}{j} = \{0, 1, \ldots, n_j - 1\}$) is a tuple
+  $\MDD = (V, \ddnode{r}, \ddnode{0}, \ddnode{1}, \mddLevel,
+  \mddChildren)$, where
+  \begin{asparaitem}
+  \item $V = \bigcup_{i = 0}^{J} V_i$ is a finite set of \emph{nodes},
+    where $V_0 = \{ \ddnode{0}, \ddnode{1} \}$ are the \emph{terminal
+      nodes}, the rest of the nodes $V_N = V \setminus V_0$ are
+    \emph{nonterminal nodes};
+  \item $\mddLevel : V \to \{0, 1, \ldots, J\}$ assigns nonnegative
+    \emph{level numbers} to each node
+    ($V_i = \{\ddnode{v} \in V : \mddLevel(\ddnode{v}) = i \}$);
+  \item $\ddnode{v} \in V_J$ is the \emph{root node};
+  \item $\ddnode{0}, \ddnode{1} \in V_0$ are the \emph{zero} and
+    \emph{one terminal nodes};
+  \item $\mddChildren: \bigl( \bigcup_{i = 1}^J V_i \times \loc{D}{i
+      - 1} \bigr) \to V$
+    is a function defining edges between nodes labeled by the items of
+    the domains, such that either
+    $\mddChildren(\ddnode{v}, x) = \ddnode{0}$ or
+    $\mddLevel(\mddChildren(\ddnode{v}, x)) = \mddLevel(\ddnode{v}) - 1$ for
+    all $\ddnode{v} \in V$, $x \in \loc{D}{\mddLevel(\ddnode{v}) - 1}$.
+  \end{asparaitem}
+\end{dfn}
 
-Kronecker matrices, Breath-first search, Saturation
+We remark that due to the presence of the terminal level $V_0$ the
+indexing of the levels and the domains is shifted, i.e.~the level
+$V_i$ corresponds to the domain $\loc{D}{i - 1}$.
 
-\subsection{Sparse matrix construction from \textls[30]{MDDs}}
+According to the semantics of \textls{MDDs}, $f(\vec{x}) = 1$ if the
+node $\ddnode{1}$ is reachable from $\ddnode{r}$ through the edges
+labeled with $\loc{x}{0}, \loc{x}{1}, \ldots, \loc{x}{J - 1}$,
+\begin{multline}
+  f(\loc{x}{0}, \loc{x}{1}, \ldots, \loc{x}{J - 1}) = 1
+  \quad\Longleftrightarrow\\
+  \mddChildren(\mddChildren(\ldots \mddChildren(\ddnode{r}, \loc{x}{J
+    - 1}) \ldots, \loc{x}{1}), \loc{x}{0}) = \ddnode{1} \text.
+\end{multline}
 
-\subsubsection{Symbolic state and state index mapping}
+\begin{dfn}
+  A quasi-reduced ordered \emph{edge-valued multivalued decision
+    diagram} (\textls{EDD}) \textbf{TODO Cite} encoding the function
+  $g(\loc{x}{0},
+  \loc{x}{1}, \ldots, \loc{x}{J - 1}) \in \NN$ is a tuple $\EDD = (V,
+  \ddnode{r}, \ddnode{0}, \ddnode{1}, \mddLevel, \mddChildren,
+  \eddLabel)$, where
+  \begin{asparaitem}
+  \item $\MDD = (V, \ddnode{r}, \ddnode{0}, \ddnode{1}, \mddLevel,
+    \mddChildren)$ is a quasi-reduced ordered \textls{MDD},
+  \item $\eddLabel: \bigl( \bigcup_{i = 1}^J V_i \times \loc{D}{i
+      - 1} \bigr) \to \NN$ is an edge label function.
+  \end{asparaitem}
+\end{dfn}
 
-\subsubsection{\textls{EDD} matrix filling}
+According to the semantics of \textls{EDDs}, the function $g$ is
+evaluated as
+\begin{equation}
+  g(\vec{x}) = \begin{cases}
+    \text{undefined}
+    & \text{if $f(\vec{x}) = 0$,} \\
+    \sum_{j = 0}^{J - 1} \eddLabel(\loc{\ddnode{n}}{j}, \loc{x}{j})
+    & \text{if $f(\vec{x}) = 1$,}
+  \end{cases}
+\end{equation}
+where $f$ is the function associated with the underlying \textls{MDD}
+and $\loc{\ddnode{n}}{j}$ are the nodes along the path to
+$\ddnode{1}$, i.e.~
+\begin{equation}
+  \loc{\ddnode{n}}{J - 1} = \ddnode{r}, \quad \loc{\ddnode{n}}{j} =
+  \mddChildren(\loc{\ddnode{n}}{j + 1}, \loc{x}{j + 1}) \text.
+\end{equation}
 
-\subsection{Symbolic block Kronecker decomposition}
+\subsection{Symbolic state spaces}
+
+Symbolic techniques involving \textls{MDDs} can efficiently store
+large reachable state spaces of superposed Petri nets. Reachable
+states $x \in \RS$ are associated with state codings $\vec{x} =
+(\loc{x}{0}, \loc{x}{1}, \ldots, \loc{x}{J - 1})$. The function $f:
+\PS \to \{0, 1\}$ can be stored as an \textls{MDD} where $f(\vec{x}) =
+1$ if and only if $x \in \RS$. The domains of the \textls{MDD} are the
+local state spaces $\loc{D}{j} = \loc{\RS}{j}$.
+
+Similarly, \textls{EDDs} can efficiently store the mapping between
+symbolic state encodings $\vec{x}$ and reachable state indices $x \in
+\RS = \{0, 1, \ldots, n - 1\}$ as the function $g(\vec{x}) = x$. This
+mapping is used to refer to elements of state probability vectors
+$\vec{\uppi}$ and the sparse generator matrix $Q$ when these objects
+are created and accessed.
+
+\begin{figure}
+  \centering
+  \begin{tikzpicture}[
+    ddnode/.style={
+      draw,tdk highlight,
+      rectangle split,
+      rectangle split parts=#1,
+      rectangle split horizontal,
+      inner sep=5pt
+    },
+    terminal/.style={
+      draw,circle,tdk highlight
+    }
+    ]
+
+    \matrix [row sep=1.2cm,column sep=1cm,node distance=1cm] {
+      \node {$V_3:$};
+      & \node [ddnode=2] (x00) {0\nodepart{two}1}; \\
+      \node {$V_2:$};
+      & \node [ddnode=3] (x10) {0\nodepart{two}1\nodepart{three}2};
+      & \node [ddnode=3] (x11) {0\nodepart{two}1\nodepart{three}2}; \\
+      \node {$V_1:$};
+      & \node [ddnode=3] (x20) {0\nodepart{two}1\nodepart{three}2};
+      & \node [ddnode=3] (x21) {0\nodepart{two}1\nodepart{three}2}; \\
+      \node {$V_0:$};
+      & \node [terminal] (t0) {$\ddnode{0}$};
+      & \node [terminal] (t1) {$\ddnode{1}$}; \\
+    };
+
+    \begin{scope}[
+      every edge/.append style={-{Latex}},
+      every node/.append style={above}
+      ]
+      \draw (x00.one south) edge node [right] {0} (x10);
+      \draw (x00.two south) edge node [above] {4} (x11);
+      \draw (x10.one south) edge node [left] {0} (x20);
+      \draw (x10.two south) edge node [right] {2} (x20);
+      \draw (x11.one south) edge node [left,yshift=-5pt,xshift=2pt] {0} (x21);
+      \draw (x11.two south) edge node [right] {1} (x21);
+      \draw (x11.three south) edge node [left,yshift=5pt] {2} (x20);
+      \draw (x20.one south) edge node [below,xshift=-5pt] {0} (t1);
+      \draw (x20.two south) edge node [xshift=5pt] {1} (t1);
+      \draw (x21.three south) edge node [right] {0} (t1);
+    \end{scope}
+  \end{tikzpicture}
+  \caption{\textls{EDD} state space mapping for the
+    \emph{SharedResource} \textls{SSPN}.}
+  \label{fig:genstor:symbolic:edd-example}
+\end{figure}
+
+\begin{runningExample}
+  \Cref{fig:genstor:symbolic:edd-example} shows the state space of the
+  \emph{SharedResource} model encoded as an \textls{EDD}. The edge
+  labels express the lexicographic mapping of symbolic state codes
+  $\vec{x}$ to state indices $\vec{x}$. Edges to the terminal zero
+  node $\ddnode{0}$ were omitted for the sake of clarity.
+\end{runningExample}
+
+Some algorithms for \textls{MDD} state space exploration are
+\emph{breath-first search} \textbf{TODO cite} and \emph{saturation}%
+~\citep{Ciardo:2006}. We use the implementation of saturation from the
+\textls{Petridotnet} framework~\citep{TDK2010_Darvas,Petridotnet}.
+
+\begin{algorithm}
+  \KwIn{node for target state $\ddnode{t}$, node for
+    source state $\ddnode{s}$, target state offset $y$, source state
+    offset $y$, transition $t$, transition rate $\lambda$,
+    matrix $Q_O$}
+  \eIf{$\mddLevel(\ddnode{t}) = 0$}{
+    \lIf{$\ddnode{t} = \ddnode{1} \land \ddnode{s} = \ddnode{1}$}{%
+      $q_O[x, y] \gets q_O[x, y] + \lambda$}
+  }{
+    $j \gets \mddLevel(\ddnode{t}) - 1$\;
+    \ForEach{$\loc{y}{j} \in \loc{RS}{j}$}{
+      \lIf{$\mddChildren(\ddnode{t}, \loc{y}{j}) = \ddnode{0}$}{%
+        \KwSty{return}
+      }
+      Find $\loc{x}{j}$ such that $\loc{x}{j} \tranto{t} \loc{y}{j}$\;
+      \lIf{$\mddChildren(\ddnode{s}, \loc{x}{j}) = \ddnode{0}$}{%
+        \KwSty{return}
+      }
+      $\textsc{FillIn}(\mddChildren(\ddnode{t}, \loc{y}{j}),
+      \mddChildren(\ddnode{s}, \loc{x}{j}),$\\
+      $\hphantom{\textsc{FillIn}(}y + \eddLabel(\ddnode{t},
+      \loc{y}{j}), x + \eddLabel(\ddnode{t}, \loc{x}{j}), t, \lambda,
+      Q_O)$\;
+    }
+  }
+  \caption{\textsc{FillIn} procedure for matrix construction from
+    \textls{EDD} state space.}
+  \label{alg:genstor:symbolic:fillin}
+\end{algorithm}
+
+\begin{algorithm}
+  \KwIn{state space \textls{MDD} root $\ddnode{r}$, state space size
+    $n$, transitions $T$, transition rate function $\Lambda$}
+  \KwOut{generator matrix $Q \in \RR^{n \times n}$}
+  \KwAllocate{$Q_O \in \RR^{n \times n}$}\;
+  \ForEach{$t \in T$}{
+    $\textsc{FillIn}(\ddnode{r}, \ddnode{r}, 0, 0, t, \Lambda(t), Q_O)$\;
+  }
+  $\vec{d} \gets -Q_O \vec{1}^\T$\;
+  \KwRet{$Q_O + \diag\{ \vec{d} \}$}\;
+  \caption{Sparse matric construction from \textls{EDD} state space.}
+  \label{alg:genstor:symbolic:sparse}
+\end{algorithm}
+
+\Vref{alg:genstor:symbolic:fillin,alg:genstor:symbolic:sparse}
+illustrate the construction of a generator matrix based on the state
+space encoded as \textls{EDDs}. The procedure \textls{FillIn} descends
+the \textls{EDD} following a path for the target and the source
+state simulatenously. The edge labels, represeting state indices, are
+summed on both paths. If a transition $\vec{x} \tranto{t} \vec{y}$ is
+found, the matrix element $q_O[x, y]$ corresponding to the summed
+indices in increated by the transition rate
+$\Lambda(t)$. \Cref{alg:genstor:symbolic:sparse} repeats
+\textsc{FillIn} for all transitions.
+
+\subsection{Symbolic hierarchical state space decomposition}
+
+The memory requirements and runtime of
+\vref{alg:genstor:explicit:block:macro} may be significantly improved
+by the use of symbolic state space storage instead of a bit vector.
+
+To symbolically partition the local states $\loc{\RS}{j}$ into macro
+states $\loc{\Macro{\RS}}{j}$, we will use the following notations of above and
+below substates from \citet{ciardo2001saturation}:
+
+\begin{dfn}
+  The set of \emph{above} substates coded by the node $\ddnode{n}$ is
+  \begin{gather}
+    \mddAbove(\ddnode{n}) \subseteq \{ (\loc{x}{j + 1}, \loc{x}{j +
+      2}, \ldots, \loc{x}{J - 1}) \in \loc{\RS}{j + 1} \times
+    \loc{\RS}{j +
+      2} \times \cdots \times \loc{\RS}{J - 1} \} \text, \\
+    \intertext{such that}
+    \vec{x} \in \mddAbove(\ddnode{n})
+    \quad\Longleftrightarrow\quad \mddChildren(\mddChildren(\ldots
+    \mddChildren(\ddnode{r}, \loc{x}{J - 1}) \ldots ,\loc{x}{j + 2}),
+    \loc{x}{j + 1}) = \ddnode{n}
+  \end{gather}
+  and $j = \mddLevel(\ddnode{n}) - 1$, i.e.~$\mddAbove(\ddnode{n})$ is
+  the set of all paths in the \textls{MDD} leading from $\ddnode{r}$
+  to $\ddnode{n}$.
+\end{dfn}
+
+\begin{dfn}
+  The set of \emph{below} substates coded by the node $\ddnode{n}$ is
+  \begin{gather}
+    \mddBelow(\ddnode{n}) \subseteq \{ (\loc{x}{0}, \loc{x}{1},
+    \ldots, \loc{x}{j}) \in \loc{\RS}{0} \times
+    \loc{\RS}{1} \times \cdots \times \loc{\RS}{j} \} \text, \\
+    \intertext{such that}
+    \vec{x} \in \mddBelow(\ddnode{n})
+    \quad\Longleftrightarrow\quad \mddChildren(\mddChildren(\ldots
+    \mddChildren(\ddnode{n}, \loc{x}{j}) \ldots ,\loc{x}{1}),
+    \loc{x}{0}) = \ddnode{1}
+  \end{gather}
+  and $j = \mddLevel(\ddnode{n}) - 1$, i.e.~$\mddBelow(\ddnode{n})$ is
+  the set of all paths in the \textls{MDD} leading from $\ddnode{n}$
+  to $\ddnode{1}$.
+\end{dfn}
+
+\begin{figure}
+  \centering
+  \begin{tikzpicture}[
+    ddnode/.style={
+      draw,tdk highlight,
+      rectangle split,
+      rectangle split parts=#1,
+      rectangle split horizontal,
+      inner sep=5pt
+    },
+    terminal/.style={
+      draw,circle,tdk highlight
+    }
+    ]
+
+    \matrix [row sep=1.2cm,column sep=1cm,node distance=1cm] {
+      \node {$V_3:$};
+      & \node [ddnode=2] (x00) {0\nodepart{two}1}; \\
+      \node {$V_2:$};
+      & \node [ddnode=3] (x10) {0\nodepart{two}1\nodepart{three}2};
+      & \node [ddnode=3] (x11) {0\nodepart{two}1\nodepart{three}2}; \\
+      \node {$V_1:$};
+      & \node [ddnode=3] (x20) {0\nodepart{two}1\nodepart{three}2};
+      & \node [ddnode=3] (x21) {0\nodepart{two}1\nodepart{three}2}; \\
+      \node {$V_0:$};
+      & \node [terminal] (t0) {$\ddnode{0}$};
+      & \node [terminal] (t1) {$\ddnode{1}$}; \\
+    };
+
+    \begin{scope}[
+      every edge/.append style={-{Latex}},
+      every node/.append style={above}
+      ]
+      \draw (x00.one south) edge node [right] {0} (x10);
+      \draw [very thick, dashed] (x00.two south) edge node [above] {4} (x11);
+      \draw (x10.one south) edge node [left] {0} (x20);
+      \draw (x10.two south) edge node [right] {2} (x20);
+      \draw (x11.one south) edge node [left,yshift=-5pt,xshift=2pt] {0} (x21);
+      \draw (x11.two south) edge node [right] {1} (x21);
+      \draw [very thick] (x11.three south) edge node [left,yshift=5pt] {2} (x20);
+      \draw [very thick, dotted] (x20.one south) edge node [below,xshift=-5pt] {0} (t1);
+      \draw [very thick, dotted] (x20.two south) edge node [xshift=5pt] {1} (t1);
+      \draw (x21.three south) edge node [right] {0} (t1);
+    \end{scope}
+  \end{tikzpicture}
+  \caption{The set of all paths having $\loc{x}{1} = \loc{2}{1}$ in
+    the \emph{SharedResource} \textls{EDD}.}
+  \label{fig:genstor:symbolic:edd-bind-variable}
+\end{figure}
 
 \section{Matrix storage}
 
