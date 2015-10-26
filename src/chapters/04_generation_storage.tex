@@ -127,11 +127,16 @@ Construction of macro states is performed as follows%
 \item The equivalence relation $\loc{\sim}{j}$ is defined over
   $\loc{\RS}{j}$ as
   \begin{equation}
+    \label{eq:genstor:explicit:block:locsim}
     \loc{x}{j} \mathbin{\loc{\sim}{j}} \loc{y}{j}
-    \quad\Longleftrightarrow\quad \{ \vec{z} \in \RS : \loc{z}{j} =
-    \loc{x}{j} \} = \{ \vec{z} \in \RS : \loc{z}{j} = \loc{y}{j} \}
+    \quad\Longleftrightarrow\quad \{ \loc{\hat{\vec{z}}}{j} : \vec{x}
+    \in \RS, \loc{z}{j} =
+    \loc{x}{j} \} = \{ \loc{\hat{\vec{z}}}{j} : \vec{x} \in \RS, \loc{z}{j} = \loc{y}{j} \}
     \text,
   \end{equation}
+  where
+  $\loc{\hat{\vec{z}}}{j} = (\loc{z}{0}, \ldots, \loc{z}{j - 1},
+  \loc{z}{j + 1}, \ldots, \loc{z}{J - 1})$,
   i.e.~two local states are equivalent if they are reachable in the
   same combinations of ambient local markings. Therefore, the relation
   \begin{equation}
@@ -562,7 +567,10 @@ form $\NN^J \to \{0, 1\}$.
     the domains, such that either
     $\mddChildren(\ddnode{v}, x) = \ddnode{0}$ or
     $\mddLevel(\mddChildren(\ddnode{v}, x)) = \mddLevel(\ddnode{v}) - 1$ for
-    all $\ddnode{v} \in V$, $x \in \loc{D}{\mddLevel(\ddnode{v}) - 1}$.
+    all $\ddnode{v} \in V$, $x \in \loc{D}{\mddLevel(\ddnode{v}) - 1}$,
+  \item if $\ddnode{n}, \ddnode{m} \in V_j, j > 0$ then the subgraphs
+    formed by the nodes reachable from $\ddnode{n}$ and $\ddnode{m}$
+    are either non-isomorphic, or $\ddnode{n} = \ddnode{m}$.
   \end{asparaitem}
 \end{dfn}
 
@@ -793,6 +801,39 @@ below substates from \citet{ciardo2001saturation}:
   to $\ddnode{1}$.
 \end{dfn}
 
+The relation $\loc{\sim}{j}$ over $\loc{\RS}{j}$ can be expressed
+with $\mddAbove(\ddnode{n})$ and $\mddBelow(\ddnode{n})$ is a way that
+can be handled easily with symbolic techniques.
+
+\begin{obs}
+  \label{obs:genstor:symbolic:block:paths}
+  The set of states which contain some local state $\loc{x}{j}$ is
+  \begin{multline}
+    \{\loc{\hat{\vec{z}}}{j} : \vec{z} \in \RS, \loc{z}{j} = \loc{x}{j}\} =\\ \{
+    (\vec{b},\vec{a}) : \ddnode{n} \in V_{j + 1},
+    \mddChildren(\ddnode{n}, \loc{x}{j}) \ne \ddnode{n}, \vec{b} \in
+    \mddBelow(\mddChildren(\ddnode{n}, \loc{x}{j})), \vec{a} \in
+    \mddAbove(\ddnode{n}) \} \text.
+  \end{multline}
+\end{obs}
+
+\begin{proof}
+  Any reachable state $\vec{z} \in \RS$ that has
+  $\loc{z}{j} = \loc{x}{j}$ is represented by a path in the
+  \textls{MDD} that passes through a pair of nodes
+  $\ddnode{n} \in V_{j + 1}$ and
+  $\mddChildren(\ddnode{n}, \loc{x}{j}) \ne \ddnode{0}$. Therefore,
+  some path $\vec{a} \in \mddAbove(\ddnode{n})$ must be followed from
+  $\ddnode{r}$ to reach $\ddnode{n}$, then some path
+  $\vec{b} \in \mddBelow(\mddChildren(\ddnode{n}, \loc{x}{j}))$ must
+  be followed from $\mddChildren(\ddnode{n}, \loc{x}{j})$ to
+  $\ddnode{1}$.
+
+  This means all paths from $\ddnode{r}$ to $\ddnode{1}$ containing
+  $\loc{x}{j}$ are of the form $(\vec{b}, \loc{x}{j}, \vec{a})$ and
+  the converse also holds.
+\end{proof}
+
 \begin{figure}
   \centering
   \begin{tikzpicture}[
@@ -842,6 +883,92 @@ below substates from \citet{ciardo2001saturation}:
     the \emph{SharedResource} \textls{EDD}.}
   \label{fig:genstor:symbolic:edd-bind-variable}
 \end{figure}
+
+\begin{runningExample}
+  \Cref{fig:genstor:symbolic:edd-bind-variable} shows all path in the
+  \emph{SharedResource} \textls{MDD} with $\loc{x}{1} = \loc{2}{1}$.
+
+  The single path in the set $\mddAbove(\ddnode{n})$ is dashed, while
+  paths in the set $\mddBelow(\mddChildren(\ddnode{n}, \loc{2}{1}))$ are
+  drawn as dotted edges.
+\end{runningExample}
+
+\begin{obs}
+  
+  If $\ddnode{n}$ and $\ddnode{m}$ are distinct nonterminal nodes of a
+  quasi-reduced ordered \textls{MDD},
+  $\mddAbove(\ddnode{n}) \cup \mddAbove(\ddnode{m}) = \emptyset$ and
+  $\mddBelow(\ddnode{n}) \ne \mddBelow(\ddnode{m})$.
+\end{obs}
+
+\begin{proof}
+  We prove the statements indirectly. Let
+  $\vec{a} \in \mddAbove(\ddnode{n}) \cup \mddAbove(\ddnode{m})$. If we
+  follow the path $\vec{a}$ for $\ddnode{r}$, we arrive at
+  $\ddnode{n}$, because $\vec{a} \in \mddAbove(\ddnode{n})$. However, we
+  also arrive at $\ddnode{m}$, because
+  $\vec{a} \in Above(\ddnode{m})$. This is a contradition, since
+  $\ddnode{n} \ne \ddnode{m}$, $\mddAbove(\ddnode{n})$ and
+  $\mddAbove(\ddnode{m}$ must be disjoint.
+
+  Now suppose that there are $\ddnode{n}, \ddnode{m} \in V_N$ such
+  that $\mddBelow(\ddnode{n}) = \mddBelow(\ddnode{m})$. Because the paths
+  $\mddBelow(\ddnode{n})$ describe the subgraph reachable from
+  $\ddnode{n}$ completely, this means the subgraphs reachable from
+  $\ddnode{n}$ and $\ddnode{m}$ are isomorphic. This is impossible,
+  because then the \textls{MDD} cannot be reduced, thus
+  $\mddBelow(\ddnode{n})$ and $\mddBelow(\ddnode{m})$ must be distinct.
+\end{proof}
+
+\begin{obs}
+  The relation $\loc{x}{j} \mathbin{\loc{\sim}{j}} \loc{y}{j}$ can be
+  expressed as
+  \begin{multline}
+    \loc{x}{j} \mathbin{\loc{\sim}{j}} \loc{y}{j}
+    \quad\Longleftrightarrow\\
+    \{ (\ddnode{n}, \mddChildren(\ddnode{n}, \loc{x}{j})) : \ddnode{n}
+    \in V_{j + 1} \} = \{ (\ddnode{n}, \mddChildren(\ddnode{n},
+    \loc{y}{j})) : \ddnode{n} \in V_{j + 1} \} \text.
+  \end{multline}
+\end{obs}
+
+\begin{proof}
+  Let
+  \begin{align}
+    X &= \{ \loc{\hat{\vec{z}}}{j} : \vec{z} \in \RS, \loc{z}{j} =
+        \loc{x}{j} \},
+    & Y &= \{ \loc{\hat{\vec{z}}}{j} : \vec{z} \in \RS, \loc{z}{j} =
+        \loc{y}{j} \}.
+  \end{align}
+  According to \vref{eq:genstor:explicit:block:locsim}, $\loc{x}{j}
+  \mathbin{\loc{\sim}{j}} \loc{y}{j}$ if and only if $X = Y$.
+
+  Define
+  \begin{align}
+    X(\ddnode{n}) &= \{ \vec{b} : (\vec{b}, \vec{a}) \in X, \vec{b} \in
+    \mddAbove(\ddnode{n}) \},
+    & Y(\ddnode{n}) &= \{ \vec{b} : (\vec{b}, \vec{a}) \in Y, \vec{b} \in
+    \mddAbove(\ddnode{n}) \} \text.
+  \end{align}
+  $X = Y$ holds precisely when
+  $X(\ddnode{n}) = Y(\ddnode{n})$ for all $\ddnode{n} \in V_{j + 1}$.
+  We may notice that $X(\ddnode{n})$ and $Y(\ddnode{n})$ partition $X$
+  and $Y$, respectively, because the $\mddAbove$-sets are disjoint for
+  each node.
+
+  According to \cref{obs:genstor:symbolic:block:paths},
+  \begin{align}
+    X(\ddnode{n}) &= \mddBelow(\mddChildren(\ddnode{n}, \loc{x}{j})),
+    & Y(\ddnode{n}) &= \mddBelow(\mddChildren(\ddnode{n}, \loc{y}{j}))
+                      \text.
+  \end{align}
+  Thus, $X(\ddnode{n}) = Y(\ddnode{n})$ if and only if
+  $\mddChildren(\ddnode{n}, \loc{x}{j}) = \mddChildren(\ddnode{n},
+  \loc{y}{j})$,
+  because the $\mddBelow$-sets are distinct for each node.
+\end{proof}
+
+\textbf{TODO algoritmus, ref to Buchholz and Kemper}
 
 \section{Matrix storage}
 
