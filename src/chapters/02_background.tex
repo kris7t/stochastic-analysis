@@ -360,13 +360,19 @@ at time $t$ can be calculated as
 which requires the solution of the initial value problem%
 ~\citep{DBLP:journals/cor/Grassmann77,reibman1989markov}
 \begin{equation}
+  \label{eq:background:ctmc:transient-ivp}
   \frac{\dd \vec{\uppi}(t)}{\dd t} = \vec{\uppi}(t) \, Q, \quad
   \vec{\uppi}(0) = \vec{\uppi}_0
 \end{equation}
 to form the inner product $\Ex R(t) = \vec{\uppi}(t) \, \vec{r}^\T$.
+
 To obtain the expected steady-state reward rate (if it exists) the
 linear equation~\eqref{eq:background:ctmc:steadystate} should be
-solved instead to acquire the steady-state probability vector $\vec{\uppi}$.
+solved instead of \cref{eq:background:ctmc:transient-ivp} in order to
+acquire the steady-state probability vector $\vec{\uppi}$. The
+computation of the reward value proceeds by
+\cref{eq:background:ctmc:reward} in the same way as in transient
+analysis.
 
 The expected value of the accumulated reward is
 \begin{align}
@@ -706,6 +712,10 @@ modeling~\citep{DBLP:conf/pnpm/1985}.
 
 \subsection{Stochastic reward nets}
 
+The stochastic reward net formalism is an extension of stochastic Petri
+nets that allows the definition of performance measures on the net
+level for use in the stochastic analysis workflow.
+
 \begin{dfn}
   \label{dfn:background:srn}
   A \emph{Stochastic Reward Net} is a triple
@@ -807,9 +817,10 @@ can be constructed as follows:
 \begin{itemize}
 \item $\loc{P}{j}$ is the corresponding set from the partitioning of the original net.
 \item $\loc{T}{j}$ contains the local transition $\loc{T_L}{j}$ and
-  synchronization transitions $\loc{T_S}{j}$. A transition is
-  \emph{local} to $\LN{j}$ if it only affects places in $\loc{P}{j}$,
-  that is,
+  synchronization transitions $\loc{T_S}{j}$.
+
+  A transition is \emph{local} to $\LN{j}$ if it only affects places
+  in $\loc{P}{j}$, that is,
   \begin{equation}
     \label{eq:background:sspn:localtran}
     \loc{T_L}{j} = \{ t \in T : \inarc{t} \cup \outarc{t} \subseteq

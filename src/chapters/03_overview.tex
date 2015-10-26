@@ -130,18 +130,133 @@ current version of our framework.
     (numeric) edge [transform canvas={xshift=-0.325cm}] (ds)
     (numeric) edge (calc) (reward) edge (calc)
     (sensitivity) edge (calc);
-    \draw ($(ds.south)+(-0.7cm,-0.325cm)$) edge
-    ($(ds.south)+(0.7cm,-0.325cm)$) node [left]
-    {Configurable operations};
+
+    \draw ($(ds.north west)+(-0.325cm,0.325cm)$)
+    rectangle ($(numeric.south east)+(0.325cm,-0.325cm)$);
+    \node [above=0.4cm of ds] {Configurable operations};
+
+    %\draw ($(ds.south)+(-0.7cm,-0.325cm)$) edge
+    %($(ds.south)+(0.7cm,-0.325cm)$) node [left]
+    %{Configurable operations};
   \end{tikzpicture}
   \caption{Configurable stochastic analysis workflow.}
   \label{fig:overview:our:workflow}
 \end{figure}
 
+\begin{figure}
+  \centering
+  \begin{tikzpicture}[
+    architecture layer/.style={
+      tdk highlight,draw,
+      minimum width=0.98\linewidth,
+      minimum height=2.5cm
+    },
+    layer label/.style={
+      anchor=north west,font=\strut
+    },
+    component/.style={
+      text width=2.1cm,minimum height=1.2cm,align=center,
+      draw,tdk highlight
+    },
+    small component/.style={
+      component,text width=1.5cm, minimum height=0.9cm,
+      font=\footnotesize
+    },
+    components/.style={
+      column sep=0.65cm,
+      yshift=-4ex,
+      anchor=north
+    },
+    two components/.style={
+      components,
+      column sep=2cm
+    },
+    three components/.style={
+      components,
+      column sep=1.5cm
+    },
+    small components/.style={
+      components,
+      column sep=0.325cm,
+      row sep=0.325cm
+    }
+    ]
+    \node [architecture layer] (l-state-exploration) {};
+    \node [layer label] at (l-state-exploration.north west)
+    {State space exploration};
+    \node [architecture layer,below=of l-state-exploration] (l-state-storage) {};
+    \node [layer label] at (l-state-storage.north west)
+    {State space storage};
+    \node [architecture layer,below=of l-state-storage] (l-matrix-decomposition) {};
+    \node [layer label] at (l-matrix-decomposition.north west)
+    {Matrix representation};
+    \node [architecture layer,below=of l-matrix-decomposition,
+    rectangle split,rectangle split horizontal,rectangle split
+    parts=2,text width=0.49\linewidth,inner sep=0pt,minimum height=4.75cm] (l-numerical)
+    {\nodepart{one}\hfil\nodepart{two}\hfil};
+    \node [layer label] at (l-numerical.north west)
+    {Steady-state solution algorithms};
+    \node [layer label] at (l-numerical.north)
+    {Transient solution algorithms};
+    \node [architecture layer,below=of l-numerical] (l-reward) {};
+    \node [layer label] at (l-reward.north west)
+    {Performance measure calculation};
+
+    \matrix [two components] at (l-state-exploration.north) {
+      \node [component] (se-explicit) {Explicit};
+      & \node [component] (se-symbolic) {Symbolic}; \\
+    };
+    \matrix [two components] at (l-state-storage.north) {
+      \node [component] (ss-explicit) {Explicit};
+      & \node [component] (ss-symbolic) {Decision diagram}; \\
+    };
+    \matrix [three components] at (l-matrix-decomposition.north) {
+      \node [component] (md-dense) {Dense matrix};
+      & \node [component] (md-sparse) {Sparse matrix};
+      & \node [component] (md-kronecker) {Block Kronecker}; \\
+    };
+    \matrix [small components] at (l-numerical.one north) {
+      \node [small component] (st-lu) {\textls{LU} decomposition};
+      & \node [small component] (st-power) {Power method};
+      & \node [small component] (st-jacobi) {Jacobi}; \\
+      \node [small component] (st-gs) {Gauss--Seidel};
+      & \node [small component] (st-groupjacobi) {Group Jacobi};
+      & \node [small component] (st-groupgs) {Group G--S}; \\
+      & \node [small component] (st-bicgstab) {\textls{BiCGSTAB}}; & \\
+    };
+    \matrix [components] at (l-numerical.two north) {
+      \node [component] (tr-unif) {Uni\-for\-mi\-za\-tion};
+      & \node [component] (tr-trbdf2) {\textls{TR-BDF2}}; \\
+    };
+    \matrix [three components] at (l-reward.north) {
+      \node [component] (r-reward) {Reward};
+      & \node [component] (r-sensitivty) {Sensitivity};
+      & \node [component] (r-mtff) {\textls{MTFF}}; \\
+    };
+
+    \draw [{Latex}-{Latex}] (se-explicit) edge (ss-explicit)
+    (se-symbolic) edge (ss-symbolic);
+
+    \newcommand*{\commArrows}[2]{
+      \draw [-{Latex},transform canvas={xshift=-1cm}] (#1) -- (#2);
+      \draw [-{Latex},transform canvas={xshift=1cm}] (#2) -- (#1);
+    }
+    \commArrows{l-state-storage}{l-matrix-decomposition}
+    \commArrows{l-matrix-decomposition}{l-numerical}
+    \commArrows{l-numerical}{l-reward}
+  \end{tikzpicture}
+  \caption{Architecture of the configurable stochastic analysis
+    framework.}
+  \label{fig:overview:our:architecture}
+\end{figure}
+
 Our implementation of the general stochastic analysis workflow is
 illustrated in \cref{fig:overview:our:workflow}.
 
-The workflow is fully \emph{configurable}, which means that the modeler may combine the available algorithms for the analysis steps arbitrarily. 
+The workflow is fully \emph{configurable}, which means that the
+modeler may combine the available algorithms for the analysis steps
+arbitrarily. This is achieved by a layered architecture as shown in
+\cref{fig:overview:our:architecture}.
 
 \begin{table}
   \caption{Linear equation solvers supported by our framework.}
@@ -232,7 +347,7 @@ The workflow is fully \emph{configurable}, which means that the modeler may comb
   linear solver are shown in \cref{tab:overview:our:transient}.
 \end{itemize}
 
-\subsection{Supported formalisms}
+\subsection{Formalisms}
 
 Our stochastic analysis framework supports models in the Stochastic
 Petri Net with inhibitor arcs formalism (see
@@ -276,7 +391,7 @@ Reward expressions with \textls{CTL} are only allowed when symbolic
 state spaces representation is used, as \textls{CTL} evaluation%
 \footnote{The symbolic state space exploration and \textls{CTL}
   evaluation component is currently provided by the
-  \textsc{Petridotnet}~\citep{Petridotnet} tool.} is performed
+  \textsc{PetriDotNet}~\citep{Petridotnet} tool.} is performed
 symbolically~\citep{TDK2010_Darvas}.
 
 \begin{runningExample}
@@ -316,7 +431,7 @@ symbolically~\citep{TDK2010_Darvas}.
   \end{equation}
 \end{runningExample}
 
-\subsection{Supported analysis types}
+\subsection{Analysis}
 
 The framework introducted in this paper supports the configurable stochastic analysis of the following problems:
 \begin{itemize*}
@@ -334,7 +449,7 @@ The framework introducted in this paper supports the configurable stochastic ana
 \end{itemize*}
 Configurable stochastic analysis provides the combination of multiple solver and representation algorithms for the efficient computation of the introduced properties.
 
-\subsection{Reward and sensitivity calculation}
+\subsection{Reward and sensitivity computation}
 
 Transition and reward rates are stored as algebraic expression trees
 in the input \textls{SPN} models. Symbolic operations, such as partial

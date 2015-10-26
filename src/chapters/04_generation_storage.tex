@@ -181,7 +181,8 @@ Construction of macro states is performed as follows%
   $\loc{\hat{\vec{z}}}{j} = (\loc{z}{0}, \ldots, \loc{z}{j - 1},
   \loc{z}{j + 1}, \ldots, \loc{z}{J - 1})$,
   i.e.~two local states are equivalent if they are reachable in the
-  same combinations of ambient local markings. Therefore, the relation
+  same combinations of local markings of the other
+  components. Therefore, the relation
   \begin{equation}
     \vec{x} \sim \vec{y} \quad\Longleftrightarrow\quad \loc{x}{j}
     \mathbin{\loc{\sim}{j}} \loc{y}{j} \text{ for all $j = 0, 1,
@@ -228,7 +229,7 @@ Construction of macro states is performed as follows%
     Reshape $\vec{b}$ into matrix $B$ with $n_j$ columns\;
     Partition the columns of $B$ by componentwise equality
     \label{ln:genstor:explicit:block:macro:partition}\;
-    \ForEach{subset $S$ of the partition $B/{=}$}{
+    \ForEach{subset $S$ of the equality partition of the columns of $B$}{
       Create a new local macro state $\loc{\macro{y}}{j}$ in
       $\loc{\Macro{\RS}}{j}$\;
       Assign all local micro states $z \in S$ to $\loc{\macro{y}}{j}$\;
@@ -255,7 +256,8 @@ extremely memory demanding due to the allocation of the bit vector
 $\vec{b}$ of length $\lvert \PS \rvert$.
 
 In \citep{DBLP:journals/tse/Buchholz99}, sorting the columns of $B$
-lexicographically was recommended to calculate the partition $B / {=}$
+lexicographically was recommended to calculate the equality partition
+of the columns of $B$.
 In our implementation, we insert the rows of $B$ into a bitwise trie
 and detect duplicates instead, so that no mapping between the original
 order and sorted ordering of columns needs to be maintained.
@@ -744,7 +746,7 @@ are created and accessed.
 Some iteration strategies for \textls{MDD} state space exploration are
 \emph{breath-first search} and \emph{saturation}%
 ~\citep{Ciardo:2006}. We use the implementation of saturation from the
-\textls{Petridotnet} framework~\citep{TDK2010_Darvas,Petridotnet}.
+\textls{PetriDotNet} framework~\citep{TDK2010_Darvas,Petridotnet}.
 
 \begin{algorithm}
   \KwIn{node for target state $\ddnode{t}$, node for
@@ -802,6 +804,7 @@ $\Lambda(t)$. \Cref{alg:genstor:symbolic:sparse} repeats
 \textsc{FillIn} for all transitions.
 
 \subsection{Symbolic hierarchical state space decomposition}
+\label{ssec:genstor:symbolic:hierarchical}
 
 The memory requirements and runtime of
 \vref{alg:genstor:explicit:block:macro} may be significantly improved
