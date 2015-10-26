@@ -2,6 +2,7 @@
 \label{chap:background}
 
 \section{Petri nets}
+\label{chap:background:sec:petri-nets}
 
 Petri nets are a widely used graphical and mathematical modeling tool
 for systems which are concurrent, asynchronous, distributed, parallel
@@ -39,7 +40,7 @@ drawn as bars or rectangles. Edge weights of $1$ are ususally omitted
 from presentation. Dots on places correspond to tokens in the current
 marking.
 
-If $M\,\tranto{t}$ the transition $t$ can be \emph{fired} to get a
+If $M\,\tranto{t}$ holds the transition $t$ can be \emph{fired} to get a
 new marking $M'$ \paren{written as $M \tranto{t} M'$} by
 decreasing the token counts for each place $p \in \inarc{t}$ by
 $W(p, t)$ and increasing the token counts for each place
@@ -72,7 +73,7 @@ denoted by
   for some (finite) $k$.
 \end{dfn}
 
-The reachable state space $\RS$ is finite if and only if the Peti net
+The reachable state space $\RS$ is finite if and only if the Petri net
 is bounded.
 
 \begin{figure}
@@ -110,7 +111,7 @@ is bounded.
   oxygen molecules, represented by tokens on the places $p_{\text{H$_{2}$}}$
   and $p_{\text{O$_{2}$}}$, therefore the transition $t$ is
   enabled. Firing $t$ yields the marking on the right where the two
-  tokens on $p_{\text{H$_{2}$O}}$ are the reaction products. Now $t$ is no
+  tokens on $p_{\text{H$_{2}$O}}$ are the products of the reaction. Now $t$ is no
   longer enabled.
 \end{example}
 
@@ -129,9 +130,9 @@ is bounded.
   throughout this report.
 
   The model consists of a single shared resource $S$ and two
-  consumers. Each consumer can be in one of the
+  consumers. Each consumer can be in one of the following states:
   $C_i$ \paren{calculating locally}, $W_i$ \paren{waiting for
-    resource} and $S_i$ \paren{using shared resource} states. The
+    resource} and $S_i$ \paren{using shared resource}. The
   transitions $r_i$ \paren{request resource}, $a_i$ \paren{acquire
     resource} and $d_i$ \paren{done} correspond to behaviors of the
   consumers. The net is \mbox{$1$-bounded}, therefore it has finite
@@ -140,18 +141,21 @@ is bounded.
   The Petri net model allows the verification of safety properties,
   e.g.~we can show that there is mutual exclusion
   --~$M(S_1) + M(S_2) \le 1$ for all reachable markings~-- or that
-  deadlocks cannot occur. In contrast, we cannot compute dependability
-  or performability measures \paren{e.g.~the utilization of the shared
-    resource or number of calculations completed per unit time}
-  because the model does not describe the temporal behavior of the
-  system.
+  deadlock cannot occur. 
+  %In contrast, we cannot compute dependability
+  %or performability measures \paren{e.g.~the utilization of the shared
+  %  resource or number of calculations completed per unit time}
+  %because the model does not describe the temporal behavior of the
+  %system.
 \end{runningExample}
 
 \subsection{Petri nets extended with inhibitor arcs}
 
-One of the most frequently used extensions of Petri nets is the
-addition of inhibitor arcs, which constrains the rule for transition
-enablement. This modification gives Petri nets expressive power
+Inhibitor arcs are widely used extensions of Petri nets that can disable transitions even when the firing rule defined in \cref{chap:background:sec:petri-nets} is satisfied. 
+%One of the most frequently used extensions of Petri nets is the
+%addition of inhibitor arcs, which constrains the rule for transition
+%enablement. 
+This modification gives Petri nets expressive power
 equivalent to Turing
 machines~\citep{DBLP:conf/apn/Chrzastowski-Wachtel99}.
 
@@ -179,20 +183,20 @@ The firing rule \eqref{eq:background:petri:fire} remains unchanged.
 \section{Continuous-time Markov chains}
 
 Continuous-time Markov chains are mathematical tools for describing the
-behavior of systems in countinous time where the random behavior of
+behavior of systems in countinous time where the stochastic behavior of
 the system only depends on its current state.
 
 \begin{dfn}
   A \emph{Continuous-time Markov Chain} \paren{\CTMC}
   $X(t) \in S, t \ge 0$ over a finite or countable infinite state
   space $S = \{0, 1, \ldots, n - 1\}$ is a continuous-time random
-  process with the \emph{Markovian} or memoryless property
+  process with the \emph{Markovian} or memoryless property:
   \begin{multline}\allowdisplaybreaks[0]
     \Pr(X(t_k) = x_k \mid X(t_{k - 1}) = x_{k - 1}, X(t_{k -
       2}) = x_{k - 2}, \ldots, X(t_{0}) = x_{0}) \\
     = \Pr(X(t_k) = x_k \mid X(t_{k - 1}) = x_{k - 1}) \text,
   \end{multline}
-  where $t_0 \le t_1 \le \cdots \le t_k$. A \CTMC\ is said to be
+  where $t_0 \le t_1 \le \cdots \le t_k$ and $X(t_k)$ is a continuous random variable denoting the current state of the \CTMC\ at time $t_k$. A \CTMC\ is said to be
   \emph{time-homogenous} if it also satisfies
   \begin{equation}
     \Pr(X(t_k) = x_k \mid X(t_{k - 1}) = x_{k - 1}) = \Pr(X(t_k - t_{k -
@@ -362,7 +366,7 @@ which requires the solution of the initial value problem%
 to form the inner product $\Ex R(t) = \vec{\uppi}(t) \, \vec{r}^\T$.
 To obtain the expected steady-state reward rate (if it exists) the
 linear equation~\eqref{eq:background:ctmc:steadystate} should be
-solved instead for the steady-state probability vector $\vec{\uppi}$.
+solved instead to acquire the steady-state probability vector $\vec{\uppi}$.
 
 The expected value of the accumulated reward is
 \begin{align}
@@ -400,13 +404,13 @@ problem~\citep{reibman1989markov}
 
 \subsection{Sensitivity}
 
+Sensitivity analysis is widely used to assess the robustnes of information systems.
 Consider a reward process $(X(t), \vec{r})$ where both the
 infinitesimal generator matrix $Q(\vec{\uptheta})$ and the reward rate
 vector $\vec{r}(\vec{\uptheta})$ may depend on some \emph{parameters}
 $\vec{\uptheta} \in \RR^m$. The \emph{sensitivity} analysis of the
 rewards $R(t)$ may reveal performance or reliability bottlenecks of
-the modeled system and aid designers in achieving desired performance
-measures.
+the modeled system and help designers in achieving desired performance measures and robustnes values.
 
 \begin{dfn}
   The \emph{sensitivity} of the expected reward rate~$\Ex R(t)$ to the
@@ -416,9 +420,7 @@ measures.
   \end{equation}
 \end{dfn}
 
-The model reacts to the change of parameters with high absolute
-sensitivity more prominently, therefore they can be promising avenues
-of system optimization.
+Considering parameters with high absolute sensitivity the model reacts to the changes of those parameters more prominently, therefore they can be promising directions of system optimization.
 
 To calculate the sensivity of $\Ex R(t)$, the partial derivative of
 both sides of \cref{eq:background:ctmc:reward} is taken, yielding
@@ -464,6 +466,8 @@ conditioning of the solutions of the Markov chain.
 \subsection{Time to first failure}
 \label{ssec:background:mtff}
 
+Computing the first time of a system failure (provided it was fully operational when it was started) has many applications in reliability engineering.
+
 Let $D \subsetneq S$ be a set of \emph{failure states} of the \CTMC\ 
 $X(t)$ and $U = S \setminus D$ be a set of operating states. We will
 assume without loss of generality that $U = \{0, 1, \ldots, n_U - 1\}$
@@ -495,12 +499,13 @@ states (i.e.~$\pi_0[x] = 0$ for all $x \in D$), the \emph{Time
 is \emph{phase-type distributed} with parameters
 $(\vec{\pi}_{U}, Q_{UU})$~\citep{NEUT75}, where $\vec{\uppi}_U$ is the
 vector containing the first $n_U$ elements of $\vec{\pi}_0$. In
-particular, the \emph{Mean Time to First Failure} is
+particular, the \emph{Mean Time to First Failure} is computed as follows:
 \begin{equation}
   \label{eq:background:mtff}
   \MTFF = \Ex[\TFF] = - \vec{\uppi}_U Q_{UU}^{-1} \vec{1}^\T \text.
 \end{equation}
 
+\noindent
 The probability of a $D'$-mode failure ($D' \in D$) is
 \begin{equation}
   \label{eq:background:failure-mode}
@@ -544,7 +549,7 @@ A finite \CTMC\ can be associated with a bounded stochastic Petri net
 (with inhibitor arcs) as follows:
 \begin{enumerate}
 \item The reachable state space of the Petri net is explored. We
-  associate a consecutive natural numbers with the states such that
+  associate consecutive natural numbers with the states such that
   the state space is
   \begin{equation}
     \RS = \{ M_0, M_1, M_2, \ldots, M_{n - 1} \} \text,
@@ -562,7 +567,7 @@ A finite \CTMC\ can be associated with a bounded stochastic Petri net
       1 & 0 & 0 & \cdots & 0
     \end{pmatrix}
   \end{equation}
-  in the analysis steps ($\pi_0[x] = \delta_{0,x}$).
+  in the analysis step ($\pi_0[x] = \delta_{0,x}$).
 \item The generator matrix $Q \in \RR^{n \times n}$ encodes the
   possible state transitions of the Petri net and the associated
   transition rate $\Lambda(\,\cdot\,)$ as
@@ -652,8 +657,7 @@ A finite \CTMC\ can be associated with a bounded stochastic Petri net
   exponential transition rates.
 
   The transitions $a_1$, $d_1$, $a_2$ and $d_2$ have rates $1.0$,
-  $0.5$, $1.0$ and $1.1$, respectively. The parameter vector
-  $\vec{\uptheta} = (0.625, 1.25) \in \RR^2$ is introduced such
+  $0.5$, $1.0$ and $1.1$, respectively. The vector $\vec{\uptheta} = (0.625, 1.25) \in \RR^2$ of model parameters is introduced such
   that the transitions $r_1$ and $r_2$ have rates $1 / \theta[0]$ and
   $1 / \theta[1]$.
 
@@ -661,8 +665,8 @@ A finite \CTMC\ can be associated with a bounded stochastic Petri net
   (\cref{tab:background:spn:sharedresource-rs}) contains $8$ markings
   which are mapped to the integers $S = \{0, 1, \ldots, 7\}$. The
   state space graph along with the transition rates of the \CTMC\ is
-  shown in \cref{fig:background:spn:sharedresouce-ctmc}. The generator
-  matrix is
+  shown in \cref{fig:background:spn:sharedresouce-ctmc}. The generator matrix is (also depicting state indices):
+
   \begin{equation}
     Q =
     \begin{blockarray}{l*{8}{c}}
@@ -734,8 +738,7 @@ performed on reward process $(X, \vec{r})$,
 \end{equation}
 where the summation is taken over all enabled
 transitions~\citep{DBLP:journals/pe/CiardoMT91}. In general, the
-distribution of $Y(t)$ cannot be derived by this
-method~\citep{RACZ99a}.
+distribution of the accumulated reward $Y(t)$ cannot be derived by this method~\citep{RACZ99a}.
 
 \begin{runningExample}
   \label{ex:background:srn}
@@ -784,13 +787,14 @@ method~\citep{RACZ99a}.
 
 \subsection{Superposed stochastic Petri nets}
 
+In this section we define the base formalism of the decomposition algorithm introduced in \cref{chap:genstor}.
+
 \begin{dfn}
   \label{dfn:background:sspn}
   A \emph{Superposed Stochastic Petri Net} (\textls{SSPN}) is a pair
   $\SSPN = (\SPN, \partitions)$, where
   $\partitions = \{ \loc{P}{0}, \loc{P}{1}, \ldots, \loc{P}{J - 1} \}$
-  is partition of the set of places
-  $P = \loc{P}{0} \cup \loc{P}{1} \cup \cdots \cup \loc{P}{J -
+  is the partitioning of the set of places and $P = \loc{P}{0} \cup \loc{P}{1} \cup \cdots \cup \loc{P}{J -
     1}$~\citep{DBLP:conf/apn/Donatelli94}.
   Superposed stochastic Petri nets with inhibitor arcs
   $\SSPN_I = (\SPN_I, \partitions)$ are defined analogously.
@@ -801,10 +805,9 @@ $\LN{j} = ((\loc{P}{j}, \loc{T}{j} = \loc{T_L}{j} \cup \loc{T_S}{j},
 \loc{F}{j}, \loc{W}{j}, \loc{M_0}{j}), \loc{\Lambda}{j})$
 can be constructed as follows:
 \begin{itemize}
-\item $\loc{P}{j}$ is the corresponding set from the partition of the
-  original net.
+\item $\loc{P}{j}$ is the corresponding set from the partitioning of the original net.
 \item $\loc{T}{j}$ contains the local transition $\loc{T_L}{j}$ and
-  synchronizing transitions $\loc{T_S}{j}$. A transition is
+  synchronization transitions $\loc{T_S}{j}$. A transition is
   \emph{local} to $\LN{j}$ if it only affects places in $\loc{P}{j}$,
   that is,
   \begin{equation}
@@ -830,18 +833,18 @@ can be constructed as follows:
 \end{itemize}
 
 If there are inhibitor arcs in $\SSPN_I$, inhibitor arcs must be
-considered when local net $\LNI{j}$ is constructed. The set
+considered when a local net $\LNI{j}$ is constructed. The set
 $\inarc{t} \cup \outarc{t}$ is replaced with
 $\inarc{t} \cup \outarc{t} \cup \inharc{t}$ in
 \cref{eq:background:sspn:localtran,eq:background:sspn:synctran} so
-that the enablement of local transitions only depends on the marking
+that the enabling of local transitions only depends on the marking
 of places in $\loc{P}{j}$ and only places in $\loc{P}{j}$ may be
 affected upon firing. In addition, the inhibitor arc relation and
 weight function are restricted as
 $\loc{I}{j} = I \cap (\loc{P}{j} \cap \loc{T}{j})$,
 $\loc{W_I}{j} = W_I |_{\loc{I}{j}}$.
 
-The set of all synchronizing transitions is denoted as
+The set of all synchronization transitions is denoted as
 $T_S = \bigcup_{j = 0}^{J - 1} \loc{T_S}{j}$. The \emph{support} of
 the transition $t \in T$ is the set of components it
 is adjacent to, $\supp t = \{j : t \in \loc{T}{j}\}$.
@@ -879,8 +882,7 @@ is adjacent to, $\supp t = \{j : t \in \loc{T}{j}\}$.
   resource $S$.
 
   The transitions $r_1$ and $r_2$ are local to $\LN{0}$ and $\LN{1}$,
-  respectively, while $a_1$, $d_1$, $a_2$ and $d_2$ synchronize with
-  $\LN{2}$ and the local net associated with their consumers.
+  respectively, while $a_1$, $d_1$, $a_2$ and $d_2$ synchronize $\LN{2}$ and the local net associated with their consumers.
 \end{runningExample}
 
 The \emph{local reachable state space} $\loc{\RS}{j}$ of $\LN{j}$ is
@@ -900,7 +902,7 @@ explicit projection of global reachable
 markings~\citep{DBLP:journals/tse/Buchholz99}.
 
 The \emph{potential state space} $\PS$ of an \textls{SSPN} is the
-Descares product of the local reachable state spaces of its components
+Cartesian product of the local reachable state spaces of its components
 \begin{equation}
   \PS = \loc{\RS}{0} \times \loc{\RS}{1} \times \cdots \times
   \loc{\RS}{J - 1} \text,
@@ -985,6 +987,8 @@ which is the union of the local markings $\loc{M_{\loc{x}{0}}}{0},
 
 \section{Kronecker algebra}
 
+Kronecker algebra defines the building blocks of the decomposition algorithm being introduced in \cref{chap:genstor}.
+
 \begin{dfn}
   The \emph{Kronecker product} of matrices
   $A \in \RR^{n_1 \times m_1}$ and $B \in \RR^{n_2 \times m_2}$ is the
@@ -1000,7 +1004,7 @@ Some properties of the Kroncker product are
   \begin{equation}
     A \krtimes (B \krtimes C) = (A \krtimes B) \krtimes C \text,
   \end{equation}
-  which makes $J$-way Kronecker products $\loc{A}{0} \krtimes
+  which makes Kronecker products of the form $\loc{A}{0} \krtimes
   \loc{A}{1} \krtimes \cdots \krtimes \loc{A}{J - 1}$ well-defined.
 \item Distributivity over matrix addition:
   \begin{equation}
@@ -1013,7 +1017,7 @@ Some properties of the Kroncker product are
     \shortintertext{in particular,}
     A \krtimes B = (A \krtimes I_2) (I_1 \krtimes B)
   \end{gather}
-  for appropriately-sized identity matrices $I_1$ and $I_2$.
+  for identity matrices $I_1$ and $I_2$ with appropriate dimensions.
 \end{enumerate}
 
 We will occasionally employ multi-index notation to refer to elements

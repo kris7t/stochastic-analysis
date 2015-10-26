@@ -26,15 +26,15 @@ models.
 In transient analysis, initial value problems with first-order linear
 differetial equations such as%
 ~\vref{eq:background:ctmc:diffeq,eq:background:ctmc:L-ivp} are
-considered. The decomposed generator matrix $Q$ must handled
+considered. The decomposed generator matrix $Q$ must be also handled
 efficiently. Another difficulty is caused by the \emph{stiffness} of
 differential equations arising from some models, which may
 significantly increase computation times.
 
-To facilitate configurable stochastic analysis, we implemented several
+To facilitate configurable stochastic analysis, we developeds several
 linear equation solvers and transient analysis methods. Where it is
 reasonable, the implementation is independent of the form of the
-generator matrix $Q$. Genericity is achieved by defining an interface
+generator matrix $Q$. We achieved genericity by defining an interface
 between the algorithms and the data structures with operations including
 \begin{asparaitem}
 \item multiplication of a matrix with a vector from left or right,
@@ -121,7 +121,7 @@ We used Crout's \textls{LU} decomposition%
 i.e.~the diagonal of the $U$ matrix is uniformly $1$. The matrix is
 filled in during the decomposition even if it was initially sparse,
 therefore it should first be copied to a dense array storage for
-efficiency. This considerably limits the size of Markov chains that
+efficiency reasons. This considerably limits the size of Markov chains that
 can be analysed by direct solution due to memory requirements. Our
 data structure allows access to upper and lower diagonal parts to
 matrices and linear combinations, therefore no additional storage is
