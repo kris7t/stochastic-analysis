@@ -200,7 +200,7 @@ current version of our framework.
     {Transient solution algorithms};
     \node [architecture layer,below=of l-numerical] (l-reward) {};
     \node [layer label] at (l-reward.north west)
-    {Performance measure calculation};
+    {Engineering measure calculation};
 
     \matrix [two components] at (l-state-exploration.north) {
       \node [component] (se-explicit) {Explicit};
@@ -230,12 +230,14 @@ current version of our framework.
     };
     \matrix [three components] at (l-reward.north) {
       \node [component] (r-reward) {Reward};
-      & \node [component] (r-sensitivty) {Sensitivity};
+      & \node [component] (r-sensitivity) {Sensitivity};
       & \node [component] (r-mtff) {\textls{MTFF}}; \\
     };
 
     \draw [{Latex}-{Latex}] (se-explicit) edge (ss-explicit)
     (se-symbolic) edge (ss-symbolic);
+    \draw [{Latex}-{Latex},dashed] (md-sparse) edge (md-kronecker)
+    (r-reward) edge (r-sensitivity);
 
     \newcommand*{\commArrows}[2]{
       \draw [-{Latex},transform canvas={xshift=-1cm}] (#1) -- (#2);
