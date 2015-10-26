@@ -80,3 +80,22 @@ Möbiues is a commercial tool with with many supported formalisms and analysis t
 \label{sec:evaluation:results}
 
 In \cref{tbl:evaluation:results} we present our preliminary performance results for our implemented block Kronecker decomposition based approaches. We performed several analysis for several models with relatively big state spaces. 
+
+
+\begin{obs}
+	Based on the preliminary measurements and combinatorial testing we can note some interesting observations:
+
+	\begin{enumerate}
+		\item As expected the storage requirement of the block Kronecker form is almost an order of magnitude lower than that of the sparse form. 
+
+		\item For models with moderate state space sizes (approximately a few millions) the sparse form outperforms the block Kronecker form.
+
+		\item However for models with considerably bigger state space sizes (almost a hundred million) the block Kronecker form outperforms the sparse form not just in memory usage but in analysis time as well. This is probably because of the inefficient cache usage of the sparse structure.
+
+		\item For models consisting of similar transition rates the BiCGSTAB algorithm is the most effective solution method for both sparse and block Kronecker matrix representations. 
+
+		\item Slower, but more memory efficient solvers (Gauss-Seidel iteration, Jacobi iteration) often diverged using sparse matrix form while converged using the block Kronecker form. This is due to the possibility of different state ordering in the block Kronecker form.  
+
+		\item For irregular models (i.e. containing very different transition rates) it's possible that the BiCGSTAB algorithm won't converge while other algorithms can handle the model.
+	\end{enumerate}}
+\end{obs}
