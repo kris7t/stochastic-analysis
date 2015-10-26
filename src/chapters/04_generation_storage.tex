@@ -747,7 +747,7 @@ Some algorithms for \textls{MDD} state space exploration are
 
 \Vref{alg:genstor:symbolic:fillin,alg:genstor:symbolic:sparse}
 illustrate the construction of a generator matrix based on the state
-space encoded as \textls{EDDs}. The procedure \textls{FillIn} descends
+space encoded as \textls{EDDs}. The procedure \textsc{FillIn} descends
 the \textls{EDD} following a path for the target and the source
 state simulatenously. The edge labels, represeting state indices, are
 summed on both paths. If a transition $\vec{x} \tranto{t} \vec{y}$ is
@@ -894,7 +894,6 @@ can be handled easily with symbolic techniques.
 \end{runningExample}
 
 \begin{obs}
-  
   If $\ddnode{n}$ and $\ddnode{m}$ are distinct nonterminal nodes of a
   quasi-reduced ordered \textls{MDD},
   $\mddAbove(\ddnode{n}) \cup \mddAbove(\ddnode{m}) = \emptyset$ and
@@ -921,6 +920,7 @@ can be handled easily with symbolic techniques.
 \end{proof}
 
 \begin{obs}
+  \label{obs:genstor:symbolic:parallel-edges}
   The relation $\loc{x}{j} \mathbin{\loc{\sim}{j}} \loc{y}{j}$ can be
   expressed as
   \begin{multline}
@@ -952,7 +952,10 @@ can be handled easily with symbolic techniques.
   \end{align}
   $X = Y$ holds precisely when
   $X(\ddnode{n}) = Y(\ddnode{n})$ for all $\ddnode{n} \in V_{j + 1}$.
-  We may notice that $X(\ddnode{n})$ and $Y(\ddnode{n})$ partition $X$
+  We may notice that $\{X(\ddnode{n}) \times
+  \mddAbove(\ddnode{n})\}_{\ddnode{n} \in V_{j + 1}}$ and
+  $\{Y(\ddnode{n}) \times
+  \mddAbove(\ddnode{n})\}_{\ddnode{n} \in V_{j + 1}}$ are partitions of $X$
   and $Y$, respectively, because the $\mddAbove$-sets are disjoint for
   each node.
 
@@ -968,7 +971,69 @@ can be handled easily with symbolic techniques.
   because the $\mddBelow$-sets are distinct for each node.
 \end{proof}
 
-\textbf{TODO algoritmus, ref to Buchholz and Kemper}
+\Cref{obs:genstor:symbolic:parallel-edges} can be interpreted as the
+statement that $\loc{x}{j} \mathbin{\loc{\sim}{j}} \loc{y}{j}$ if and
+only if the \textls{MDD} edges corresponding to $\loc{x}{j}$ are
+always parallel, i.e.~from the node $\ddnode{n}$ they all go to the
+same node $\ddnode{m}(\ddnode{n})$ for all $\ddnode{n} \in V_{j + 1}$.
+
+\begin{algorithm}
+  \KwIn{Symbolic state space $\MDD$}
+  \KwOut{Local macro states $\loc{\Macro{\RS}}{j}$, $\loc{\RS}{j}_x$}
+  \For{$j \gets 0$ \KwTo $J - 1$}{
+    Initialize the empty queue $Q$\;
+    $\textit{Done} \gets \{\loc{\RS}{j}\}$\;
+    \ForEach{$\ddnode{n} \in V_{j + 1}$}{
+      \ForEach{$S \in \textit{Done}$}{$\textsc{Enqueue}(Q, S)$}
+      $\textit{Done} \gets \emptyset$\;
+      \While{$\neg \textsc{Empty}(Q)$}{
+        $S \gets \textsc{Dequeue}(Q)$\;
+        $S_1 \gets \emptyset$\;
+        $S_2 \gets \emptyset$\;
+        Let $x_0$ be any element of $S$\;
+        $\ddnode{m} \gets \mddChildren(\ddnode{n}, x_0)$\;
+        \ForEach{$x \in S \setminus \{ x_0 \}$}{
+          \leIf{$\ddnode{m} = \mddChildren(\ddnode{n}, x)$}{%
+            \label{ln:genstor:symbolic:refinement:split}
+            $S_1 \gets S_1 \cup \{x\}$%
+          }{%
+            $S_2 \gets S_2 \cup \{x\}$%
+          }
+        }
+        \If{$S_2 \ne \emptyset$}{%
+          $\textsc{Enqueue}(Q, S_2)$
+        }
+        $\textit{Done} \gets \textit{Done} \cup \{S_1\}$\;
+      }
+    }
+    $\macro{n}_j \gets \lvert \textit{Done} \rvert$\;
+    $\loc{\Macro{\RS}}{j} \gets \{\loc{\macro{0}}{j},
+    \loc{\macro{1}}{j}, \ldots, \loc{\Macro{\macro{n}_j - 1}}{j}\}$\;
+    Each set $S \in \textit{Done}$ is a local macro state
+    $\loc{\Macro{\RS}}{j}_x$\;
+  }
+  \caption{Local macro state construction by partition refinement.}
+  \label{alg:genstor:symbolic:refinement}
+\end{algorithm}
+
+The macro states can be constructed from the paralell edges in the
+\textls{MDD} by partition refinement. This process is performed by
+\vref{alg:genstor:symbolic:refinement}.
+
+The key step in partition refinement is in line%
+~\ref{ln:genstor:symbolic:refinement:split}, where the candiate macro
+state $S$ is split into $S_1$ and $S_2$. Edges in $S_1$ are all
+parallel and go from
+$\ddnode{n}$ to $\ddnode{m}$, while $S_2$ is further split. The
+process is repeated for each node $\ddnode{n}$ and level $V_{j + 1}$
+until only parallel macro state candidates remain.
+
+This procedure is based on an idea of \citet{buchholz2004kronecker},
+however, we employed partition refinement instead of hashing and and
+proved correctness of the algorithm formally.
+
+A block Kronecker matrix may be constructed from the decomposed state
+space by \cref{alg:genstor:explicit:block:construction}.
 
 \section{Matrix storage}
 
