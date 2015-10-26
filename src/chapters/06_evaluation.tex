@@ -79,7 +79,55 @@ Möbiues is a commercial tool with with many supported formalisms and analysis t
 \section{Results}
 \label{sec:evaluation:results}
 
-In \cref{tbl:evaluation:results} we present our preliminary performance results for our implemented block Kronecker decomposition based approaches. We performed several analysis for several models with relatively big state spaces. 
+\begin{table}
+  \centering{\small
+  \begin{tabular}{@{}lrllrr@{}}
+    \toprule
+    \multicolumn{1}{@{}c}{Model} & \multicolumn{1}{c}{States} &
+    \multicolumn{1}{c}{Generator} & \multicolumn{1}{c}{Algorithm} &
+    \multicolumn{1}{c}{Memory} & \multicolumn{1}{c@{}}{Time} \\
+    \midrule
+    SR-Sym-7 & $10\,775\,710$
+    & Sparse & Uniformization & $3\,120$~MiB & $279$~s \\
+    & & & \textls{BiCGSTAB} & $3\,450$~MiB & $236$~s \\
+    & & \textls{BK} & Uniformization & $650$~MiB & $222$~s \\
+    & & & \textls{BiCGSTAB} & $815$~MiB & $162$~s \\
+
+    SR-Asym-7 & $10\,775\,710$
+    & Sparse & Uniformization & $3\,116$~MiB & $316$~s \\
+    & & & \textls{BiCGSTAB} & $3\,450$~MiB & $236$~s \\
+    & & \textls{BK} & \textls{BiCGSTAB} & $812$~MiB & $373$~s \\
+
+    SR-Degen-7 & $10\,775\,710$
+    & Sparse & \textls{BiCGSTAB} & \multicolumn{2}{c@{}}{Breakdown} \\
+    & & BK & Group \textls{GS} / Jacobi & \multicolumn{2}{c@{}}{No convergence} \\
+    
+    SR-Sym-9 & $81\,466\,099$
+    & Sparse & \textls{BiCGSTAB} & $25\,564$~MiB & $2\,542$~s \\
+
+    SR-Asym-9 & $81\,466\,099$
+    & Sparse & \textls{BiCGSTAB} & \multicolumn{2}{c@{}}{Oscillation} \\
+    & & \textls{BK} & Group \textls{GS} / Jacobi & $2\,388$~MiB & $9\,402$~s \\
+    
+    Cloud-3-2 & $20\,047\,500$
+    & Sparse & \textls{BiCGSTAB} & \multicolumn{2}{c@{}}{Out of memory} \\
+    & & BK & \textls{BiCGSTAB} & \multicolumn{2}{c@{}}{Breakdown} \\
+    & & & Group \textls{GS} / Jacobi & $684$~MiB & $3\,379$~s \\
+    
+    KanBan-5 & $2\,546\,432$
+    & Sparse & Uniformization & $833$~MiB & $54$~s \\
+    & & & \textls{BiCGSTAB} & $911$~MiB & $92$~s \\
+    & & BK & Uniformization & $360$~MiB & $70$~s \\
+    & & & \textls{BiCGSTAB} & $392$~MiB & $124$~s \\
+
+    KanBan-7 & $41\,644\,800$
+    & Sparse & Uniformization & $12\,471$~MiB & $909$~s \\
+    & & BK & Uniformization & $6\,253$~MiB & $1\,135$~s \\
+    \bottomrule
+  \end{tabular}}
+  \caption{Preliminary benchmark results.}
+  \label{tab:evaluation:results}
+\end{table}
 
 
 \begin{obs}
