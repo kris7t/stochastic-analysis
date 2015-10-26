@@ -179,38 +179,36 @@ The workflow is fully \emph{configurable}, which means that the modeler may comb
 \end{table}
 
 \begin{itemize}
-\item The model state space may be explored either by an explicitly
-  enumeration of every reachable space, or by symbolic
+\item The model state space may be explored either by an explicit 
+  state space traversal, or by symbolic
   saturation~\citep{Ciardo:2006}. As symbolic methods are usually much
   faster and use significantly less memory than explicit enumeration,
-  they are the recommended approach for stochastic analysis. However,
-  the explicit algorithms are provided for benchmarking and software
-  redundancy reason.
+  they are the recommended approach for stochastic analysis. However the explicit algorithms are not sensitive to the structure of the model, they provide a robust solution as long as the state space fits into memory. In addition they are provided for benchmarking and software redundancy reasons too.
 
-  For state space exploration algorithms operating on a superposed
-  \textls{SPN}, the component partitions may be provided by the user
+  The algorithms operating on a superposed
+  \textls{SPN} receive the model and a decomposition as an input. Partitions needed for the decomposition may be provided by the user
   as part of the model or generated on the fly.
-\item The generator matrix may be stored in sparse matrix or block
-  Kronecker decomposition form%
+\item The generator matrix may be stored in sparse matrix representation or decomposed into block
+  Kronecker form%
   ~\citep{DBLP:journals/sigmetrics/BuchholzK98}. The matrix can be
   build from both explicitly or symbolically stored state spaces.
 
   To facilitate block Kronecker matrix generation, we propose a purely
-  symbolic algorithm, which avoids any overheads of explicit state
+  symbolic algorithm. The developed solution avoids any overheads of explicit state
   space operations.
-\item The resulting matrices, in possibly decomposed form, are part of
+\item The resulting matrices, in a possibly decomposed form, are part of a
   specialized data structure. Extremely large matrices may be stored
-  as results of linear algebraic operations (e.g.~linear combinations,
+  with the developed decomposition algorithms (e.g.~linear combinations,
   Kronecker products, contatenations into block structures). The data
-  structure defines generic vector and matrics operations, as well as
+  structure defines generic vector and matrix operations, as well as
   more specific manipulations performed by stochastic analysis
   algorithms.
 
   State space exploration and generator matrix decomposition methods
-  are presented in \cref{chap:genstor}, including our algorithmic
+  are presented in \cref{chap:genstor}, including our theoretical and algorithmic
   contribution for block Kronecker decomposition.
-\item The execution of the operations of the data structure can be
-  modified at runtime. This allows the use of different
+\item The execution of the operations on the data structures can be
+  set at runtime. This allows the use of different
   implementations at the different stages of the workflow, or when
   different algorithms are employed to calculate multiple performance
   measures. Whenever possible, both sequential and parallel
@@ -218,14 +216,12 @@ The workflow is fully \emph{configurable}, which means that the modeler may comb
   supported datatypes.
 \item Several numerical algorithms are provided for steady-state and
   transient analysis of Markov chains. The user can select the
-  algorithm most suitable for the model under study. For solvers that
-  called nother as a subroutine, any other solver can be passed as an
-  inner algorithm.
+  algorithm most suitable for the model under study. The algorithm library supports the combination of the algorithms and data structures at different levels of computations. This allows us to fine tune the numerical solution and solve every component with the most suitable algorithm.
 
-  Important considerations in selecting the solver are its convergence
-  behavior and its memory requirements. While matrix decompositions
-  can reduce the storage space occupied by the $Q$ matrix by orders of
-  magnitudes, we store all elements of probability vectors
+  Important considerations in solver selection are convergence
+  properties and memory requirements. Matrix decompositions
+  can reduce the storage space needed by the matrix $Q$ by orders of
+  magnitudes. We store all elements of probability vectors
   explicitly. Therefore, one should pay close attention to the number
   of temporary vectors used in the algorithm in order to avoid
   excessive memory consumption.
@@ -238,7 +234,7 @@ The workflow is fully \emph{configurable}, which means that the modeler may comb
 
 \subsection{Supported formalisms}
 
-Our stochastic analysis framework targets models in the Stochastic
+Our stochastic analysis framework supports models in the Stochastic
 Petri Net with inhibitor arcs formalism (see
 \vref{dfn:background:spn}). Structured models are handled as
 Superposed Stochastic Petri Nets (see
@@ -249,10 +245,10 @@ algorithms with the workflow.
 Transition rates in the \textls{SPNs} can be arbitrary algebraic
 expressions containing references to \emph{sensitivity
   variables}. These variables correspond to the parameter vector
-$\vec{\theta}$ in Markov chain sensitivity analysis. However, the rate
+$\vec{\theta}$ of the Markov chain sensitivity analysis. However, the rate
 expression may not depend on the marking of the net.
 
-Rewards structures are defined as Stochastic Reward Nets (see
+Reward structures are defined as Stochastic Reward Nets (see
 \vref{dfn:background:srn}). An \textls{SRN} reward structure may be
 specified by composing any \emph{reward expressions} of the forms
 \begin{enumerate}
@@ -270,16 +266,16 @@ specified by composing any \emph{reward expressions} of the forms
 \end{enumerate}
 
 A reward weight expression is an algebraic expression that may refer
-to places an transition rates in the net. Refrences to places are
-replaced with the number of tokens upon evaluation. For example, the
+to places and transition rates in the net. Refrences to places are
+replaced by the number of tokens upon evaluation. For example, the
 reward expression $(p, w)$ may be written as
 $\KwTrue \rightarrow p \cdot w$ or $p > 0 \rightarrow p \cdot w$ using
 \textls{CTL}.
 
 Reward expressions with \textls{CTL} are only allowed when symbolic
-state spaces representation is in use, as \textls{CTL} evaluation%
+state spaces representation is used, as \textls{CTL} evaluation%
 \footnote{The symbolic state space exploration and \textls{CTL}
-  evluation component is currently provided by the
+  evaluation component is currently provided by the
   \textsc{Petridotnet}~\citep{Petridotnet} tool.} is performed
 symbolically~\citep{TDK2010_Darvas}.
 
@@ -288,11 +284,11 @@ symbolically~\citep{TDK2010_Darvas}.
   \emph{Shared\-Resource} Petri net from \vref{ex:background:srn}.
 
   The utilization of the shared resource can be described by the
-  reward expressions
+  reward expression
   \begin{equation}
     \textit{resourceUtilization} = \{ (p_{S_1}, 1), (p_{S_2}, 1)\} \text,
   \end{equation}
-  which are equivalent to the \textls{SRN} reward structure
+  which is equivalent to the \textls{SRN} reward structure
   \begin{equation}
     \rateReward_1(M) = M(p_{S_1}) + M(p_{S_2}), \quad
     \impulseReward_1(t, M) \equiv 0 \text.
@@ -322,7 +318,7 @@ symbolically~\citep{TDK2010_Darvas}.
 
 \subsection{Supported analysis types}
 
-Our framework supports calcuations of
+The framework introducted in this paper supports the configurable stochastic analysis of the following problems:
 \begin{itemize*}
 \item expected steady-state reward rates $\Ex R$ for any reward
   structure defined by reward expressions,
@@ -336,8 +332,7 @@ Our framework supports calcuations of
 \item mean-time to failure $\MTFF$ and associated failure mode
   probabilities.
 \end{itemize*}
-A selection fo multiple algorithms is available for each analysis
-type.
+Configurable stochastic analysis provides the combination of multiple solver and representation algorithms for the efficient computation of the introduced properties.
 
 \subsection{Reward and sensitivity calculation}
 
@@ -348,7 +343,7 @@ laws, as the evaluation of the expressions can be delayed.
 
 In reward and \textls{MTFF} calculations, rate expressions are
 evaluated by replacing sensitivity parameters with their values before
-the matrix $Q$ is composed. Thus, the elements of matrix are not
+the matrix $Q$ is composed. Thus, the elements of a matrix are not
 expression trees, but floating point numbers and matrix generation
 has to be performed only when sensitivity parameters are changed.
 
