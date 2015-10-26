@@ -11,7 +11,7 @@ As described in \cref{chap:algorithms} algorithms use the common vector and matr
 
 The most important requirement against the datastructure operations is mathematical correctness regardless of the storage technique used. Considering the number of implementations for a given interface and the previous requirement we used a simple unit testing design pattern (also known as interface testing pattern) as the core building block for the datastructure testing \citep{myers2011art}. 
 
-The basic idea behind this pattern is to write unit tests for interface operations without any knowledge about the concrete implementation. Hiding implemetation details can be achieved in a number of ways. Some unit testing frameworks (like \emph{NUnit}) support the usage of generic test classes and running them for multiple concrete types.
+The basic idea behind this pattern is to write unit tests for interface operations without any knowledge about the concrete implementation. Hiding implemetation details can be achieved in a number of ways. Some unit testing frameworks (like \emph{NUnit}, \citep{NUnit}) support the usage of generic test classes and running them for multiple concrete types.
 
 Since most of the time multiple instances of different types of interface implementations are needed in a single unit test we choose a more flexible approach for hiding implementation details. This approach is based on class inheritance and abstract factory methods. Whenever we need an instance for a given interface we delegate the instantiation to an abstract factory method in the test class. 
 
@@ -19,15 +19,15 @@ A drawback of this approach is that the test class itself becomes abstract so we
 
 \subsubsection{Abstract tests}
 
-In order to make sure we cover the most possible usage scenarios of the datastructure we followed some common testing techniques. As a first step we used equivalence partitioning to identify the valid and invalid ranges of the parameters of the operations. Next we implemented the parameter value checks in interface code contract classes using Microsoft's Code Contract library. This enabled us to implement the parameter check logic in one place for an operation making the code more maintainable. Moreover every class implementing a datastructure interface and it's operations will automatically contain these logics if code contracts are enabled. Code contracts can be disabled if needed resulting in a perfomance boost for the datastructure library since the parameter checks are skipped.
+In order to make sure we cover the most possible usage scenarios of the datastructure we followed some common testing techniques. As a first step we used equivalence partitioning to identify the valid and invalid ranges of the parameters of the operations. Next we implemented the parameter value checks in interface code contract classes using Microsoft's Code Contract library \citep{CodeContracts}. This enabled us to implement the parameter check logic in one place for an operation making the code more maintainable. Moreover every class implementing a datastructure interface and it's operations will automatically contain these logics if code contracts are enabled. Code contracts can be disabled if needed resulting in a perfomance boost for the datastructure library since the parameter checks are skipped.
 
 Writing unit tests for valid parameter values was straighforward since it's possible to cover multiple valid parameter ranges with a single unit test. However testing for invalid parameter values requires some care. We must ensure that there is only one invalid parameter per unit test so one error doesn't obscure the other. This significantly increases the number of unit tests and the possibility that we forget to test an invalid parameter range. Therefore we aimed to gather every possible invalid parameter range automatically. 
 
-For this purpose we used Microsoft's IntelliTest tool which assists in automating white-box and unit-testing. IntelliTest automatically generates unit tests using constraint satisfaction problem solving based on the source code of the method under test. Using IntelliTest on our interface code contract classes provided us with many invalid parameter values which we could use in our abstract unit tests.
+For this purpose we used Microsoft's IntelliTest tool \citep{IntelliTest} (formerly known as Pex, \citep{tillmann2008pex}) which assists in automating white-box and unit-testing. IntelliTest automatically generates unit tests using constraint satisfaction problem solving based on the source code of the method under test. Using IntelliTest on our interface code contract classes provided us with many invalid parameter values which we could use in our abstract unit tests.
 
 \subsubsection{Concrete tests}
 
-Once the abstract unit tests were implemented the next step was to create the derived classes for every storage combination and implement the abstract factory methods. Since the number of possible combinations were too many to implement manually we used Microsoft's Text Template Transformation Toolkit (T4) to generate the derived classes. The created template files provide ways to modify the behavior of abstract tests (through simple regular expression based configuration files) and to decrease the number of generated test by using pairwise testing instead of full combinatorial testing of implementation combinations. To generate the combinations for pairwise testing we used the ACTS tool. 
+Once the abstract unit tests were implemented the next step was to create the derived classes for every storage combination and implement the abstract factory methods. Since the number of possible combinations were too many to implement manually we used Microsoft's Text Template Transformation Toolkit (T4, \citep{T4}) to generate the derived classes. The created template files provide ways to modify the behavior of abstract tests (through simple regular expression based configuration files) and to decrease the number of generated test by using pairwise testing instead of full combinatorial testing of implementation combinations. To generate the combinations for pairwise testing we used the ACTS tool \citep{borazjany2012combinatorial}. 
 
 As a result of this testing process more than $78\;000$ unit tests were generated using full combinatorial testing (more than $18\;000$ with pairwise testing) which together with the behavior configuration files serve as a quasi-formal specification for the expected behavior of future and modified implementations (e.g.\ perfomance optimization). Breaking changes in implementation should either be rejected or the test suite and configuration files should be revised as specification change. Every unit test was executed sucessfully for both sequential and parallel operation implementations.
 
@@ -54,21 +54,13 @@ In this section we introduce the models used throughout the testing and benchmar
 
 \subsection{Benchmark models}
 
-\subsubsection{Resource sharing}
+\subsubsection{Shared resource}
 
-One of the bechmark models was the modified version of stochastic \emph{SharedResource} system (presented in \cref{fig:background:spn:sharedresource}). We added three more nodes to the system and modified some of its parameters along two dimensions. On one hand we increased the number of reachable states by adding more resources and local processes to the model. On the other hand we changed the rates of transitions in the model resulting in changes in it's stochastic  behaviour.
-
-TODO: állapottér méretek
+One of the bechmark models was the modified version of stochastic \emph{SharedResource} (SR) system (presented in \cref{fig:background:spn:sharedresource}). We added three more nodes to the system and modified some of its parameters along two dimensions. On one hand we increased the number of reachable states by adding more resources and local processes to the model (denoted by the parameter $N$ in \cref{tab:evaluation:results}). On the other hand we changed the rates of transitions in the model resulting in changes in it's stochastic  behaviour. We created symmetric, slightly asymmetric and significantly asymmetric versions of the model. In the third case there are orders of magnitude of difference between the transitions rates of the model.  
 
 \subsubsection{Kanban}
 
-We used the \SPN\ version of the \emph{kanban} system \citep{ciardo2003logical} as the other benchmark model. The model was scaled by modifying the available resources at each stage of the model resulting in an increase in the size of the state space.
-
-TODO: állapottér méretek
-
-\subsubsection{Results}
-
-\textbf{TODO: nagyobb modellek teljesítménye sparse Vs. BK}
+We used the \SPN\ version of the \emph{kanban} (KB) system \citep{ciardo2003logical} as the other benchmark model. The model was scaled by modifying the available resources (denoted by the paramter $N$ in \textbf{TODO: table}) at each stage of the model resulting in an increase in the size of the state space.
 
 \subsection{Case studies}
 
