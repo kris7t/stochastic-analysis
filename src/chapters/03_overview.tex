@@ -156,7 +156,8 @@ current version of our framework.
     },
     component/.style={
       text width=2.1cm,minimum height=1.2cm,align=center,
-      draw,tdk highlight
+      draw,tdk highlight,
+      inner sep=4pt
     },
     small component/.style={
       component,text width=1.5cm, minimum height=0.9cm,
@@ -208,7 +209,8 @@ current version of our framework.
     };
     \matrix [two components] at (l-state-storage.north) {
       \node [component] (ss-explicit) {Explicit};
-      & \node [component] (ss-symbolic) {Decision diagram}; \\
+      & \node [component
+      ] (ss-symbolic) {\textls{MDD} / \textls{EDD}}; \\
     };
     \matrix [three components] at (l-matrix-decomposition.north) {
       \node [component] (md-dense) {Dense matrix};
@@ -228,8 +230,9 @@ current version of our framework.
       \node [component] (tr-unif) {Uni\-for\-mi\-za\-tion};
       & \node [component] (tr-trbdf2) {\textls{TR-BDF2}}; \\
     };
-    \matrix [three components] at (l-reward.north) {
-      \node [component] (r-reward) {Reward};
+    \matrix [components] at (l-reward.north) {
+      \node [component] (r-accum-reward) {Accumulated reward};
+      &\node [component] (r-reward) {Reward rate};
       & \node [component] (r-sensitivity) {Sensitivity};
       & \node [component] (r-mtff) {\textls{MTFF}}; \\
     };
