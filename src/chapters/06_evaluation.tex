@@ -11,7 +11,7 @@ As described in \cref{chap:algorithms} algorithms use the common vector and matr
 
 The most important requirement against the datastructure operations is mathematical correctness regardless of the storage technique used. Considering the number of implementations for a given interface and the previous requirement we used a simple unit testing design pattern (also known as interface testing pattern) as the core building block for the datastructure testing \citep{myers2011art}. 
 
-The basic idea behind this pattern is to write unit tests for interface operations without any knowledge about the concrete implementation. Hiding implemetation details can be achieved in a number of ways. Some unit testing frameworks (like \emph{NUnit}) support the usage of generic test classes and running them for multiple concrete types.
+The basic idea behind this pattern is to write unit tests for interface operations without any knowledge about the concrete implementation. Hiding implemetation details can be achieved in a number of ways. Some unit testing frameworks (like \emph{NUnit}, \citep{NUnit}) support the usage of generic test classes and running them for multiple concrete types.
 
 Since most of the time multiple instances of different types of interface implementations are needed in a single unit test we choose a more flexible approach for hiding implementation details. This approach is based on class inheritance and abstract factory methods. Whenever we need an instance for a given interface we delegate the instantiation to an abstract factory method in the test class. 
 
@@ -19,15 +19,15 @@ A drawback of this approach is that the test class itself becomes abstract so we
 
 \subsubsection{Abstract tests}
 
-In order to make sure we cover the most possible usage scenarios of the datastructure we followed some common testing techniques. As a first step we used equivalence partitioning to identify the valid and invalid ranges of the parameters of the operations. Next we implemented the parameter value checks in interface code contract classes using Microsoft's Code Contract library. This enabled us to implement the parameter check logic in one place for an operation making the code more maintainable. Moreover every class implementing a datastructure interface and it's operations will automatically contain these logics if code contracts are enabled. Code contracts can be disabled if needed resulting in a perfomance boost for the datastructure library since the parameter checks are skipped.
+In order to make sure we cover the most possible usage scenarios of the datastructure we followed some common testing techniques. As a first step we used equivalence partitioning to identify the valid and invalid ranges of the parameters of the operations. Next we implemented the parameter value checks in interface code contract classes using Microsoft's Code Contract library \citep{CodeContracts}. This enabled us to implement the parameter check logic in one place for an operation making the code more maintainable. Moreover every class implementing a datastructure interface and it's operations will automatically contain these logics if code contracts are enabled. Code contracts can be disabled if needed resulting in a perfomance boost for the datastructure library since the parameter checks are skipped.
 
 Writing unit tests for valid parameter values was straighforward since it's possible to cover multiple valid parameter ranges with a single unit test. However testing for invalid parameter values requires some care. We must ensure that there is only one invalid parameter per unit test so one error doesn't obscure the other. This significantly increases the number of unit tests and the possibility that we forget to test an invalid parameter range. Therefore we aimed to gather every possible invalid parameter range automatically. 
 
-For this purpose we used Microsoft's IntelliTest tool which assists in automating white-box and unit-testing. IntelliTest automatically generates unit tests using constraint satisfaction problem solving based on the source code of the method under test. Using IntelliTest on our interface code contract classes provided us with many invalid parameter values which we could use in our abstract unit tests.
+For this purpose we used Microsoft's IntelliTest tool \citep{IntelliTest} (formerly known as Pex, \citep{tillmann2008pex}) which assists in automating white-box and unit-testing. IntelliTest automatically generates unit tests using constraint satisfaction problem solving based on the source code of the method under test. Using IntelliTest on our interface code contract classes provided us with many invalid parameter values which we could use in our abstract unit tests.
 
 \subsubsection{Concrete tests}
 
-Once the abstract unit tests were implemented the next step was to create the derived classes for every storage combination and implement the abstract factory methods. Since the number of possible combinations were too many to implement manually we used Microsoft's Text Template Transformation Toolkit (T4) to generate the derived classes. The created template files provide ways to modify the behavior of abstract tests (through simple regular expression based configuration files) and to decrease the number of generated test by using pairwise testing instead of full combinatorial testing of implementation combinations. To generate the combinations for pairwise testing we used the ACTS tool. 
+Once the abstract unit tests were implemented the next step was to create the derived classes for every storage combination and implement the abstract factory methods. Since the number of possible combinations were too many to implement manually we used Microsoft's Text Template Transformation Toolkit (T4, \citep{T4}) to generate the derived classes. The created template files provide ways to modify the behavior of abstract tests (through simple regular expression based configuration files) and to decrease the number of generated test by using pairwise testing instead of full combinatorial testing of implementation combinations. To generate the combinations for pairwise testing we used the ACTS tool \citep{borazjany2012combinatorial}. 
 
 As a result of this testing process more than $78\;000$ unit tests were generated using full combinatorial testing (more than $18\;000$ with pairwise testing) which together with the behavior configuration files serve as a quasi-formal specification for the expected behavior of future and modified implementations (e.g.\ perfomance optimization). Breaking changes in implementation should either be rejected or the test suite and configuration files should be revised as specification change. Every unit test was executed sucessfully for both sequential and parallel operation implementations.
 
@@ -52,51 +52,31 @@ Beside verifying the correctness of the developed algorithms, our main goal with
 
 In this section we introduce the models used throughout the testing and benchmarking phase then we present preliminary results about the performance of solver algorithms using the implemented block Kronecker decomposition matrix form.
 
-\subsection{Benchmark models}
+\subsection{Shared resource}
 
-\subsubsection{Resource sharing}
+One of the bechmark models was the modified version of stochastic \emph{SharedResource} (SR) system (presented in \cref{fig:background:spn:sharedresource}). We added three more nodes to the system and modified some of its parameters along two dimensions. On one hand we increased the number of reachable states by adding more resources and local processes to the model (denoted by the parameter $N$ in \cref{tbl:evaluation:results}). On the other hand we changed the rates of transitions in the model resulting in changes in it's stochastic  behaviour. We created symmetric, slightly asymmetric and significantly asymmetric versions of the model. In the third case there are orders of magnitude of difference between the transitions rates of the model.  
 
-One of the bechmark models was the modified version of stochastic \emph{SharedResource} system (presented in \cref{fig:background:spn:sharedresource}). We added three more nodes to the system and modified some of its parameters along two dimensions. On one hand we increased the number of reachable states by adding more resources and local processes to the model. On the other hand we changed the rates of transitions in the model resulting in changes in it's stochastic  behaviour.
+\subsection{Kanban}
 
-TODO: állapottér méretek
+We used the \SPN\ version of the \emph{kanban} (KB) system \citep{ciardo2003logical} as the other benchmark model. The model was scaled by modifying the available resources at each stage (denoted by the parameter $N$ in \cref{tbl:evaluation:results}) of the model resulting in an increase in the size of the state space.
 
-\subsubsection{Kanban}
+\subsection{Cloud performability}
 
-We used the \SPN\ version of the \emph{kanban} system \citep{ciardo2003logical} as the other benchmark model. The model was scaled by modifying the available resources at each stage of the model resulting in an increase in the size of the state space.
-
-TODO: állapottér méretek
-
-\subsubsection{Results}
-
-\textbf{TODO: nagyobb modellek teljesítménye sparse Vs. BK}
-
-\subsection{Case studies}
-
-\subsubsection{Performability of clouds}
-
-\subsubsection{Results}
+One of the models we used for analyis represents a cloud architecture \citep{ghosh2012scalable} with physichal and virtual machines serving incoming jobs using warm and cold spare resources in case of increasing load. We modified some aspects of the model in \citep{ghosh2012scalable} since our library currently doesn't support the GPSN formalism.
 
 \section{Baselines}
 
-In this section we present some of the state of the art modeling and analysis tools and their features without being exhaustive.
+In the next paragraphs we present some of the state of the art modeling and analysis tools and their features without being exhaustive. These will serve as a baseline for evaluating the performance of the best algorithm combinations of our library against the algorithms available in presented analysis tools.
 
 \subsection{GreatSPN}
 
-\emph{GreatSPN} (also refered to as \emph{GSPN}) \citep{baarir2009greatspn} is a tool for the modeling, verification and performance evaluation of distributed stochastic systems. The tool support numerous extenstions of stochastic Petri nets and provides a wide range of analysis options the various types of Petri nets. To our best knowledge GSPN is available only for a few Unix based systems with single core 32-bit CPUs which poses a restriction on the amount of resources it can use during an analysis.
-
-\subsection{Oris}
-
-\citep{bucci2010oris}. 
+\emph{GreatSPN} (also refered to as \emph{GSPN}) \citep{baarir2009greatspn} is a freely available tool for the modeling, verification and performance evaluation of distributed stochastic systems. The tool support numerous extenstions of stochastic Petri nets and provides a wide range of analysis options the various types of Petri nets. To our best knowledge GSPN is available only for a few Unix based systems with single core 32-bit CPUs which poses a restriction on the amount of resources it can use during an analysis.
 
 \subsection{Möbius}
 
-\citep{courtney2009mobius}.
-
-\subsection{SMART}
-
-\citep{ciardo2003logical}
+Möbiues is a commercial tool with with many supported formalisms and analysis types \citep{courtney2009mobius}. Furthermore they use runtime codegeneration to greatly improve the tool's performance. They provide a white-box analysis library making it possible for third party developer to integrate their own tools with Möbius.
 
 \section{Results}
 \label{sec:evaluation:results}
 
-TODO: Oris triv, GPSN?
+In \cref{tbl:evaluation:results} we present our preliminary performance results for our implemented block Kronecker decomposition based approaches. We performed several analysis for several models with relatively big state spaces. 
