@@ -29,9 +29,7 @@ higher level formalisms can be often structured as follows
 \begin{enumerate}
 \item \emph{State space exploration.} The reachable state space of the
   higher level model, for example stochastic automata network or
-  stochastic Petri net is explored to enumerate the possible behaviors
-  of the model $S$. If the model is partitioned into a hierarchy of
-  components, this step includes the exploration of the local state
+  stochastic Petri net is explored to enumerate the possible behaviors of the model $S$. If the model is hierarchically partitioned, this step includes the exploration of the local state
   spaces of the component as well as the possible global combinations
   of states.
 
@@ -40,7 +38,7 @@ higher level formalisms can be often structured as follows
   employed later in the workflow. In this work, we restrict our
   attention to finite cases.
 \item \emph{Descriptor generation.} The infinitesimal generator matrix
-  $Q$ of the Markov chain $X(t)$ defined over $S$ is created. If the
+  $Q$ of the Markov chain $X(t)$ defined over $S$ is built. If the
   analyzed formalism is a Markov chain, $Q$ is readily
   given. Otherwise, this matrix contains the transition rates between
   reachable states, which are obtained by evaluating rate expressions
@@ -53,7 +51,7 @@ higher level formalisms can be often structured as follows
   calculation of steady-state and transient rewards and sensitivities
   of the rewards. Additional algebraic manipulations (for example, the
   calculation of the ratio of an instantenous and accumulated reward)
-  may be provided to the modeler as convenience.
+  may be provided to the modeler for convenience.
 
 \end{enumerate}
 
@@ -83,20 +81,19 @@ size must be stored in addition to the state space. This neccessitates
 the use of further decomposition techniques for data storage.
 
 The convergence of the numerical methods depends on the structure of
-the model and the matrix decomposition in use. In addition, the memory
+the model and the applied matrix decomposition. In addition, the memory
 requirements of the algorithms may constrain the methods that can be
-employed. As several numerical algorithms for stochastic analysis
+employed. As various numerical algorithms for stochastic analysis
 tasks are known with different characteristics, it is important to
 allow the modeler to select the algorithm suitable for the properties
-of the model, as well as the decomposition method and executing
-hardware in use.
+of the model, as well as the decomposition method and hardware environment.
 
 The vector operations and vector-matrix products that are preformed by
-the numerical algorithms can also be executed in multiple ways. For
+the numerical algorithms can also be performed in multiple ways. For
 example, multiplications with matrices can be implemented either
-sequentially or on multiple threads. Large matrices benefit from
-parallelization, while for small matrices, the overhead of managing
-multiple tasks is usually excessive. Distributed or \textls{GPU}
+sequentially or in parallel. Large matrices benefit from
+parallelization, while for small matrices managing
+multiple tasks yields overhead. Distributed or \textls{GPU}
 impelemtations are also possible, albeit they are missing from the
 current version of our framework.
 
@@ -144,8 +141,7 @@ current version of our framework.
 Our implementation of the general stochastic analysis workflow is
 illustrated in \cref{fig:overview:our:workflow}.
 
-The workflow is fully \emph{configurable}, meaning components can be
-freely selected by the modeler to suit the application.
+The workflow is fully \emph{configurable}, which means that the modeler may combine the available algorithms for the analysis steps arbitrarily. 
 
 \begin{table}
   \caption{Linear equation solvers supported by our framework.}
