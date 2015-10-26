@@ -52,19 +52,17 @@ Beside verifying the correctness of the developed algorithms, our main goal with
 
 In this section we introduce the models used throughout the testing and benchmarking phase then we present preliminary results about the performance of solver algorithms using the implemented block Kronecker decomposition matrix form.
 
-\subsection{Benchmark models}
-
-\subsubsection{Shared resource}
+\subsection{Shared resource}
 
 One of the bechmark models was the modified version of stochastic \emph{SharedResource} (SR) system (presented in \cref{fig:background:spn:sharedresource}). We added three more nodes to the system and modified some of its parameters along two dimensions. On one hand we increased the number of reachable states by adding more resources and local processes to the model (denoted by the parameter $N$ in \cref{tbl:evaluation:results}). On the other hand we changed the rates of transitions in the model resulting in changes in it's stochastic  behaviour. We created symmetric, slightly asymmetric and significantly asymmetric versions of the model. In the third case there are orders of magnitude of difference between the transitions rates of the model.  
 
-\subsubsection{Kanban}
+\subsection{Kanban}
 
 We used the \SPN\ version of the \emph{kanban} (KB) system \citep{ciardo2003logical} as the other benchmark model. The model was scaled by modifying the available resources at each stage (denoted by the parameter $N$ in \cref{tbl:evaluation:results}) of the model resulting in an increase in the size of the state space.
 
-\subsection{Case study}
+\subsection{Cloud performability}
 
-
+One of the models we used for analyis represents a cloud architecture \citep{ghosh2012scalable} with physichal and virtual machines serving incoming jobs using warm and cold spare resources in case of increasing load. We modified some aspects of the model in \citep{ghosh2012scalable} since our library currently doesn't support the GPSN formalism.
 
 \section{Baselines}
 
@@ -72,11 +70,11 @@ In the next paragraphs we present some of the state of the art modeling and anal
 
 \subsection{GreatSPN}
 
-\emph{GreatSPN} (also refered to as \emph{GSPN}) \citep{baarir2009greatspn} is a tool for the modeling, verification and performance evaluation of distributed stochastic systems. The tool support numerous extenstions of stochastic Petri nets and provides a wide range of analysis options the various types of Petri nets. To our best knowledge GSPN is available only for a few Unix based systems with single core 32-bit CPUs which poses a restriction on the amount of resources it can use during an analysis.
+\emph{GreatSPN} (also refered to as \emph{GSPN}) \citep{baarir2009greatspn} is a freely available tool for the modeling, verification and performance evaluation of distributed stochastic systems. The tool support numerous extenstions of stochastic Petri nets and provides a wide range of analysis options the various types of Petri nets. To our best knowledge GSPN is available only for a few Unix based systems with single core 32-bit CPUs which poses a restriction on the amount of resources it can use during an analysis.
 
 \subsection{Möbius}
 
-\citep{courtney2009mobius}.
+Möbiues is a commercial tool with with many supported formalisms and analysis types \citep{courtney2009mobius}. Furthermore they use runtime codegeneration to greatly improve the tool's performance. They provide a white-box analysis library making it possible for third party developer to integrate their own tools with Möbius.
 
 \section{Results}
 \label{sec:evaluation:results}
