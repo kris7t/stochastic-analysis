@@ -9,7 +9,7 @@ When developing an algorithm library for formal analysis of safety critical syst
 
 As described in \cref{chap:algorithms} algorithms use the common vector and matrix interfaces to perform various operations. This makes the used storage techniques transparent which in turn makes the code base more concise, reusable and less prone to errors. 
 
-The most important requirement against the datastructure operations is mathematical correctness regardless of the storage technique used. Considering the number of implementations for a given interface and the previous requirement we used a simple unit testing pattern (sometimes refered to as interface testing pattern \textbf{TODO: reference}) as the core building block for the datastructure testing. 
+The most important requirement against the datastructure operations is mathematical correctness regardless of the storage technique used. Considering the number of implementations for a given interface and the previous requirement we used a simple unit testing design pattern (also known as interface testing pattern) as the core building block for the datastructure testing \citep{myers2011art}. 
 
 The basic idea behind this pattern is to write unit tests for interface operations without any knowledge about the concrete implementation. Hiding implemetation details can be achieved in a number of ways. Some unit testing frameworks (like \emph{NUnit}) support the usage of generic test classes and running them for multiple concrete types.
 
@@ -46,25 +46,57 @@ Combining our fully configurable workflow with \cref{obs:evaluation:reward-resul
 
 The building block for this testing phase consists of running our analysis workflow for a given configuration and saving the calculated results (reward and sensitivity values). We generated $588$ mathematically consistent configurations in total, executed them for our running example (\cref{fig:background:spn:sharedresource}), multiple benchmark models and case studies. Finally we examined the maximum absolute difference of the calculated results as an error indicator for each performance measure in each model as presented in the next sections.
 
+Beside verifying the correctness of the developed algorithms, our main goal with software redundance based testing is to gather a knowledge base about the effectiveness of different analysis approaches for models with varying properties. The gathered observations are summarized in \cref{sec:evaluation:results}.
+
 \section{Measurements}
+
+In this section we introduce the models used throughout the testing and benchmarking phase then we present preliminary results about the performance of solver algorithms using the implemented block Kronecker decomposition matrix form.
 
 \subsection{Benchmark models}
 
 \subsubsection{Resource sharing}
 
+One of the bechmark models was the modified version of stochastic \emph{SharedResource} system (presented in \cref{fig:background:spn:sharedresource}). We added three more nodes to the system and modified some of its parameters along two dimensions. On one hand we increased the number of reachable states by adding more resources and local processes to the model. On the other hand we changed the rates of transitions in the model resulting in changes in it's stochastic  behaviour.
+
+TODO: állapottér méretek
+
 \subsubsection{Kanban}
 
-\subsubsection{Dining philosophers}
+We used the \SPN\ version of the \emph{kanban} system \citep{ciardo2003logical} as the other benchmark model. The model was scaled by modifying the available resources at each stage of the model resulting in an increase in the size of the state space.
+
+TODO: állapottér méretek
+
+\subsubsection{Results}
+
+\textbf{TODO: nagyobb modellek teljesítménye sparse Vs. BK}
 
 \subsection{Case studies}
 
 \subsubsection{Performability of clouds}
 
+\subsubsection{Results}
+
 \section{Baselines}
 
-\subsection{PRISM}
+In this section we present some of the state of the art modeling and analysis tools and their features without being exhaustive.
+
+\subsection{GreatSPN}
+
+\emph{GreatSPN} (also refered to as \emph{GSPN}) \citep{baarir2009greatspn} is a tool for the modeling, verification and performance evaluation of distributed stochastic systems. The tool support numerous extenstions of stochastic Petri nets and provides a wide range of analysis options the various types of Petri nets. To our best knowledge GSPN is available only for a few Unix based systems with single core 32-bit CPUs which poses a restriction on the amount of resources it can use during an analysis.
+
+\subsection{Oris}
+
+\citep{bucci2010oris}. 
+
+\subsection{Möbius}
+
+\citep{courtney2009mobius}.
 
 \subsection{SMART}
 
+\citep{ciardo2003logical}
+
 \section{Results}
 \label{sec:evaluation:results}
+
+TODO: Oris triv, GPSN?
