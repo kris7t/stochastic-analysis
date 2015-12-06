@@ -297,6 +297,13 @@
 \SetArgSty{textnormal}
 \newcommand*{\textalcapsty}[1]{{\sffamily\bfseries#1}}
 \SetAlCapSty{textalcapsty}
+\SetNlSty{textnormal}{}{}
+
+\newcommand*{\HlNode}[1]{%
+  \tikz [baseline] \node [anchor=base,inner sep=2pt,fill=black!20]
+  {#1};\hspace{-2pt}}
+\newcommand*{\HlNl}[2][]{%
+  \SetNlSty{HlNode}{}{#1}#2\SetNlSty{textnormal}{}{}}
 
 % Custom comments
 \def\tdk@comment#1#2{\@ifnextchar*{\tdk@comment@star#1#2}{\tdk@comment@nostar#1#2}}
@@ -412,6 +419,8 @@
 
 \RequirePackage{xspace,needspace}
 \RequirePackage{blindtext}
+
+\RequirePackage{soul}
 
 % Include thesis topic as a literal
 \RequirePackage{pdfpages}

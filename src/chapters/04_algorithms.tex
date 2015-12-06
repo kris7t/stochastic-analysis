@@ -589,11 +589,11 @@ iterative methods, we refer to
 
 Projectional iterative methods are iterative linear equation solvers
 that produce a sequence of approximate solutions $\vec{x}_k$ of the
-linear equation $\vec{x} Q = \vec{b}$ that satisfy the
+linear equation $\vec{x} A = \vec{b}$ that satisfy the
 Petrov--Galerkin conditions \textbf{TODO Cite}
 \begin{equation}
   \label{eq:algorithms:krylov:galerkin}
-  \vec{x}_k \in \mathcal{K}_k, \quad \vec{r}_k = \vec{b} - \vec{x}_k Q
+  \vec{x}_k \in \mathcal{K}_k, \quad \vec{r}_k = \vec{b} - \vec{x}_k A
   \perp \mathcal{L}_k \text,
 \end{equation}
 where $\mathcal{K}_k$ and $\mathcal{L}_k$ are two subspaces of
@@ -601,18 +601,18 @@ $\RR^n$ and $\vec{r}_k$ is residual in the $k$th iteration.
 
 Krylov subspace iterative methods correspond to the choice
 \begin{equation}
-  \mathcal{K}_k = \mathcal{K}_{k}(Q, \vec{r}_0) = \Span \{ \vec{r}_0,
-  \vec{r}_0 Q, \vec{r}_0 Q^2, \ldots, \vec{r}_0 Q^{k - 1} \} \text,
+  \mathcal{K}_k = \mathcal{K}_{k}(A, \vec{r}_0) = \Span \{ \vec{r}_0,
+  \vec{r}_0 A, \vec{r}_0 A^2, \ldots, \vec{r}_0 A^{k - 1} \} \text,
 \end{equation}
-where $\mathcal{K}_{k}(Q, \vec{r}_0)$ is the \emph{$k$th Krylov
-  subspace} of $Q$ and the initial residual $\vec{r}_0 = \vec{b} -
+where $\mathcal{K}_{k}(A, \vec{r}_0)$ is the \emph{$k$th Krylov
+  subspace} of $A$ and the initial residual $\vec{r}_0 = \vec{b} -
 \vec{x}_0 Q$.
 
 The smallest $m \in \NN$ such that
-$\dim \mathcal{K}_m(Q, \vec{r}_0) = \dim \mathcal{K}_{m + 1}(Q,
+$\dim \mathcal{K}_m(A, \vec{r}_0) = \dim \mathcal{K}_{m + 1}(A,
 \vec{r}_0)$
-is called the \emph{grade} of $Q$ with respect to $\vec{r}_0$. Hence
-$k \le m$ implies $\dim \mathcal{K}_k(Q, \vec{r}_0) = k$. Krylov
+is called the \emph{grade} of $A$ with respect to $\vec{r}_0$. Hence
+$k \le m$ implies $\dim \mathcal{K}_k(A, \vec{r}_0) = k$. Krylov
 subspace solvers usually suppose that the algorithm terminates at some
 iteration $k^*$ such that $k^* \le m$, therefore the dimension of
 $\mathcal{K}_k$ increases with each iteration. The contary situation
@@ -628,7 +628,7 @@ $\mathcal{L}_k$ likewise fills the space to make additional residuals
 forbidden by the Petrov--Galerkin condition~%
 \eqref{eq:algorithms:krylov:galerkin}.
 
-If $Q \in \RR^{n \times n}$ is of full rank and grade, Krylov subspace
+If $A \in \RR^{n \times n}$ is of full rank and grade, Krylov subspace
 solvers find the exact solution of the linear equation in at most $n$
 iterations with exact arithmetic. The only possible orthogonal
 residual is the zero vector $\vec{0}$ if $\mathcal{L}_n = \RR^n$
@@ -636,7 +636,7 @@ holds. While $n$ is usually too large for this to be practical,
 convergence often happens with suitable accuracy after a small number
 of iterations.
 
-Note that problems may arise when $Q$ is singular, which may worsen
+Note that problems may arise when $A$ is singular, which may worsen
 the convergence behaviour. This is the case in \textls{CTMC} analysis,
 where the infinitesimal generator matrix $Q$ is of rank $n - 1$.
 
@@ -656,8 +656,8 @@ a Krylov subspace method for nonsymmetric linear systems. It is based
 on the choice
 \begin{equation}
   \label{eq:algorithms:gmres:lspace}
-  \mathcal{L}_k = \mathcal{K}_k Q = \{ \vec{r}_0Q, \vec{r}_0Q^2,
-  \ldots, \vec{r}_0 Q^k \} \text.
+  \mathcal{L}_k = \mathcal{K}_k A = \{ \vec{r}_0A, \vec{r}_0A^2,
+  \ldots, \vec{r}_0 A^k \} \text.
 \end{equation}
 
 With this choice, the Petrov--Galerkin condition~%
@@ -665,7 +665,7 @@ With this choice, the Petrov--Galerkin condition~%
 the residuals in each iteration, i.e.
 \begin{equation}
   \label{eq:algorithms:gmres:minres}
-  \vec{x}_k \in \mathcal{K}_k \text{ such that } \vec{r}_k = \vec{b} - \vec{x}_k Q \perp
+  \vec{x}_k \in \mathcal{K}_k \text{ such that } \vec{r}_k = \vec{b} - \vec{x}_k A \perp
   \mathcal{L_k} \quad\Longleftrightarrow\quad \vec{x}_k = \argmin_{\vec{x} \in
     \mathcal{K}_k} \| \vec{b} - \vec{x} Q \|_2 \text.
 \end{equation}
@@ -698,10 +698,10 @@ Bi-Conjugate Gradient Stabilized~(\textls{BiCGSTAB})%
 is a Krylov subspace method where~\citep{simoncini2010interpreting}
 \begin{equation}
   \label{eq:algorithms:bicgstab:stabpoly}
-  \mathcal{L}_k = \mathcal{K}_k(Q^\T, \tilde{\vec{r}}_0) \cdot
-  (\Omega_k(Q)^\T)^{-1}, \quad
-  \Omega_k(Q) = \begin{cases}
-    \Omega_{k - 1}(Q) \cdot (I - \omega_k Q) & \text{if $k \ge 1$,} \\
+  \mathcal{L}_k = \mathcal{K}_k(A^\T, \tilde{\vec{r}}_0) \cdot
+  (\Omega_k(A)^\T)^{-1}, \quad
+  \Omega_k(A) = \begin{cases}
+    \Omega_{k - 1}(A) \cdot (I - \omega_k A) & \text{if $k \ge 1$,} \\
     I & \text{if $k = 0$.}
   \end{cases}
 \end{equation}
@@ -717,7 +717,7 @@ produces residuals
   \vec{r}_k \in \mathcal{G}_k, \quad
   \mathcal{G}_k = \begin{cases}
     (\mathcal{G}_{k} \cap \tilde{\vec{r}}_0^{\perp}) (I - \omega_k
-    Q) & \text{if $k \ge 1$}, \\
+    A) & \text{if $k \ge 1$}, \\
     \RR^n & \text{if $k = 0$,}
   \end{cases}
 \end{equation}
@@ -725,12 +725,12 @@ where $\mathcal{A}^{\perp}$ is the set of vector orthogonal to
 $\mathcal{A}$. It can be shown that%
 ~\citep{sleijpen2010exploiting}
 \begin{equation}
-  \mathcal{G}_k = \mathcal{S}(\Omega_k, Q, \tilde{\vec{r}}_0) = \{
-  \vec{v} \cdot \Omega_k(Q) : \vec{v} \perp \mathcal{K}_k(Q^\T,
+  \mathcal{G}_k = \mathcal{S}(\Omega_k, A, \tilde{\vec{r}}_0) = \{
+  \vec{v} \cdot \Omega_k(A) : \vec{v} \perp \mathcal{K}_k(A^\T,
   \tilde{\vec{r}}_0) \} \text,
 \end{equation}
-where $\mathcal{S}(\Omega, Q, \tilde{\vec{r}}_0)$ is the
-$\Omega$\kern0.5pt th \emph{Sonneveld subspace} generated by $Q$ and
+where $\mathcal{S}(\Omega, A, \tilde{\vec{r}}_0)$ is the
+$\Omega$\kern0.5pt th \emph{Sonneveld subspace} generated by $A$ and
 $\tilde{\vec{r}}_0)$ of order $k = \deg \Omega$. Hence
 $\mathcal{L}_k = \mathcal{G}_k^{\perp}$, which makes \textls{BiCGSTAB}
 equivalent to another Krylov subspace method, Induced Dimensionality
@@ -826,11 +826,11 @@ by \citet{barrett1994templates}.
 
 The inner loop of \textls{BiCGSTAB} is the composed of two
 procedures. The bi-conjucate gradient (\textls{Bi-CG}) part in lines~%
-\ref{nl:algorithms:bicgtab:bicg-start}--\ref{nl:algorithms:bicgtab:bicg-end}
-calculates a residual $\vec{t} \in \mathcal{G}_{k - 1} Q$ and its
+\ref{nl:algorithms:bicgstab:bicg-start}--\ref{nl:algorithms:bicgstab:bicg-end}
+calculates a residual $\vec{t} \in \mathcal{G}_{k - 1} A$ and its
 associated approximate solution $\vec{x} \in \mathcal{K}_k$. The
 \textls{GMRES}($1$) part in lines~%
-\ref{nl:algorithms:bicgtab:gm-start}--\ref{nl:algorithms:bicgtab:gm-end}
+\ref{nl:algorithms:bicgstab:gm-start}--\ref{nl:algorithms:bicgstab:gm-end}
 selects $\omega_k \in \RR$ and calculates a new residual
 $\vec{r} \in \mathcal{G}_{k}$ such that the Euclidean norm
 $\| \vec{r} \|_2$ is minimized. This part improves convergence over
@@ -887,16 +887,16 @@ from \textls{CTMC} analysis.
   \cref{eq:algorithms:bicgstab:sonneveld} constraints the residual
   $\vec{r}_k$
   \begin{equation}
-    \vec{r}_k \in \mathcal{G}_k = \mathcal{S}(\Omega_k, Q, \widetilde{R}_0) =
-    \{ \vec{v} \cdot \Omega_k(Q) : \vec{v} \perp \mathcal{K}_k(Q,
+    \vec{r}_k \in \mathcal{G}_k = \mathcal{S}(\Omega_k, A, \widetilde{R}_0) =
+    \{ \vec{v} \cdot \Omega_k(A) : \vec{v} \perp \mathcal{K}_k(A,
     \tilde{R}_0) \}\text,
   \end{equation}
-  where $\mathcal{K}_k(Q, \tilde{R}_0)$ is the $k$th \emph{row} Krylov
-  subspace of $Q \in \RR^{n \times n}$ with respect to
+  where $\mathcal{K}_k(A, \tilde{R}_0)$ is the $k$th \emph{row} Krylov
+  subspace of $A \in \RR^{n \times n}$ with respect to
   $\tilde{R}_0 \in \RR^{s \times n}$
   \begin{equation}
-    \mathcal{K}_k(Q, \widetilde{R}_0) = \Span \{ \tilde{\vec{r}}_0[i],
-    \tilde{\vec{r}}_0[i] Q, \ldots, \tilde{\vec{r}}_0[i] Q^{k - 1} : i =
+    \mathcal{K}_k(A, \widetilde{R}_0) = \Span \{ \tilde{\vec{r}}_0[i],
+    \tilde{\vec{r}}_0[i] A, \ldots, \tilde{\vec{r}}_0[i] A^{k - 1} : i =
     0, 1, \ldots, s - 1 \}
   \end{equation}
   and $\tilde{\vec{r}}_0[i]$ is the $i$th row $\tilde{R}_0$.
@@ -910,8 +910,8 @@ from \textls{CTMC} analysis.
   stabilizer polynomial $\Omega_k$ from
   \cref{eq:algorithms:bicgstab:stabpoly} with
   \begin{equation}
-    \Omega_k(Q) = \Omega_{k - 1}(Q) \cdot (I - \gamma[0] Q - \gamma[1] Q^2
-    - \cdots - \gamma[\ell - 1] Q^{\ell}) \text,
+    \Omega_k(A) = \Omega_{k - 1}(A) \cdot (I - \gamma[0] A - \gamma[1] A^2
+    - \cdots - \gamma[\ell - 1] A^{\ell}) \text,
   \end{equation}
   i.e.~degree of the stabilizer polynomial $\Omega$ increases by $\ell$
   instead of $1$ every iteration. The increase is described by the
@@ -936,6 +936,218 @@ different settings of $(s, \ell)$ bring the power of multiple
 algorithms to the modelers' disposal.
 
 \paragraph{Implementation}
+
+\begin{algorithm}
+  \KwIn{matrix $A \in \RR^{n \times n}$, right vector $\vec{b} \in
+    \RR^n$, initial guess $\vec{x} \in \RR^n$, tolerance $\tau > 0$}
+  \KwOut{approximate solution of $\vec{x}A = \vec{b}$}
+  \KwAllocate{$\vec{R} \in \RR^{(\ell + 1) \times n}, \vec{U}, \vec{V}
+    \in \RR^{((\ell + 2) \times s) \times n}, \widetilde{\vec{R}}_0 \in \RR^{s
+    \times n}$}\;
+  \KwAllocate{$\largesigma \in \RR^{s \times s}, \vecarrow{m} \in
+    \RR^s, \vecarrow{\alpha} \in \RR^s, \vecarrow{\beta} \in \RR^s, G \in
+    \RR^{\ell \times \ell}, \vecarrow{\rho} \in \RR^\ell,
+    \vecarrow{\gamma} \in \RR^\ell$}\;
+  \HlNl{
+    \KwAllocate{$\vec{C}, \vec{D} \in \RR^{s \times n}$}\;
+  }
+  \AlgSection{Initialize shadow residuals}
+  \For{$j = 0$ \KwTo $s - 1$}{
+    Sample $\tilde{\vec{r}}_0[j]$ from an $n$-dimensional standard
+    normal distribution\;
+    \HlNl[*]{
+      $\tilde{\vec{r}}_0[j] \gets \tilde{\vec{r}}_0[j] + \mleft( - \sum_{k
+        = 0}^{n - 1} \tilde{r}_0[j][k] / n \mright) \, \vec{1}$
+    }
+    \Operation*{\InPlace VectorAdd}
+    \For{$q = 0$ \KwTo $s - 1$}{%
+      $\tilde{\vec{r}}_0[j] \gets \tilde{\vec{r}}_0[j] +
+      (-\tilde{\vec{r}}_0[j] \cdot \tilde{\vec{r}}_0[q])
+      \, \tilde{\vec{r}}_0[q]$
+      \Operation*{\InPlace VectorAdd}
+    }
+    $\tilde{\vec{r}}_0[j] \gets (1 / \| \tilde{\vec{r}}_0[j] \|_2 )
+    \, \tilde{\vec{r}}_0[j]$
+    \Operation*{\InPlace VectorScale}
+  }
+  \AlgSection{Initialize residuals and intermediate vectors}
+  $\vec{r}[0] \gets \vec{b}$,
+  $\vec{r}[0] \gets \vec{r}[0] + (-1) \, \vec{x} A$
+  \Operation*{MatrixVectorAccumulateMultiplyFromLeft}
+  \For{$q \gets 0$ \KwTo $s - 1$}{%
+    \HlNl{
+      \lIf(\Operation*[f]{VectorSet}){$q = 0$}{%
+        $\vec{c}[0] \gets (-1) \, \vec{x}$,
+        $\vec{u}[0, 0] \gets \vec{r}[0]$%
+      }
+      \lElse(\Operation*[f]{VectorSet}){%
+        $\vec{c}[q] \gets \vec{u}[0, q - 1]$,
+        $\vec{u}[0, q] \gets \vec{u}[1, q - 1]$%
+      }
+    }
+    $U[1, q] \gets U[0, q] \, A$
+    \Operation*{MatrixMultiplyFromLeft}
+    \For{$k \gets 0$ \KwTo $q - 1$}{
+      $\textit{proj} \gets \vec{u}[0, k] \cdot \vec{u}[0, q]$
+      \Operation*{VectorScalarProduct}
+      \HlNl{
+        $\vec{c}[q] \gets \vec{c}[q] + (-\textit{proj}) \, \vec{c}[k]$
+        \Operation*{\InPlace VectorAdd}
+      }
+      $\vec{u}[0, q] \gets U[0, q] + (-\textit{proj}) \, \vec{u}[0, k]$,
+      $\vec{u}[1, q] \gets U[1, q] + (-\textit{proj}) \, \vec{u}[1, k]$\;
+    }
+    $\textit{norm} \gets \| \vec{u}[0, q] \|_2$
+    \Operation*{VectorScalarProduct}
+    \HlNl{
+      $\vec{c}[q] \gets (1 / \textit{norm}) \, \vec{c}[q]$,
+      \Operation*{\InPlace VectorScale}
+    }
+    $\vec{u}[0, q] \gets (1 / \textit{norm}) \, \vec{u}[0, q]$,
+    $\vec{u}[1, q] \gets (1 / \textit{norm}) \, \vec{u}[1, q]$\;
+  }
+  \AlgSection{Iteration}
+  \While{$\| \vec{r}[0] \| > \epsilon$}{
+    Perform \textls{IDR} step from \textbf{TODO}\;
+    Perform \textls{GMRES}($\ell$) step from \textbf{TODO}\;
+  }
+  \KwRet{$\vec{x}$}
+  \caption{\textls{IDR}($s$)\textls{STAB}($\ell$).}
+\end{algorithm}
+
+\begin{algorithm}
+  \For(\tcp*[f]{For every repetition step}){$j \gets 1$ \KwTo $\ell$}{
+    %\AlgSection{Caclulate the new residuals}
+    \For{$k \gets 0$ \KwTo $s - 1$}{
+      \lFor(\Operation*[f]{VectorScalarProduct}){$q \gets 0$ \KwTo $s - 1$}{%
+        $\sigma[q, k] \gets \vec{u}[j, q] \cdot \tilde{\vec{r}}_0[k]$%
+      }
+      $m[k] \gets \vec{r}[j - 1] \cdot \tilde{\vec{r}}_0[k]$
+      \Operation*{VectorScalarProduct}
+    }
+    Solve $\vecarrow{\alpha} \largesigma = \vecarrow{m}$ for
+    $\vecarrow{\alpha}$\;
+    \For{$q \gets 0$ \KwTo $s - 1$}{
+      $\vec{x} \gets \vec{x} + \alpha[q] \, \vec{u}[0, q]$
+      \Operation*{\InPlace VectorAdd}
+      \lFor{$k \gets 0$ \KwTo $j - 1$}{%
+        $\vec{r}[k] \gets \vec{r}[k] + (-\alpha[q]) \, \vec{u}[k +
+        1][q]$%
+      }
+    }
+    $\vec{r}[j - 1] \gets \vec{r} \, A$
+    \Operation*{VectorMatrixMultiplyFromLeft}
+    \For(\tcp*[f]{Build a new basis for the shadow space}){%
+      $q \gets 0$ \KwTo $s - 1$}{
+      %\AlgSection{Calculate the next basis vector by projection}
+      \eIf{$q = 0$}{
+        \HlNl{
+          $\vec{d}[0] \gets (-1) \, \vec{x}$
+          \Operation*{VectorScale}
+        }
+        \lFor(\Operation*[f]{VectorSet}){$k \gets 0$ \KwTo $j - 1$}{%
+          $\vec{v}[k, 0] \gets \vec{r}[k]$%
+        }
+      }{
+        \HlNl{
+          $\vec{d}[q] \gets \vec{v}[0, q - 1]$
+          \Operation*{VectorSet}
+        }
+        \lFor(\Operation*[f]{VectorSet}){$k \gets 0$ \KwTo $j - 1$}{%
+          $\vec{v}[k, q] \gets \vec{v}[k + 1, q - 1]$%
+        }
+      }
+      \lFor(\Operation*[f]{VectorScalarProduct}){%
+        $k \gets 0$ \KwTo $s - 1$}{%
+        $m[k] \gets \vec{v}[j, q] \cdot \tilde{\vec{r}}_0[k]$%
+      }
+      Solve $\vecarrow{\beta} \largesigma = \vecarrow{m}$ for
+      $\vecarrow{\beta}$\;
+      \For{$i \gets 0$ \KwTo $s - 1$}{%
+        \HlNl{
+          $\vec{d}[q] \gets \vec{d}[q] + (-\beta[i]) \, \vec{c}[i]$
+          \Operation*{\InPlace VectorAdd}
+        }
+        \lFor{$k \gets 0$ \KwTo $j$}{%
+          $\vec{v}[k, q] \gets \vec{v}[k, q] + (-\beta[i]) \,
+          \vec{u}[k, i]$%
+        }
+      }
+      $\vec{v}[j + 1, q] \gets \vec{v}[j, q] \, A$
+      \Operation*{VectorMatrixMultiplyFromLeft}
+      %\AlgSection{Gram--Schmidt orthonormalization}
+      \For(\tcp*[f]{Attempt orthonormalization}){%
+        $i \gets 0$ \KwTo $q - 1$}{
+        $\textit{proj} \gets \vec{v}[j, q] \cdot \vec{v}[j, i]$
+        \Operation*{VectorScalarProduct}
+        \HlNl{
+          $\vec{d}[q] \gets \vec{d}[q] + (-\textit{proj}) \, \vec{d}[i]$
+          \Operation*{\InPlace VectorAdd}
+        }
+        \lFor{$k \gets 0$ \KwTo $j + 1$}{%
+          $\vec{v}[k, q] \gets \vec{v}[k, q] + (-\textit{proj}) \, \vec{v}[k, i]$%
+        }
+      }
+      $\textit{norm} \gets \| \vec{v}[j, q] \|_2$
+      \Operation*{VectorScalarProduct}
+      \HlNl{
+        \If(\tcp*[f]{Gram--Schmidt breakdown}){%
+          $\textit{norm} < \epsilon$}{
+          \KwMessage{early exit with $\vec{v}[j, q] \approx \vec{0}$}\;
+          $\textit{sum} \gets \sum_{k = 0}^{n - 1}{d[q][k]}$,
+          $\vec{x} \gets (1 / \textit{sum}) \, d[q][k]$
+          \Operation*{\InPlace VectorScale}
+          \KwRet{$\vec{x}$}\;
+        }
+        $\vec{d}[q] \gets (1 / \textit{norm}) \, \vec{d}[q]$
+        \Operation*{\InPlace VectorScale}
+      }
+      \lFor(\Operation*[f]{\InPlace VectorScale}){%
+        $k \gets 0$ \KwTo $j + 1$}{%
+        $\vec{v}[k, q] \gets (1 / \textit{norm}) \, \vec{v}[k, q]$%
+      }
+    }
+    \HlNl{
+      Swap the references to $\vec{C}$ and $\vec{D}$\;
+    }
+    Swap the references to $\vec{U}$ and $\vec{V}$\;
+  }
+  \caption{\textls{IDR}($s$)\textls{STAB}($\ell$) \textls{IDR} step.}
+\end{algorithm}
+
+\begin{algorithm}
+  \AlgSection{Find $\argmin_{\vecarrow{\gamma} \in \RR^\ell} \|
+    \vec{r}[0] - R[1:\ell] \vecarrow{\gamma}^\T\|_2$ by solving the
+    normal equation}
+  \For{$j \gets 1$ \KwTo $s$}{
+    \lFor(\Operation*[f]{VectorScalarProduct}){$i \gets 1$ \KwTo $s$}{%
+      $g[i, j] \gets \vec{r}[i] \cdot \vec{r}[j]$%
+    }
+    $\rho[j] \gets \vec{r}[0] \cdot \vec{r}[j]$
+    \Operation*{VectorScalarProduct}
+  }
+  Solve $\vecarrow{\gamma} G = \vecarrow{\rho}$ for
+  $\vecarrow{\gamma}$\;
+  \AlgSection{Calculate the minimal residual}
+  \For{$j \gets 0$ \KwTo $j - 1$}{
+    $\vec{x} \gets \vec{x} + \gamma[j] \, \vec{r}[j]$
+    \Operation*{\InPlace VectorAdd}
+    $\vec{r}[0] \gets \vec{r}[0] + (-\gamma[j]) \, \vec{r}[j + 1]$
+    \Operation*{\InPlace VectorAdd}
+    \For{$q \gets 0$ \KwTo $s - 1$}{
+      \HlNl{
+        $\vec{c}[q] \gets \vec{c}[q] + (-\gamma[j]) \, \vec{u}[j, q]$
+        \Operation*{\InPlace VectorAdd}
+      }
+      $\vec{u}[j, q] \gets \vec{u}[j, q] + (-\gamma[j]) \, \vec{u}[j + 1, q]$
+      \Operation*{\InPlace VectorAdd}
+      $\vec{u}[j + 1, q] \gets \vec{u}[j + 1, q] + (-\gamma[j]) \,
+      \vec{u}[j + 2, q]$
+      \Operation*{\InPlace VectorAdd}
+    }
+  }
+  \caption{\textls{IDR}($s$)\textls{STAB}($\ell$) \textls{GMRES}($\ell$) step.}
+\end{algorithm}
 
 The pseudocode of our implementation of
 \textls{IDR}($s$)\textls{STAB}($\ell$), which is based on the
@@ -963,7 +1175,7 @@ step'',
     \newcommand*{\rightproj}[1]{\overset{\smash{\clap{%
             \raisebox{3pt}{$\mathsurround=0pt\Pi_{#1}$}}}}\rightarrow}%
     \newcommand*{\neproj}[1]{{\nearrow}\mathrlap{\,\Pi_{#1}}}%
-    \newcommand*{\mulA}{{\downarrow}\mathrlap{\,Q}}%
+    \newcommand*{\mulA}{{\downarrow}\mathrlap{\,A}}%
     \newcommand*{\noMulA}{{\color{black!50}\mulA}}%
     \newcommand*{\noEquation}{{\color{black!50}\downarrow}}%
   \begin{array}{*{7}{c}@{\,\,}c@{\,\,}c}
@@ -979,12 +1191,13 @@ step'',
     & & \mulA & \neproj{j} & \mulA & \neproj{j} & \mulA & & \mulA \\
     & & \boxed{\vec{r}[j]} & & \boxed{\vec{v}[j + 1,0]} & & \boxed{\vec{v}[j + 1,1]} & \cdots & \boxed{\vec{v}[j + 1, s - 1]}
   \end{array}\label{eq:algorithms:idrstab:projections}
-\end{equation}}
-for $j = 1, 2, \ldots, \ell$. After the repetition step is complete,
-$\vec{U}$ and $\vec{V}$ are swapped and the process starts again with
-increased $j$ or the \textls{GMRES}($\ell$) part commences. Symbols
-with a subscript ``$-$'' sign refer to vectors from the previous
-repetition step.
+\end{equation}}%
+for $j = 1, 2, \ldots, \ell$ every iteration.
+
+After a repetition step is complete, $\vec{U}$ and $\vec{V}$ are
+swapped and the process starts again with increased $j$ or the
+\textls{GMRES}($\ell$) part commences. Symbols with a subscript
+``$-$'' sign refer to vectors from the previous repetition step.
 
 The projections $\Pi_i$ ($i = 0, 1, \ldots, j$) are defined as
 \begin{equation}
@@ -994,19 +1207,19 @@ The projections $\Pi_i$ ($i = 0, 1, \ldots, j$) are defined as
 where the matrix $U[k, \cdot]$ is the $s \times n$ matrix that has the
 vector $\vec{u}[k, q]$ as its $q$th row. They ensure that the rows of
 $U[j, \cdot]$ form a basis of the Krylov subspace
-$\mathcal{K}_s(Q \Pi_j, \vec{r} Q^j \Pi_j)$ after the $j$th repetition
+$\mathcal{K}_s(A \Pi_j, \vec{r}[j] \Pi_j)$ after the $j$th repetition
 step.
 
-The relationships $\vec{r}[i + 1] = \vec{r}{i} Q$,
-$\vec{u}[i + 1, q] = \vec{u}[i, q] Q$,
+The relationships $\vec{r}[i + 1] = \vec{r}{i} A$,
+$\vec{u}[i + 1, q] = \vec{u}[i, q] A$,
 $\vec{v}[i + 1, q] = \vec{v}[i, q]$ are maintained throughout the
 algorithm via the projections. This is signified by the gray
-{\color{black!50}$\downarrow Q$} arrows in
+{\color{black!50}$\downarrow A$} arrows in
 \cref{eq:algorithms:idrstab:projections}. Notice that this means
-$\vec{r}[0] Q^i = \vec{r}[i]$ and $U[0, \cdot] Q^i = U[i, \cdot]$.
+$\vec{r}[0] A^i = \vec{r}[i]$ and $U[0, \cdot] A^i = U[i, \cdot]$.
 
 In the case of $\vec{r}[j]$ and $\vec{v}[j + 1, q]$, a matrix
-multiplication is performed as shown by the $\downarrow Q$
+multiplication is performed as shown by the $\downarrow A$
 arrows. Vectors generated by matrix multiplication are shown in
 borders.
 
