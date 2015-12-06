@@ -1,7 +1,7 @@
-\chapter{Overview of the approach}
+\chapter{Overview}
 \label{chap:overview}
 
-\section{General workflow}
+\section{General stochastic analysis workflow}
 
 \begin{figure}
   \centering
@@ -97,8 +97,8 @@ multiple tasks yields overhead. Distributed or \textls{GPU}
 implementations are also possible, albeit they are missing from the
 current version of our framework.
 
-\section{Our workflow}
-  \label{chap:overview:sec:our-workflow}
+\section{Our workflow in PetriDotNet}
+\label{chap:overview:sec:our-workflow}
 
 \begin{figure}
   \centering
@@ -114,7 +114,7 @@ current version of our framework.
       & \node [activity] (sse) {State space exploration};
       & \node [activity] (gen) {Generator construction};
       & \node (ds) {Data structure}; \\
-      & \node (sspn) {\textls{SSPN} partition};
+      & \node (sspn) {Model partition};
       & & \node [activity] (numeric) {Numerical algorithms}; \\
       & & \coordinate (calc-input);
       & \node [activity] (calc) {Reward calculation}; \\
@@ -125,7 +125,7 @@ current version of our framework.
     {Sensitivity parameters};
 
     \draw [-{Latex}] (model) edge (sse) (sse) edge (gen)
-    (sspn) edge [dashed] (sse) (gen) edge (ds)
+    (sspn) edge (sse) (gen) edge (ds)
     (ds) edge [transform canvas={xshift=0.325cm}] (numeric)
     (numeric) edge [transform canvas={xshift=-0.325cm}] (ds)
     (numeric) edge (calc) (reward) edge (calc)
@@ -133,7 +133,8 @@ current version of our framework.
 
     \draw ($(ds.north west)+(-0.325cm,0.325cm)$)
     rectangle ($(numeric.south east)+(0.325cm,-0.325cm)$);
-    \node [above=0.4cm of ds] {Configurable operations};
+    \node [above=0.4cm of ds, text width=4cm,align=center] {%
+      Analysis with\\configurable operations};
 
     %\draw ($(ds.south)+(-0.7cm,-0.325cm)$) edge
     %($(ds.south)+(0.7cm,-0.325cm)$) node [left]
@@ -143,125 +144,246 @@ current version of our framework.
   \label{fig:overview:our:workflow}
 \end{figure}
 
-\begin{figure}
-  \centering
-  \begin{tikzpicture}[
-    architecture layer/.style={
-      tdk highlight,draw,
-      minimum width=0.98\linewidth,
-      minimum height=2.5cm
-    },
-    layer label/.style={
-      anchor=north west,font=\strut
-    },
-    component/.style={
-      text width=2.1cm,minimum height=1.2cm,align=center,
-      draw,tdk highlight,
-      inner sep=4pt
-    },
-    small component/.style={
-      component,text width=1.5cm, minimum height=0.9cm,
-      font=\footnotesize
-    },
-    components/.style={
-      column sep=0.65cm,
-      yshift=-4ex,
-      anchor=north
-    },
-    two components/.style={
-      components,
-      column sep=2cm
-    },
-    three components/.style={
-      components,
-      column sep=1.5cm
-    },
-    small components/.style={
-      components,
-      column sep=0.325cm,
-      row sep=0.325cm
-    }
-    ]
-    \node [architecture layer] (l-state-exploration) {};
-    \node [layer label] at (l-state-exploration.north west)
-    {State space exploration};
-    \node [architecture layer,below=of l-state-exploration] (l-state-storage) {};
-    \node [layer label] at (l-state-storage.north west)
-    {State space storage};
-    \node [architecture layer,below=of l-state-storage] (l-matrix-decomposition) {};
-    \node [layer label] at (l-matrix-decomposition.north west)
-    {Matrix representation};
-    \node [architecture layer,below=of l-matrix-decomposition,
-    rectangle split,rectangle split horizontal,rectangle split
-    parts=2,text width=0.49\linewidth,inner sep=0pt,minimum height=4.75cm] (l-numerical)
-    {\nodepart{one}\hfil\nodepart{two}\hfil};
-    \node [layer label] at (l-numerical.north west)
-    {Steady-state solution algorithms};
-    \node [layer label] at (l-numerical.north)
-    {Transient solution algorithms};
-    \node [architecture layer,below=of l-numerical] (l-reward) {};
-    \node [layer label] at (l-reward.north west)
-    {Engineering measure calculation};
+``\textsc{PetriDotNet} is a framework for the editing, simulation and
+analysis of Petri nets. The framework is developed by the Fault
+Tolerant Systems Research Group at the Budapest University of
+Technology and Economics.'' \citep{Petridotnet}
 
-    \matrix [two components] at (l-state-exploration.north) {
-      \node [component] (se-explicit) {Explicit};
-      & \node [component] (se-symbolic) {Symbolic}; \\
-    };
-    \matrix [two components] at (l-state-storage.north) {
-      \node [component] (ss-explicit) {Explicit};
-      & \node [component
-      ] (ss-symbolic) {\textls{MDD} / \textls{EDD}}; \\
-    };
-    \matrix [three components] at (l-matrix-decomposition.north) {
-      \node [component] (md-dense) {Dense matrix};
-      & \node [component] (md-sparse) {Sparse matrix};
-      & \node [component] (md-kronecker) {Block Kronecker}; \\
-    };
-    \matrix [small components] at (l-numerical.one north) {
-      \node [small component] (st-lu) {\textls{LU} decomposition};
-      & \node [small component] (st-power) {Power method};
-      & \node [small component] (st-jacobi) {Jacobi}; \\
-      \node [small component] (st-gs) {Gauss--Seidel};
-      & \node [small component] (st-groupjacobi) {Group Jacobi};
-      & \node [small component] (st-groupgs) {Group G--S}; \\
-      & \node [small component] (st-bicgstab) {\textls{BiCGSTAB}}; & \\
-    };
-    \matrix [components] at (l-numerical.two north) {
-      \node [component] (tr-unif) {Uni\-for\-mi\-za\-tion};
-      & \node [component] (tr-trbdf2) {\textls{TR-BDF2}}; \\
-    };
-    \matrix [components] at (l-reward.north) {
-      \node [component] (r-accum-reward) {Accumulated reward};
-      &\node [component] (r-reward) {Reward rate};
-      & \node [component] (r-sensitivity) {Sensitivity};
-      & \node [component] (r-mtff) {\textls{MTFF}}; \\
-    };
-
-    \draw [{Latex}-{Latex}] (se-explicit) edge (ss-explicit)
-    (se-symbolic) edge (ss-symbolic);
-    \draw [{Latex}-{Latex}] (md-sparse) edge (md-kronecker)
-    (r-reward) edge (r-sensitivity);
-
-    \newcommand*{\commArrows}[2]{
-      \draw [-{Latex},transform canvas={xshift=-1cm}] (#1) -- (#2);
-      \draw [-{Latex},transform canvas={xshift=1cm}] (#2) -- (#1);
-    }
-    \commArrows{l-state-storage}{l-matrix-decomposition}
-    \commArrows{l-matrix-decomposition}{l-numerical}
-    \commArrows{l-numerical}{l-reward}
-  \end{tikzpicture}
-  \caption{Architecture of the configurable stochastic analysis
-    framework.}
-  \label{fig:overview:our:architecture}
-\end{figure}
-
-Our implementation of the general stochastic analysis workflow is
-illustrated in \cref{fig:overview:our:workflow}.
+The implementation of the general stochastic analysis workflow in
+\textsc{PetriDotNet} is illustrated in
+\cref{fig:overview:our:workflow}. The models are specified using the
+stochastic Petri net (\textls{SPN}) formalism \textbf{TODO
+  Cite}, while engineering measures to be calculated are expressed as
+\textls{SPN} performance measures. Both explicit and symbolic state
+space exploration and storage is supported, including symbolic hierarchical
+state space decomposition for block Kronecker generator
+matrices.
 
 The workflow is fully \emph{configurable}, which means that the
 modeler may combine the available algorithms for the analysis steps
-arbitrarily. This is achieved by a layered architecture as shown in
-\cref{fig:overview:our:architecture}.
+arbitrarily. In addition, implementations of the linear algebra
+operations performed by the algorithms may be replaced at
+runtime.
+
+\section{Architecture}
+
+\begin{figure}
+  \centering
+  \begin{tikzpicture}
+    \node (layers) [text width = 7.5cm,
+    rectangle split, rectangle split parts = 4,
+    align = center,
+    inner sep = 0pt,
+    draw,
+    rectangle split part fill = {white, white, black!20, black!20}] {
+      \begin{minipage}{0.9\linewidth}%
+        \vspace*{7pt}\centering%
+        Stochastic Petri net analysis: \\
+        $\bullet$~{State space exploration} \\
+        $\bullet$~{Translation of \textls{SPN} measures}%
+        \vspace*{7pt}%
+      \end{minipage}
+      \nodepart{two}%
+      \begin{minipage}{0.9\linewidth}%
+        \vspace*{7pt}\centering%
+        Stochastic automata network analysis: \\
+        $\bullet$~{Descriptor generation}\\
+        $\bullet$~{Reward and sensitivity calculation}%
+        \vspace*{7pt}%
+      \end{minipage}
+      \nodepart{three}%
+      \begin{minipage}{0.9\linewidth}%
+        \vspace*{7pt}\centering%
+        Numerical algorithms:\\
+        $\bullet$~{LU decomposition, power iteration, Jacobi,
+          Gauss--Seidel, group iteration, \textls{BiCGSTAB}}\\
+        $\bullet$~{Uniformization, \textls{TR-BDF2}}%
+        \vspace*{7pt}%
+      \end{minipage}
+      \nodepart{four}%
+      \begin{minipage}{0.5\linewidth}%
+        \vspace*{7pt}\centering%
+        Matrix-vector\\
+        data structure%
+        \vspace*{7pt}%
+      \end{minipage}%
+      \vrule
+      \begin{minipage}{0.5\linewidth}%
+        \vspace*{7pt}\centering%
+        Configurable operations%
+        \vspace*{7pt}%
+      \end{minipage}%
+    };
+
+    \node [right=-8pt of layers.west,rotate=90,anchor=south,xshift=10pt]
+    {Analysis workflow};
+
+    \begin{pgfonlayer}{bg}
+      \node (pdn) at (layers.south east) [anchor=south east,minimum
+      width=10cm, minimum height=8.75cm, draw, dashed] {};
+
+      \node (workflow) at (layers.south east) [anchor=south east,minimum
+      width=8.75cm, minimum height=8.25cm, draw, tdk highlight] {};
+    \end{pgfonlayer}
+
+    \node [right=-8pt of workflow.west,rotate=90,anchor=south,xshift=10pt]
+    {\textsc{PetriDotNet}};
+
+    \draw ($(layers.east)+(5pt,0pt)$)
+    edge [decorate,decoration={brace,amplitude=10pt}]
+    node [right,xshift=10pt] {Backend}
+    ($(layers.south east)+(5pt,0pt)$);
+
+    \draw ($(layers.north east)+(5pt,0pt)$)
+    edge [decorate,decoration={brace,amplitude=10pt}]
+    node [right,xshift=10pt] {Frontend}
+    ($(layers.east)+(5pt,15pt)$);
+
+  \end{tikzpicture}
+  \caption{Layered architecture for configurable stochastic analysis.}
+  \label{fig:overview:layered}
+\end{figure}
+
+\Cref{fig:overview:layered} shows the architecture of the configurable
+stochastic analysis module.
+\begin{itemize}
+\item The user interacts with the stochastic \emph{analysis
+    workflow} runner.
+
+  The model, its parameters and its stochastic behavior as transition
+  rates of timed transitions is specified and engineering measures of
+  interest (e.g.~performability, availability, reliability,
+  dependability) are defined with \textls{SPN} rewards. Afterwards,
+  the analysis workflow can be initiated by selecting the analysis
+  type (steady-state, sensitivity, transient, \textls{MTFF}), the used
+  algorithms and the engineering measures to compute. The workflow
+  runner instantiates and executes the components which are required
+  to complete the analysis and displays the results.
+
+  Numerical analysis algorithms most suitable for the analyzed model
+  and executing hardware may be selected by the user. Moreover,
+  low-level linear algebra operations, for example, parallel or
+  sequential algorithms for matrix products, may be also selected for
+  every step in the workflow.
+\end{itemize}
+The stochastic analysis problem is translated into numerical problems
+by the ``frontend'' part of the analysis module:
+\begin{itemize}
+\item The \emph{stochastic Petri net analysis} modules translate the
+  stochastic behaviour of Petri net into generic data structures. The
+  partition of the model defines the stochastic automata of the
+  \textls{SAN} representation of the model. The algebraic expressions
+  that specify transition rates and rewards are evaluated, thus lower
+  level components only work with transition rates and their
+  derivatives.
+
+  Symbolic state space exploration is performed by the
+  \emph{saturation} algorithm, which is provided by the symbolic
+  analysis component of \textsc{PetriDotNet}. Petri nets with inhibitor
+  arcs are supported, but transitions with prioirity (including
+  non-timed transitions) cannot be used. \textbf{TODO Cite}
+
+  Rewar expressions that refer to subsets of the reachable state space
+  defined by Computation Tree Logic (\textls{CTL}) are also evaluated
+  by the symbolic analysis component. Therefore, \textls{CTL} rewards
+  cannot be used with explicit state space representation algorithms.
+
+\item The \emph{stochastic automata network analysis} module
+  implements explicit and symbolic procedures for infinitesimal
+  generator matrix composition and reward calculation. This component
+  does not depend on the Petri net formalism and may be reused for
+  different formalisms.
+
+  The matrices $Q$ and $V_i$, that is, the generator matrix and its
+  partial derivatives may be stored as a dense or sparse array or a
+  block Kronecker matrix using the object model defined by the
+  matrix-vector data structure. Linear algebra operations during the
+  generator composition, for example, calculation of the diagonal
+  entries of $Q$, are performed by the operation framework supporting
+  the data structure.
+
+  Numerical solution algorithms, such as linear equation solvers and
+  transient distribution integrators are called to derive the steady
+  state and transient distributions of the Markov chain and its
+  sensitivities.
+
+  The final task performed by the frontend is the calculation of the
+  reward values, which uses both linear algebra operations and
+  symbolic iteration over the results of the \textls{CTL} evaluator.
+\end{itemize}
+The analysis ``backend'' serves as a library of matrix--vector data
+structured, linear algebra operations and numerical solution
+algorithms:
+\begin{itemize}
+\item \emph{Numerical algorithms} implement solution finding for linear
+  equations and Markovian transient initial value problems. The
+  algorithms are implemented generically whenever possible, so that no
+  assumptions are made about the structure of matrices unless
+  neccessary due to mathematical or performance reasons. This is
+  achieved by the definition of a (non-orthogonal) set of operations
+  on the matrix-vector data structure. The operations may be replaced
+  at runtime for flexibility, for example, different implementations
+  of operations may be used for different algorithms in the same
+  workflow.
+
+\item The \emph{matrix-vector data structure} provides an interface
+  for storing various linear algebra objects.
+
+  In addition to dense and sparse arrays, wrappers are provided to
+  access parts of matrices and vectors and to build expression trees
+  out of smaller matrices. Hence, matrices such as block Kronecker
+  infinitesimal generators (\vref{eq:genstor:explicit:block:block})
+  can be stored as a collection of small sparse matrices in a nested
+  expression tree.
+
+  While current the frontend only generates simple arrays and block
+  Kronecker matrices, and descriptor format may be used as long as it
+  can be expressed as expression trees.
+
+  The data structure only provides storage, any calls to linear
+  algebra operations are delegated to the configurable operation
+  context.
+
+\item The \emph{configurable operation context} provides and
+  dispatches the implementations of linear algebra operations, such as
+  matrix-vector product or vector addition.
+
+  Operations are specific to the data structure and may use multiple
+  dispatch call semantics. For example, an operation can be defined
+  that handles the multiplication of a block matrix and a constant
+  vector, and stores the result in vector backed by a linear
+  array. In addition to type information, the dispatch may use
+  addition runtime properties, such as the length of a vector to
+  select the appropriate implementation.
+
+  The dispatch rules may be modified at runtime. For example, parallel
+  execution may be replaced with sequential during the execution of
+  algorithms that achieve parallelization through other means.
+
+  Contrast operations with numerical algorithms, which are higher level
+  procedures that solve a particular numerical problem on a wide range
+  of data structures by delegation to a non-orthogonal set of specific
+  operations.
+\end{itemize}
+
+The stochastic analysis backed, which was developed by the author,
+comprise the topic of present work. \Cref{fig:overview:layered} shows
+its three components shaded in gray.
+
+Manipulations performed by the frontend components on the input Petri
+net models the generated descriptors are discussed in this thesis only
+briefly. We refer the interested reader to \textbf{TODO Cite TDK} for
+an overview of the whole \textsc{PetriDotNet} stochastic analysis
+component. 
+
+\section{Current status}
+
+In this section we briefly summarize the results of the backend
+development effort.
+
+\subsection{Data structures}
+
+\subsection{Numerical algorithms}
 
 \begin{table}
   \caption{Linear equation solvers supported by our framework.}
@@ -275,9 +397,13 @@ arbitrarily. This is achieved by a layered architecture as shown in
     Power method & p.~\pageref{ssec:algorithms:power} & moderate & $\checkmark$ & -- & $\checkmark$ \\
     Jacobi over-relaxation & p.~\pageref{ssec:algorithms:jgs} & moderate & $\checkmark$ & -- & $\checkmark$ \\
     Gauss--Seidel over-relaxation & p.~\pageref{ssec:algorithms:jgs} & very low & -- & -- & $\checkmark$ \\
-    \textls{BiCGSTAB} & p.~\pageref{ssec:algorithms:bicgstab} & high & $\checkmark$ & -- & $\checkmark$ \\
-    Group Jacobi & p.~\pageref{ssec:algorithms:group-jgs} & moderate & $\checkmark$ & $\checkmark$ & required \\
-    Group Gauss--Seidel & p.~\pageref{ssec:algorithms:group-jgs} & low & -- & $\checkmark$ & required \\
+    Group Jacobi & p.~\pageref{sec:algorithms:group-jgs} & moderate & $\checkmark$ & $\checkmark$ & required \\
+    Group Gauss--Seidel & p.~\pageref{sec:algorithms:group-jgs} & low & -- & $\checkmark$ & required \\
+    \textls{BiCGSTAB} & p.~\pageref{ssec:algorithms:bicgstab} & high &
+                                                                       $\checkmark$ & -- & $\checkmark$ \\
+    \textls{IDR($s$)STAB($l$)} &
+                                          p.~\pageref{ssec:algorithms:idrstab}
+      & \multicolumn{4}{c@{}}{Ongoing research} \\
     \bottomrule
   \end{tabular}
   \label{tab:overview:our:linear}
@@ -298,236 +424,40 @@ arbitrarily. This is achieved by a layered architecture as shown in
   \label{tab:overview:our:transient}
 \end{table}
 
-\begin{itemize}
-\item The model state space may be explored either by an explicit 
-  state space traversal, or by symbolic
-  saturation~\citep{Ciardo:2006}. As symbolic methods are usually much
-  faster and use significantly less memory than explicit enumeration,
-  they are the recommended approach for stochastic analysis. However the explicit algorithms are not sensitive to the structure of the model, they provide a robust solution as long as the state space fits into memory. In addition they are provided for benchmarking and software redundancy reasons too.
+Seven linear equation solver algorithms were implemented for
+steady-state, sensitivity and \textls{MTFF} problems:
+\textls{LU} decomposition, power iteration, Jacobi over-relaxation,
+Gauss--Seidel over-relaxation, group Jacobi, group Gauss--Seidel and
+\textls{BiCGSTAB}. Group Jacobi and Gauss--Seidel require a block
+matrix, while the other algorithms may run on any matrix.
 
-  The algorithms operating on a superposed
-  \textls{SPN} receive the model and a decomposition as an input. Partitions needed for the decomposition may be provided by the user
-  as part of the model or generated on the fly.
-\item The generator matrix may be stored in sparse matrix representation or decomposed into block
-  Kronecker form%
-  ~\citep{DBLP:journals/sigmetrics/BuchholzK98}. The matrix can be
-  build from both explicitly or symbolically stored state spaces.
+Special attention is paid to the root finding of singular systems with
+zero right vectors, i.e.~the determination of the nullspace of a
+matrix for systems arising from Markovian steady-state
+problems. Nonsingular problems are solved in steady-state sensitivity
+analysis and mean-time-to-failure analysis.
 
-  To facilitate block Kronecker matrix generation, we propose a purely
-  symbolic algorithm. The developed solution avoids any overheads of explicit state
-  space operations.
-\item The resulting matrices, in a possibly decomposed form, are part of a
-  specialized data structure. Extremely large matrices may be stored
-  with the developed decomposition algorithms (e.g.~linear combinations,
-  Kronecker products, contatenations into block structures). The data
-  structure defines generic vector and matrix operations, as well as
-  more specific manipulations performed by stochastic analysis
-  algorithms.
+The current research and development effort focuses on the integration
+of a solver based on \textls{IDR($s$)STAB($l$)} \textbf{TODO Cite}, a
+Krylov subspace algorithm which generalizes \textls{BiCGSTAB}. As the
+algorithm needs adaptation for singular matrices, it is currently not
+suitable for production use in Markovian analysis due to numerical
+breakdowns and instability.
 
-  State space exploration and generator matrix decomposition methods
-  are presented in \cref{chap:genstor}, including our theoretical and algorithmic
-  contribution for block Kronecker decomposition.
-\item The execution of the operations on the data structures can be
-  set at runtime. This allows the use of different
-  implementations at the different stages of the workflow, or when
-  different algorithms are employed to calculate multiple performance
-  measures. Whenever possible, both sequential and parallel
-  implementations of the most common operations are available for the
-  supported datatypes.
-\item Several numerical algorithms are provided for steady-state and
-  transient analysis of Markov chains. The user can select the
-  algorithm most suitable for the model under study. The algorithm library supports the combination of the algorithms and data structures at different levels of computations. This allows us to fine tune the numerical solution and solve every component with the most suitable algorithm.
+Two solution algorithms, uniformization and \textls{TR-BDF2}
+are available for transient analysis. Accumulated rewards can be
+calculated by uniformization only, while \textls{TR-BDF2} provides
+robustness for otherwise difficult to handle stiff Markov chains.
 
-  Important considerations in solver selection are convergence
-  properties and memory requirements. Matrix decompositions
-  can reduce the storage space needed by the matrix $Q$ by orders of
-  magnitudes. We store all elements of probability vectors
-  explicitly. Therefore, one should pay close attention to the number
-  of temporary vectors used in the algorithm in order to avoid
-  excessive memory consumption.
+Important considerations in solver selection are convergence
+properties and memory requirements. Matrix decompositions
+can reduce the storage space needed by the matrix $Q$ by orders of
+magnitudes. We store all elements of probability vectors
+explicitly. Therefore, one should pay close attention to the number
+of temporary vectors used in the algorithm in order to avoid
+excessive memory consumption.
 
-  Numerical algorithms supported by our framework are discussed in
-  \cref{chap:algorithms}. Linear equations solvers for steady-state
-  \CTMC\ analysis are shown in \cref{tab:overview:our:linear}, while
-  linear solver are shown in \cref{tab:overview:our:transient}.
-\end{itemize}
-
-\subsection{Formalisms}
-
-Our stochastic analysis framework supports models in the Stochastic
-Petri Net with inhibitor arcs formalism (see
-\vref{dfn:background:spn}). Structured models are handled as
-Superposed Stochastic Petri Nets (see
-\vref{dfn:background:sspn}). However, any modeling formalism can be
-processed by integrating the appropriate state space exploration
-algorithms with the workflow.
-
-Transition rates in the \textls{SPNs} can be arbitrary algebraic
-expressions containing references to \emph{sensitivity
-  variables}. These variables correspond to the parameter vector
-$\vec{\theta}$ of the Markov chain sensitivity analysis. However, the rate
-expression may not depend on the marking of the net.
-
-Reward structures are defined as Stochastic Reward Nets (see
-\vref{dfn:background:srn}). An \textls{SRN} reward structure may be
-specified by composing any \emph{reward expressions} of the forms
-\begin{enumerate}
-\item $(p, w)$, where $p \in P$ is a place and $w$ is a \emph{reward
-    weight expression}. This reward expression is equivalent to
-  a rate reward $\rateReward(M) = M(p) \cdot w$, i.e.~the value of $w$
-  is multiplied by the numer of tokens on $p$.
-\item $(t, w)$, where $t \in T$ is a transition and $w$ is a reward
-  weight expression. This is equivalent to an impulse reward
-  $\impulseReward(t, M) = w$ gained upon the firing of $t$.
-\item $\varphi \rightarrow w$, where $\varphi$ is a Computational Tree
-  Logic (\textls{CTL}) expression and $w$ is a reward weight
-  expression. This is equivalent to the rate reward $\rateReward(M) =
-  w$ if $\varphi$ holds in $M$, $0$ otherwise.
-\end{enumerate}
-
-A reward weight expression is an algebraic expression that may refer
-to places and transition rates in the net. Refrences to places are
-replaced by the number of tokens upon evaluation. For example, the
-reward expression $(p, w)$ may be written as
-$\KwTrue \rightarrow p \cdot w$ or $p > 0 \rightarrow p \cdot w$ using
-\textls{CTL}.
-
-Reward expressions with \textls{CTL} are only allowed when symbolic
-state spaces representation is used, as \textls{CTL} evaluation%
-\footnote{The symbolic state space exploration and \textls{CTL}
-  evaluation component is currently provided by the
-  \textsc{PetriDotNet}~\citep{Petridotnet} tool.} is performed
-symbolically~\citep{TDK2010_Darvas}.
-
-\begin{runningExample}
-  Consider the reward structures defined over the
-  \emph{Shared\-Resource} Petri net from \vref{ex:background:srn}.
-
-  The utilization of the shared resource can be described by the
-  reward expression
-  \begin{equation}
-    \textit{resourceUtilization} = \{ (p_{S_1}, 1), (p_{S_2}, 1)\} \text,
-  \end{equation}
-  which is equivalent to the \textls{SRN} reward structure
-  \begin{equation}
-    \rateReward_1(M) = M(p_{S_1}) + M(p_{S_2}), \quad
-    \impulseReward_1(t, M) \equiv 0 \text.
-    \tag{\ref{eq:background:srn:example-1} revisited}
-  \end{equation}
-  This can be also written as
-  \begin{equation}
-    \textit{resourceUtilization} = \{p_{S_1} > 0 \lor p_{S_2} > 0
-    \rightarrow 1\}
-  \end{equation}
-  using \textls{CTL}, because the places $S_1$ and $S_2$ are
-  $1$-bounded in the \emph{Shared\-Resource} model.
-
-  Completed calculations are described by
-  \begin{equation}
-    \textit{completedCalculations} = \{ (t_{s_1}, 1), (t_{r_2}, 1)\} \text,
-  \end{equation}
-  which is equivalent to the reward structure
-  \begin{equation}
-    \rateReward_2(M) \equiv 0, \quad \impulseReward_2(t, M) = \begin{cases}
-      1 & \text{if $t \in \{t_{r_1}, t_{r_2}\}$,} \\
-      0 & \text{otherwise.}
-    \end{cases}
-    \tag{\ref{eq:background:srn:example-2} revisited}
-  \end{equation}
-\end{runningExample}
-
-\subsection{Analysis}
-
-The framework introduced in this paper supports the configurable stochastic analysis of the following problems:
-\begin{itemize*}
-\item expected steady-state reward rates $\Ex R$ for any reward
-  structure defined by reward expressions,
-\item expected transient reward rates $\Ex R(t)$ and accumulated
-  rewards $\Ex Y(t)$,
-\item \emph{complex rewards}, which are algebraic expressions of mean
-  reward rates and accumulated rewards
-  (e.g~$1 + \Ex R(t) / \Ex Y(t)$),
-\item sensitivity of mean steady-state reward rates and complex
-  rewards involving steady-state rates,
-\item mean-time to failure $\MTFF$ and associated failure mode
-  probabilities.
-\end{itemize*}
-Configurable stochastic analysis provides the combination of multiple solver and representation algorithms for the efficient computation of the introduced properties.
-
-\subsection{Reward and sensitivity computation}
-
-Transition and reward rates are stored as algebraic expression trees
-in the input \textls{SPN} models. Symbolic operations, such as partial
-differentiation may be performed exactly on the trees using algebraic
-laws, as the evaluation of the expressions can be delayed.
-
-In reward and \textls{MTFF} calculations, rate expressions are
-evaluated by replacing sensitivity parameters with their values before
-the matrix $Q$ is composed. Thus, the elements of a matrix are not
-expression trees, but floating point numbers and matrix generation
-has to be performed only when sensitivity parameters are changed.
-
-Reward weight expressions may refer to the token counts on places,
-therefore they must be evaluated for every marking individually. If a
-\textls{CTL} reward expression $\varphi \rightarrow w$ is used,
-evaluation is skipped in markings where $\varphi$ is false.
-
-\begin{figure}
-  \centering
-  \begin{tikzpicture}[
-    data/.style={
-      text width=2.1cm,minimum height=1.2cm,align=center,
-      draw,tdk highlight
-    },
-    activity/.style={data,rounded corners=0.25cm},
-    node distance=0pt,inner sep=0pt
-    ]
-    \matrix [every node/.append style={activity},column sep=1cm,
-    row sep=0.65cm] (m) {
-      & \node (partial) {$\displaystyle \frac{\partial}{\partial
-          \theta [i]}$}; \\
-      \node (genq) {$Q$ matrix generation};
-      & \node (genv) {$V_i$ matrix generation}; \\
-      \node (solveq) {Solve for $\vec{p}$};
-      & \node (solvev) {Solve for $\vec{s}_i$}; \\
-      \node (preward) {$\displaystyle \vec{p}
-        \frac{\partial \vec{r}^\T}{\partial \theta[i]}$};
-      & \node (sreward) {Calculate $\vec{s}_i \vec{r}^\T$}; \\
-    };
-    \node [above=0.65cm of m,data] (rates) {Rate expressions};
-    \node [below=0.65cm of m,activity] (sum) {$\displaystyle \sum$};
-    \node [below=0.65cm of sum,data] (result) {Sensitivity value};
-    \node [left=0.65cm of genq,data,yshift=0.925cm] (param)
-    {Parameter bindings};
-    \node [left=0.65cm of preward,data,yshift=0.925cm] (reward)
-    {Reward expressions};
-
-    \begin{scope}[every path/.append style={-{Latex}}]
-      \draw (rates.south) -- ++(0,-0.325cm) -| (genq);
-      \draw (rates.south) ++(0,-0.325cm) -| (partial);
-      \draw (partial) edge (genv) (genv) edge (solvev)
-      (solvev) edge (sreward) (genq) edge (solveq)
-      (solveq) edge (preward) (sum) edge (result);
-      \draw (preward.south) |- ($(sum.north)+(0,0.325cm)$) -- (sum);
-      \draw [-] (sreward) |- ($(sum.north)+(0,0.325cm)$);
-      \draw (param) -| ($(genv.north)+(-0.5cm,0)$);
-      \draw ($(genq.north)+(-0.5cm,0.325cm)$) --
-      ($(genq.north)+(-0.5cm,0)$);
-      \draw (reward) -| ($(sreward.north)+(-0.5cm,0)$);
-      \draw ($(preward.north)+(-0.5cm,0.325cm)$) --
-      ($(preward.north)+(-0.5cm,0)$);
-      \draw [dashed] (param) -- (reward);
-    \end{scope}
-  \end{tikzpicture}
-  \caption{Reward and sensitivity calculation from expression tree
-    inputs.}
-  \label{fig:overview:sensitivity}
-\end{figure}
-
-Steady-state sensitivity calculation, shown in
-\cref{fig:overview:sensitivity}, is the most complicated
-post-processing in the workflow. Partial derivatives of the transition
-rate expressions and reward weight expressions are taken to calculate
-$\partial \Ex R / \partial \theta[i]$ using
-\cref{eq:background:ctmc:sensitvity:s,%
-eq:background:ctmc:sensitivity:productrule}.
+Numerical algorithms supported by our framework are further discussed
+in \cref{chap:algorithms}. Linear equations solvers for steady-state
+\CTMC\ analysis are shown in \cref{tab:overview:our:linear}, while
+linear solver are shown in \cref{tab:overview:our:transient}.

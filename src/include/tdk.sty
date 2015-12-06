@@ -192,8 +192,10 @@
 \theoremseparator{}
 
 % Highlight theorems with a rule
-\theoreminframepreskip{0cm}
-\theoreminframepostskip{0cm}
+\theorempreskip{1pt plus 0pt minus 0pt}
+\theorempostskip{1pt plus 0pt minus 0pt}
+\theoreminframepreskip{1pt plus 0pt minus 0pt}
+\theoreminframepostskip{1pt plus 0pt minus 0pt}
 \theoremframepreskip{0.5\baselineskip}
 \theoremframepostskip{0.5\baselineskip}
 \def\theoremframecommand{{\color{black!15}\vrule width 4pt\hspace{7pt}}}
@@ -257,9 +259,6 @@
 \newshadedtheorem{lem}[thm]{Lemma}
 \newshadedtheorem{dfn}[thm]{Definition}
 \newshadedtheorem{obs}[thm]{Observation}
-
-\theoreminframepreskip{1pt}
-\theoreminframepostskip{1pt}
 \newshadedtheorem{example}{Example}[chapter]
 \newshadedtheorem{runningExample}[example]{Running example}
 
@@ -270,7 +269,7 @@
 \RequirePackage{graphicx}
 
 \RequirePackage{tikz}
-\usetikzlibrary{arrows.meta,calc,chains,shadows,shapes.multipart,matrix,positioning}
+\usetikzlibrary{arrows.meta,calc,chains,decorations.pathreplacing,shadows,shapes.multipart,matrix,positioning}
 
 % Create a bg layer for drawings
 \pgfdeclarelayer{bg}
@@ -280,7 +279,12 @@
 % Algorithms
 %
 
-\RequirePackage[ruled,algochapter,vlined,linesnumbered,commentsnumbered]{algorithm2e}
+\RequirePackage[plainruled,algochapter,vlined,linesnumbered]{algorithm2e}
+
+% Style algorithm captions similar booktabs
+\setlength{\algoheightrule}{\heavyrulewidth}
+\def\@algocf@capt@plainruled{above}
+\renewcommand*{\algocf@caption@plainruled}{\box\algocf@capbox\vskip.6\baselineskip}
 
 % Integration with cleveref
 \crefname{algocf}{Algorithm}{Algorithms}
@@ -289,11 +293,28 @@
 % Algorithm style
 \DontPrintSemicolon
 \SetAlgoCaptionSeparator{\kern1em\unskip}
-\SetCommentSty{textnormal}
 \SetFuncSty{textnormal}
 \SetArgSty{textnormal}
 \newcommand*{\textalcapsty}[1]{{\sffamily\bfseries#1}}
 \SetAlCapSty{textalcapsty}
+
+% Custom comments
+\def\tdk@comment#1#2{\@ifnextchar*{\tdk@comment@star#1#2}{\tdk@comment@nostar#1#2}}
+\def\tdk@comment@star#1#2*{\@ifnextchar[{\tdk@comment@star@opt#1#2}{\tdk@comment@star@noopt#1#2}}
+\def\tdk@comment@nostar#1#2{\@ifnextchar[{\tdk@comment@nostar@opt#1#2}{\tdk@comment@nostar@noopt#1#2}}
+\def\tdk@comment@star@opt#1#2[#3]#4{#1*[#3]{#2{#4}}}
+\def\tdk@comment@star@noopt#1#2#3{#1*{#2{#3}}}
+\def\tdk@comment@nostar@opt#1#2[#3]#4{#1[#3]{#2{#4}}}
+\def\tdk@comment@nostar@noopt#1#2#3{#1{#2{#3}}}
+
+\SetKwComment{AlgSectionComment}{}{}
+\newcommand*{\AlgSectionStrut}{\vrule\@height1.5\baselineskip\@depth.7\baselineskip\@width\z@}
+\newcommand*{\AlgSectionFormat}[1]{\normalfont\normalsize\bfseries\sffamily\AlgSectionStrut#1}
+\newcommand*{\AlgSection}{\tdk@comment\AlgSectionComment\AlgSectionFormat}
+
+\newcommand*{\CommentFormat}{\clearthin\color{black!75}}
+\SetCommentSty{CommentFormat}
+\SetKwComment{tcp}{//~}{}
 
 % New keywords
 \newcommand*{\KwAllocate}[1]{\KwSty{allocate} \ArgSty{#1}}
@@ -306,7 +327,8 @@
 \newenvironment{algorithmhere}{}{}
 \let\algorithmhere\algorithm
 \let\endalgorithmhere\endalgorithm
-\renewenvironment{algorithm}{\algorithmhere[t]}{\endalgorithmhere}
+\renewenvironment{algorithm}{\algorithmhere[tp]}{\endalgorithmhere}
+\newenvironment{algorithmpage}{\algorithmhere[p]}{\endalgorithmhere}
 
 %
 % Bibliography
@@ -390,5 +412,8 @@
 
 \RequirePackage{xspace,needspace}
 \RequirePackage{blindtext}
+
+% Include thesis topic as a literal
+\RequirePackage{pdfpages}
 
 \endinput

@@ -1,0 +1,1425 @@
+\chapter{Algorithms for stochastic analysis}
+\label{chap:algorithms}
+
+Steady state, transient, accumulated and sensitivity analysis problems
+pose several numerical challanges, especially when the state space of
+the \CTMC\ and the vectors and matrices involved in the computation are
+extemely large.
+
+In steady-state and sensitivty analysis, linear equations of the form
+$\vec{x} A = \vec{b}$ are solved, such as%
+~\vref{eq:background:ctmc:steadystate,eq:background:ctmc:sensitvity:s}. The
+steady-state probability vector is the solution of the linear system
+\begin{equation}
+  \frac{\dd \vec{\uppi}}{\dd t} = \vec{\uppi} \, Q = \vec{0},
+  \quad \vec{\uppi} \vec{1}^\T = 1 \text,
+  \tag{\ref{eq:background:ctmc:steadystate}~revisited}
+\end{equation}
+where the infinitesimal generator $Q$ is a rank-deficient
+matrix. Therefore, steady-state solution methods must handle various
+generator matrix decompositions and homogenous linear equation with
+rank deficient matrices. Convergence and computation times of linear
+equations solvers depend on the numerical properties of the $Q$
+matrices, thus different solvers may be preferred for different
+models.
+
+In transient analysis, initial value problems with first-order linear
+differetial equations such as%
+~\vref{eq:background:ctmc:diffeq,eq:background:ctmc:L-ivp} are
+considered. The decomposed generator matrix $Q$ must be also handled
+efficiently. Another difficulty is caused by the \emph{stiffness} of
+differential equations arising from some models, which may
+significantly increase computation times.
+
+To facilitate configurable stochastic analysis, we developed several
+linear equation solvers and transient analysis methods. Where it is
+reasonable, the implementation is independent of the form of the
+generator matrix $Q$.
+
+The implementation of low-level linear algebra operations is also
+decoupled from the numerical algorithms and data structure. This
+strategy enables further configurability by replacing the operations
+at runtime, as described in~\cref{chap:operations}.
+
+In this chapter, we describe the algorithms implemented in our
+stochastic analysis framework. The pseudocode of the algorithms is
+annotated with the low level operations performed on the configurable
+data structure by the high level algorithms.
+
+\section{Linear equation solvers}
+\label{sec:algorithms:solvers}
+
+\subsection{Explicit solution by \textls[30]{LU} decomposition}
+\label{ssec:algorithms:lu}
+
+\textls{LU} decomposition is a direct method for solving linear
+equations with forward and backward substitution, i.e.~it does not
+require iteration to reach a given precision.
+
+The decomposition computes the lower triangular matrix $L$ and upper
+triangular matrix $U$ such that
+\begin{equation}
+  A = LU \text.
+\end{equation}
+To solve the equation
+\begin{equation}
+  \vec{x} A = \vec{x} LU = \vec{b}
+\end{equation}
+forward substitution is applied first to find $\vec{z}$ in
+\begin{equation}
+  \vec{z} U = \vec{b}\text,
+\end{equation}
+then $\vec{x}$ is computed by back substitution from
+\begin{equation}
+  \vec{x} L = \vec{b}\text.
+\end{equation}
+
+\begin{algorithm}
+  \KwIn{the matrix $A \in \RR^{n \times n}$ operated on in-place}
+  \KwOut{$L, U \in \RR^{n \times n}$ such that $A = LU$, $u[i, i] = 1$
+    for all $i = 0, 1, \ldots, n - 1$}
+  \For{$i \gets 0$ \KwTo $n - 1$}{
+    \lFor{$j \gets 0$ \KwTo $i$}{%
+      $a[i,j] \gets a[i,j] - \sum_{k = 0}^{j - 1} a[i, k] a[k, j]$ 
+    }
+    \lFor{$j \gets i + 1$ \KwTo $n - 1$}{%
+      $a[i, j] \gets \bigl( a[i, j] - \sum_{k = 0}^{i - 1} a[i, k]
+      a[i, j] \bigr) \big/ a[i, i]$ 
+    }
+  }
+  Let $A_L$, $A_D$ and $A_U$ refer to the strictly lower triangular,
+  diagonal and strictly upper triangular parts of $A$, respectively.\;
+  $L \gets A_L + A_D$\;
+  $U \gets A_U + I$\;
+  \KwRet{$L, U$}\;
+  \caption{Crout's \textls{LU} decomposition without pivoting.}
+  \label{alg:algorithms:lu:crout}
+\end{algorithm}
+
+We used Crout's \textls{LU} decomposition%
+~\citep[Section~2.3.1]{press2007numerical}, presented in
+\vref{alg:algorithms:lu:crout}), which ensures
+\begin{equation}
+  u[i, i] = 1 \text{ for all $i = 0, 1, \ldots, n - 1$,}
+\end{equation}
+i.e.~the diagonal of the $U$ matrix is uniformly $1$. The matrix is
+filled in during the decomposition even if it was initially sparse,
+therefore it should first be copied to a dense array storage for
+efficiency reasons. This considerably limits the size of Markov chains that
+can be analysed by direct solution due to memory requirements. Our
+data structure allows access to upper and lower diagonal parts to
+matrices and linear combinations, therefore no additional storage is
+needed other than $A$ itself.
+
+\begin{algorithm}
+  \KwIn{$U, L \in \RR^{n \times n}$, right vector $\vec{b} \in \RR^n$}
+  \KwOut{solution of $\vec{x}LU = \vec{b}$}
+  \KwAllocate{$\vec{x}, \vec{z} \in \mathbb{R}^n$}\;
+  \lIf(\tcp*[f]{Skip forward substitution for homogenous equations})
+  {$\vec{b} = \vec{0}$}{$\vec{z} \gets \vec{0}$}
+  \KwSty{else} \lFor{$j \gets 0$ \KwTo $n - 1$}{%
+    $z[j] \gets b[j] \cdot \sum_{i = 0}^{j - 1} u[i, j]$
+  }
+  \If{$l[n - 1, n - 1] \approx 0$}{
+    \lIf(\tcp*[f]{Set the free parameter to 1})
+    {$z[n - 1] \approx 0$}{$x[n - 1] \gets 0$}
+    \lElse{%
+      \label{ln:algorithms:lu:substitution:not-in-image}
+      \KwError{inconsistent linear equation system}
+    }
+  }
+  \lElse{$x[n - 1] \gets z[n - 1] / l[n - 1, n - 1]$}
+  \For{$j \gets n - 2$ \KwDownto $0$}{
+    \lIf{$l[j, j] \approx 0$}{%
+      \label{ln:algorithms:lu:substitution:rank-too-low}
+      \KwError{more than one free parameter}
+    }
+    $x[j] \gets \bigl( z[i] - \sum_{i = j + 1}^{n - 1} x[i] l[i, j]
+    \bigr) \big/ l[j, j]$\;
+  }
+  \KwRet{$\vec{x}$}\;
+  \caption{Forward and back substitution.}
+  \label{alg:algorithms:lu:substitution}
+\end{algorithm}
+
+The forward and back substitution process is shown in
+\vref{alg:algorithms:lu:substitution}. If multiple equations are
+solver with the same matrix, its \textls{LU} decomposition may be
+cached.
+
+\subsubsection{Matrices of less than full rank}
+
+If the matrix $Q$ is of rank $n - 1$, the element $l[n - 1, n - 1]$ in
+Crout's \textls{LU} decomposition will be $0$. In this case,
+$x[n - 1]$ is a free parameter and will be set to $1$ to yield a
+nonzero solution vector when $z[n - 1] = 0$. If $z[n - 1] \ne 0$, the
+equation $\vec{x} L = \vec{z}$ does not have a solution and the error
+condition in line~\ref{ln:algorithms:lu:substitution:not-in-image} is
+triggered. A matrix of rank less than $n - 1$ triggers the error
+condition in line~\ref{ln:algorithms:lu:substitution:rank-too-low}.
+
+In practice, the algorithm can be used to solve homogenous equations
+in Markovian analysis, because the infinitesimal generator matrix $Q$
+of an irreducible \CTMC\ is always of rank $n - 1$. The solution
+vector $\vec{x}$ is not a probability vector in general, so it must be
+normalized as $\vec{\pi} = \vec{x} / \vec{x} \vec{1}^\T$ to get a
+stationary probability distribution vector.
+
+\subsection{Iterative methods}
+
+\begin{algorithm}
+  \KwIn{matrix $A \in \RR^{n \times n}$, right vector $\vec{b} \in
+    \RR^n$, initial guess $\vec{x} \in \RR^n$, tolerance $\tau > 0$}
+  \KwOut{approximate solution of $\vec{x}A = \vec{b}$ and its residual
+    norm}
+  \KwAllocate{$\vec{x}' \in \mathbb{R}^n$}
+  \tcp*{Previous iterate for convergence test}
+  \Repeat{$\|\vec{x}' - \vec{x}\| \le \tau$}{
+    \nllabel{ln:algorithms:iterative:basic:loopbeg}
+    $\vec{x}' \gets \vec{x}$\tcp*{Save the previous vector}
+    $\vec{x} \gets f(\vec{x}')$\;
+  }
+  \nllabel{ln:algorithms:iterative:basic:loopend}
+  \KwRet{$\vec{x}$ and $\| \vec{x}Q - \vec{b} \|$}\;
+  \caption{Basic iterative scheme for solving linear equations.}
+  \label{alg:algorithms:iterative:basic}
+\end{algorithm}
+
+Iterative methods express the solution of the linear equation $\vec{x}
+A = \vec{b}$ as a recurrence
+\begin{equation}
+  \vec{x}_{k} = f(\vec{x}_{k - 1}) \text,
+\end{equation}
+where $\vec{x}_0$ is an initial guess vector. The iteration converges
+to a solution vector when $\lim_{k \to \infty} \vec{x}_k = \vec{x}$
+exists and $\vec{x}$ equals the true solution vector $\vec{x}^*$. The
+iteration is illustrated in \vref{alg:algorithms:iterative:basic}.
+
+The process is assumed to have converged if subsequent iterates are
+sufficiently close, i.e.~the stopping criterion at the $k$th iteration
+is
+\begin{equation}
+  \label{eq:algorithms:iterative:convergence}
+  \| \vec{x}_{k} - \vec{x}_{k - 1} \| \le \tau
+\end{equation}
+for some prescribed tolerance $\tau$. In our implementation, we
+selected the $L^1$-norm
+\begin{equation}
+  \| \vec{x}_{k} - \vec{x}_{k - 1} \| = \sum_{i} \bigl\lvert x_{k}[i] - x_{k -
+    1}[i] \bigr\rvert
+\end{equation}
+as the vector norm used for detecting convergence.
+
+Premature termination may be avoided if iterates spaced $m > 1$
+iterations apart are used for convergence test
+($\| \vec{x}_k - \vec{x}_{k - m} \| \le \tau$), but only at the
+expense of additional memory required for storing $m$ previous
+iterates. In order to handle large Markov chains with reasonable
+memory consumption, we only used the convergence test with a single
+previous iterate.
+
+Correctness of the solution can be checked by observing the norm of
+the residual $\vec{x}_{k} A - \vec{b}$, since the error vector
+$\vec{x}_k - \vec{x}^*$ is generally not available. Because the
+additional matrix multiplication may make the latter check costly, it
+is performed only after detecting convergence by
+\vref{eq:algorithms:iterative:convergence}. Unfortunately, the
+residual norm may not be representative of the error norm if the
+problem is ill-conditioned.
+
+For a detailed discussion stopping criterions and iterate
+normalization in steady-state \CTMC\ analysis, we refer
+to~\citep[Section~10.3.5]{stewart2009probability}.
+
+\subsubsection{Power iteration}
+\label{ssec:algorithms:power}
+
+Power iteration~\citep[Section~10.3.1]{stewart2009probability} is the
+one of the simplest iterative methods for Markovian analysis. Its
+iteration function has the form
+\begin{equation}
+  \vec{x}_k = f(\vec{x}_{k - 1}) = \vec{x}_{k - 1} + \frac{1}{\alpha} \mleft(
+  \vec{x}_{k - 1} A - \vec{b} \mright) \text.
+\end{equation}
+
+The iteration converges if the diagonal elements $a[i,i]$ of $A$ are
+strictly negative, the off-diagonal elements $a[i,j]$ are nonnegative
+and $\alpha \ge \max_{i} \lvert a[i,i] \rvert$. The matrix $A$
+satisfies these properties if it is an inifinitesimal generator matrix
+of an irreducible \CTMC. The fastest convergence is achieved when
+$\alpha = \min_{i} \lvert a[i,i] \rvert$.
+
+\begin{algorithm}
+  $\alpha^{-1} \gets 1 / \max_{i} \lvert a[i,i] \rvert$\;
+  \Repeat{$\epsilon \le \tau$}{
+    $\vec{x}' \gets \vec{x} A$
+    \Operation*{VectorMatrixMultiplyFromLeft}
+    $\vec{x}' \gets \vec{x}' + (-1) \cdot \vec{x}$
+    \Operation*{\InPlace VectorAdd}
+    $\epsilon \gets \alpha^{-1} \| \vec{x}' \|$
+    \Operation*{VectorL1Norm}
+    $\vec{x} \gets \vec{x} + \alpha^{-1} \vec{x}'$
+    \Operation*{\InPlace VectorAdd}
+  }
+  \caption{Power iteration.}
+  \label{alg:algorithms:iterative:power}
+\end{algorithm}
+
+Power iteration can be realized by replacing lines%
+~\ref{ln:algorithms:iterative:basic:loopbeg}%
+--\ref{ln:algorithms:iterative:basic:loopend} in
+\vref{alg:algorithms:iterative:basic} with the loop in
+\vref{alg:algorithms:iterative:power}.
+
+This realization uses memory efficiently, because it only requires the
+allocation of a single vector $\vec{x}'$ in addition to the initial
+guess $\vec{x}$.
+
+\begin{obs}
+  \label{obs:algorithms:iterative:power-keepnorm}
+  If $\vec{b} = 0$ and $A$ is an inifitesimal generator matrix, then
+  \begin{align}
+    \vec{x}_k \vec{1}^\T &= \mleft[ \vec{x}_{k - 1} + \frac{1}{\alpha}
+                           \mleft( \vec{x}_{k - 1} A - \vec{b}
+                           \mright) \mright] \vec{1}^\T \\
+                         &= \vec{x}_{k - 1} \vec{1}^\T +
+                           \frac{1}{\alpha} \vec{x}_{k - 1} A
+                           \vec{1}^T - \vec{b} \vec{1}^\T \\
+                         &= \vec{x}_{k - 1} \vec{1}^\T +
+                           \frac{1}{\alpha} \vec{x}_{k - 1} \vec{0}^\T
+                           - \vec{0} \vec{1}^\T = \vec{x}_{k - 1} \vec{1}^\T.
+  \end{align}
+  This means the sum of the elements of the result vector $\vec{x}$
+  and the initial guess vector $\vec{x}_0$ are equal, because the
+  iteration leaves the sum unchanged.
+\end{obs}
+
+To solve an equation of the form
+\begin{equation}
+  \label{eq:algorithms:iterative:homogenous-prob}
+  \vec{x} Q = \vec{0},\quad \vec{x} \vec{1}^\T = 1
+\end{equation}
+where $Q$ is an infinitesimal generator matrix, the initial guess
+$\vec{x}_0$ is selected such that $\vec{x}_0 \vec{1}^\T = 1$. If the
+\CTMC\ described by $Q$ is irreducible, we may select
+\begin{equation}
+  \label{eq:algorithms:iterative:power-init}
+  x_0[i] \equiv \frac{1}{n} \text,
+\end{equation}
+where $n$ is the dimensionality of $\vec{x}$. After the initial guess
+is selected, the equation $\vec{x} \vec{1}^\T$ may be ignored to solve
+$\vec{x} Q = \vec{0}$ with the power method. This process yields the
+solution of the original problem%
+~\eqref{eq:algorithms:iterative:homogenous-prob}.
+
+\subsubsection{Jacobi and Gauss--Seidel iteration}
+\label{ssec:algorithms:jgs}
+
+Jordan and Gauss--Seidel iterative methods%
+~\citep[Section~10.3.2--3]{stewart2009probability} repeatedly solve a
+system of simultaneous equations of a specific form.
+
+In Jordan iteration, the system
+{\small\begin{equation} \left.
+      \begin{array}{r@{${} = {}$}*{2}{r@{\kern1pt}l@{${} + {}$}}c@{${} + {}$}r@{\kern1pt}l}
+        b[0] & x_{k}[0] & a[0,0] & x_{k - 1}[1] & a[1,0] & \cdots & x_{k - 1}[n - 1] & a[n - 1,0] \text,\\
+        b[1] & x_{k - 1}[0] & a[0,1] & x_{k}[1] & a[1,1] & \cdots & x_{k - 1}[n - 1] & a[n - 1,1] \text,\\
+        \multicolumn{8}{c}{$\vdots$} \\
+        b[n - 1] & x_{k - 1}[0] & a[0,n - 1] & x_{k - 1}[1] & a[1,n - 1] & \cdots & x_{k}[n - 1] & a[n - 1,n - 1] \text,\\
+      \end{array}
+    \right\}
+  \end{equation}}%
+is solved for $\vec{x}_{k}$ at each iteration, i.e.~there is a
+single unknown in each row and the rest of the variables are taken
+from the previous iterate. In vector form, the iteration can be
+expressed as
+\begin{equation}
+  \vec{x}_{k} = A_D^{-1} (\vec{b} - A_O \vec{x}_{k - 1}) \text,
+\end{equation}
+where $A_D$ and $A_O$ are the diagonal (all off-diagonal elements are
+zero) and off-diagonal (all diagonal elements are zero) parts of $A =
+A_D + A_O$.
+
+In Gauss--Seidel iteration, the linear system
+{\small\begin{equation}
+    \left.
+      \begin{array}{r@{${} = {}$}*{2}{r@{\kern1pt}l@{${} + {}$}}c@{${} + {}$}r@{\kern1pt}l}
+        b[0] & x_{k}[0] & a[0,0] & x_{k - 1}[1] & a[1,0] & \cdots & x_{k - 1}[n - 1] & a[n - 1,0] \text,\\
+        b[1] & x_{k}[0] & a[0,1] & x_{k}[1] & a[1,1] & \cdots & x_{k - 1}[n - 1] & a[n - 1,1] \text,\\
+        \multicolumn{8}{c}{$\vdots$} \\
+        b[n - 1] & x_{k}[0] & a[0,n - 1] & x_{k}[1] & a[1,n - 1] & \cdots & x_{k}[n - 1] & a[n - 1,n - 1] \text,\\
+      \end{array}
+    \right\}
+  \end{equation}}%
+is considered, i.e.~the $i$th equation contains the first $i$ elements
+of $\vec{x}_k$ as unknowns. The equations are solved for successive
+elements of $\vec{x}_k$ from top to bottom.
+
+\begin{algorithm}
+  \KwIn{matrix $A \in \RR^{n \times n}$, right vector $\vec{b} \in
+    \RR^n$, initial guess $\vec{x} \in \RR^n$, tolerance $\tau > 0$,
+    over-relaxation parameter $\omega > 0$}
+  \KwOut{approximate solution of $\vec{x}A = \vec{b}$}
+  \KwAllocate{$\vec{x}' \in \RR^n$}\;
+  Let $A_O$ refer to the off-diagonal part of $A$.\;
+  \Repeat{$\epsilon \le \tau$}{
+    $\vec{x}' \gets \vec{x} A_O$
+    \Operation*{VectorMatrixMultiplyFromLeft}\label{ln:algorithms:jacobi:product}
+    $\vec{x}' \gets \vec{x}' + (-1) \cdot \vec{b}$\label{ln:algorithms:jacobi:addition}
+    \Operation*{\InPlace VectorAdd}
+    $\epsilon \gets 0$\;
+    \For{$i \gets 0$ \KwTo $n - 1$}{
+      \label{ln:algorithms:jacobi:innerloop}
+      $y \gets (1 - \omega) x[i] - \omega x'[i] / a[i, i]$\;
+      $\epsilon \gets \epsilon + \lvert y - x[i] \rvert$\;
+      $x[i] \gets y$\;
+    }
+  }
+  \KwRet{$\vec{x}$}\;
+  \caption{Jacobi over-relaxation.}
+  \label{alg:algorithms:iterative:jacobi}
+\end{algorithm}
+
+Jacobi over-relaxation, a generalized form of Jacobi iteraion, is
+realized in \vref{alg:algorithms:iterative:jacobi}. The value $1$ of
+the over-relaxation paramter $\omega$ corresponds to ordinary Jacobi
+iteration. Values $\omega > 1$ may accelerate convergence, while
+$0 < \omega < 1$ may help diverging Jacobi iteration converge.
+
+Jacobi over-relaxation has many parallelization opportunities. The
+matrix multiplication in line~\ref{ln:algorithms:jacobi:product} and
+the vector addition in line~\ref{ln:algorithms:jacobi:addition} can be
+parallelized, as well as the for loop in
+line~\ref{ln:algorithms:jacobi:innerloop}. Our implementation takes
+advantage of the configurable linear algebra operations framework to
+execute lines~\ref{ln:algorithms:jacobi:product} and
+\ref{ln:algorithms:jacobi:addition} with possible paralellization
+considering the structures of both the vectors $\vec{x}, \vec{x}'$ and
+the matrix $A$. However, the inner loop is left sequential to reduce
+implementation complexity, as it represents only a small fraction of
+execution time compared to the matrix-vector product.
+
+\begin{algorithm}
+  \KwIn{matrix $A \in \RR^{n \times n}$, right vector $\vec{b} \in
+    \RR^n$, initial guess $\vec{x} \in \RR^n$, tolerance $\tau > 0$,
+    over-relaxation parameter $\omega > 0$}
+  \KwOut{approximate solution of $\vec{x}A = \vec{b}$}
+  \KwAllocate{$\vec{x}' \in \RR^n$}\;
+  Let $A_O$ refer to the off-diagonal part of $A$.\;
+  \Repeat{$\epsilon \le \tau$}{
+    $\epsilon \gets 0$\;
+    \For{$i \gets 0$ \KwTo $n - 1$}{
+      $\textit{scalarProduct} \gets \vec{x} \cdot \vec{a}_O[\cdot, i]$
+      \Operation*{VectorMatrixScalarProductWithColumn}
+      $y \gets \omega (b[i] - \textit{scalarProduct}) / a[i, i] + (1 -
+      \omega) \cdot x[i]$\;
+      $\epsilon \gets \epsilon + \lvert y - x[i] \rvert$\;
+      $x[i] \gets y$\;
+    }
+  }
+  \KwRet{$\vec{x}$}\;
+  \caption{Gauss--Seidel successive over-relaxatation.}
+  \label{alg:algorithms:iterative:gs}
+\end{algorithm}
+
+\Vref{alg:algorithms:iterative:gs} shows an implementation of
+successive over-relaxation for Gauss--Seidel iteration, where the
+notation $\vec{a}_O[\cdot, i]$ refers to the $i$th column of $A_O$.
+
+Gauss--Seidel iteration cannot easily be parallelized, because
+calculation of successive elements $x[0], x[1], \ldots$ depend on all
+of the prior elements. However, in contrast with Jacobi iteration, no
+memory is required in addition to the vectors $\vec{x}$, $\vec{b}$ and
+the matrix $X$, which makes the algorithm suitable for very large
+vectors and memory-constrained situations. In addition, convergence is
+often significantly faster.
+
+The sum of elements $\vec{x} \vec{1}^\T$ does not stay constant during
+Jacobi or Gauss--Seidel iteration. Thus, when solving equations of the
+form $\vec{x} Q = \vec{0}, \vec{x} \vec{1}^\T = 1$, normalization
+cannot be entierly handled by the initial guess. We instead transform
+the equation into the form
+\begin{equation}
+  \label{eq:algorithms:iterative:normalized-linear-system}
+  \vec{x} \begin{pmatrix}
+    q[0,0] & q[0,1] & \cdots & q[0,n - 2] & 1 \\
+    q[1,0] & q[1,1] & \cdots & q[1,n - 2] & 1 \\
+    \vdots & \vdots & \ddots & \vdots & \vdots \\
+    q[n - 2,0] & q[n - 2,1] & \cdots & q[n - 2,n - 2] & 1 \\
+    q[n - 1,0] & q[n - 1,1] & \cdots & q[n - 2,n - 1] & 1 \\
+  \end{pmatrix} = \begin{pmatrix}
+    0 \\ 0 \\ \vdots \\ 0 \\ 1
+  \end{pmatrix} \text,
+\end{equation}
+where we take advantage of the fact that the infinitesimal generator
+matrix is not of full rank, therefore one of the columns is redundant
+and can be replaced with the condition $\vec{x} \vec{1}^\T = 1$. While
+this transformation may affect the convergence behavior of the
+algorithm, it allows uniform handling of homogenous and non-homogenous
+linear equations.
+
+\subsection{Group iterative methods}
+\label{sec:algorithms:group-jgs}
+
+\emph{Group} or \emph{block} iterative methods%
+~\citet[Section~10.4]{stewart2009probability} assume the block
+structure for the vectors $\vec{x}$, $\vec{b}$ and the matrix $A$
+\begin{equation}
+  \vec{x}[i] \in \RR^{n_i}, \vec{b}[j] \in \RR^{n_j}, A[i, j] \in
+  \RR^{n_i \times n_j} \text{ for all $i, j \in \{0, 1, \ldots,
+    N - 1\}$,}
+\end{equation}
+Infinitesimal generator matrices in the block Kronecker decomposition
+along with appropriately partitioned vectors match this structure (see
+\vref{eq:genstor:explicit:block:block}). Each block of $\vec{x}$
+corresponds to a group a variables that are simultaneously solved for.
+
+Group Jacobi iteration solves the linear system
+{\small\begin{equation}
+    \left.
+      \begin{array}{r@{${} = {}$}*{2}{r@{\kern1pt}l@{${} + {}$}}c@{${} + {}$}r@{\kern1pt}l}
+        \vec{b}[0] & \vec{x}_{k}[0] & A[0,0] & \vec{x}_{k - 1}[1] & A[1,0] & \cdots & \vec{x}_{k - 1}[n - 1] & A[n - 1,0] \text,\\
+        \vec{b}[1] & \vec{x}_{k - 1}[0] & A[0,1] & \vec{x}_{k}[1] & A[1,1] & \cdots & \vec{x}_{k - 1}[n - 1] & A[n - 1,1] \text,\\
+        \multicolumn{8}{c}{$\vdots$} \\
+        \vec{b}[n - 1] & \vec{x}_{k - 1}[0] & A[0,n - 1] & \vec{x}_{k - 1}[1] & A[1,n - 1] & \cdots & \vec{x}_{k}[n - 1] & A[n - 1,n - 1] \text,\\
+      \end{array}
+    \right\}
+  \end{equation}}%
+while group Gauss--Seidel considers
+{\small\begin{equation}
+    \left.
+      \begin{array}{r@{${} = {}$}*{2}{r@{\kern1pt}l@{${} + {}$}}c@{${} + {}$}r@{\kern1pt}l}
+        \vec{b}[0] & \vec{x}_{k}[0] & A[0,0] & \vec{x}_{k - 1}[1] & A[1,0] & \cdots & \vec{x}_{k - 1}[n - 1] & A[n - 1,0] \text,\\
+        \vec{b}[1] & \vec{x}_{k}[0] & A[0,1] & \vec{x}_{k}[1] & A[1,1] & \cdots & \vec{x}_{k - 1}[n - 1] & A[n - 1,1] \text,\\
+        \multicolumn{8}{c}{$\vdots$} \\
+        \vec{b}[n - 1] & \vec{x}_{k}[0] & A[0,n - 1] & \vec{x}_{k}[1] & A[1,n - 1] & \cdots & \vec{x}_{k}[n - 1] & A[n - 1,n - 1] \text.\\
+      \end{array}
+    \right\}
+  \end{equation}}
+
+\begin{algorithm}
+  \KwIn{block matrix $A$, block right vector $\vec{b}$, block initial
+    guess $\vec{n}$, tolerance $\tau > 0$, over-relaxation parameter
+    $\omega > 0$}
+  \KwOut{approximate solution of $\vec{x}A = \vec{b}$ and its residual
+    norm}
+  \KwAllocate{$\vec{x}'$ and $\vec{c}$ with the same block structure
+    as $\vec{x}$ and $\vec{b}$}\;
+  Let $A_{OB}$ represent the off-diagonal part of the block matrix $A$
+  with the blocks along the diagonal set to zero.\;
+  \Repeat{$\epsilon \le \tau$}{
+    $\vec{x}' \gets \vec{x}, \vec{c} \gets \vec{b}$\;
+    $\vec{c} \gets \vec{c} + (-1) \cdot \vec{x}' A_{OB}$
+    \Operation*{AccumulateVectorMatrixMultiplyFromLeft}
+    \ParFor(\tcp*[f]{Loop over all blocks}){$i \gets 0$ \KwTo $N - 1$}{
+      Solve $\vec{x}[i] A[i,i] = \vec{c}[i]$ for $\vec{x}[i]$\;
+    }
+    $\epsilon \gets 0$\;
+    \For(\tcp*[f]{Loop over all elements}){$k \gets 0$ \KwTo $n - 1$}{
+      $y \gets \omega x[k] + (1 - \omega) x'[k]$\;
+      $\epsilon \gets \epsilon + \lvert y - x'[k] \rvert$\;
+      $x[k] \gets y$\;
+    }
+  }
+  \caption{Group Jacobi over-relaxation.}
+  \label{alg:algorithms:iterative:group-jacobi}
+\end{algorithm}
+
+\begin{algorithm}
+  \KwIn{block matrix $A$, block right vector $\vec{b}$, block initial
+    guess $\vec{n}$, tolerance $\tau > 0$, over-relaxation parameter
+    $\omega > 0$}
+  \KwOut{approximate solution of $\vec{x}A = \vec{b}$ and its residual
+    norm}
+  \KwAllocate{$\vec{x}'$ and $\vec{c}$ large enough to store a single
+    block of $\vec{x}$ and $\vec{b}$.}\;
+  \Repeat{$\epsilon \le \tau$}{
+    $\epsilon \gets 0$\;
+    \For(\tcp*[f]{Loop over all blocks}){$i \gets 0$ \KwTo $N - 1$}{
+      $\vec{x}' \gets \vec{x}[i], \vec{c} \gets \vec{b}[i]$\;
+      \For{$j \gets 0$ \KwTo $N - 1$}{
+        \If(\Operation*[f]{AccumulateVectorMatrixMultiplyFromLeft}){$i \ne j$}{
+          $\vec{c} \gets \vec{c} + (-1) \cdot \vec{x}[j] A[i, j]$\;
+        }
+      }
+      Solve $\vec{x}[i] A[i,i] = \vec{c}$ for $\vec{x}[i]$\;
+      \For{$k \gets 0$ \KwTo $n_i - 1$}{
+        $y \gets \omega x[i][k] + (1 - \omega) x'[k]$\;
+        $\epsilon \gets \epsilon + \lvert y - x'[k] \rvert$\;
+        $x[i][k] \gets y$\;
+      }
+    }
+  }
+  \caption{Group Gauss--Seidel successive over-relaxation.}
+  \label{alg:algorithms:iterative:group-gs}
+\end{algorithm}
+
+Implementations of group Jacobi over-relaxation and group Gauss--Seidel
+successive over-relaxation are shown in
+\vref{alg:algorithms:iterative:group-jacobi,alg:algorithms:iterative:group-gs}.
+The inner linear equations of the form $\vec{x}[i] A[i,i] = \vec{c}$
+may be solved by any algorithm, for example, LU decomposition,
+iterative methods, or even block-iterative methods if $A$ has a
+two-level block structure. The choice of the inner algorithm may
+significantly affect performance and care must be taken to avoid
+diverging inner solutions in an iterative solver is used.
+
+In Jacobi over-relaxation, paralellization of both the matrix
+multiplication and the inner loop is possible. However, two vectors of
+the same size as $\vec{x}$ are required for temporary storage.
+
+Gauss--Seidel successive over-relaxation cannot be parallelized
+easily.  However it requires only two temporary vectors of size equal
+to the largest block of $\vec{x}$, much less than Jacobi
+over-relaxation. Moreover, it often requires fewer steps to converge,
+making it preferable over Jacobi iteration.
+
+Because the inner solver may be selected by the user and thus its
+convergence behaviour varies widely, we do not perform the
+transformation for homogenous equations
+\eqref{eq:algorithms:iterative:normalized-linear-system}. Instead, the
+normalization $\vec{\uppi} = \vec{x} / \vec{x}\vec{1}^\T$ is performed
+only after finding any nonzero solution of $\vec{x} Q = \vec{0}$.
+
+For a detailed analysis of the convergence behaviour of group
+iterative methods, we refer to
+\citet[Chapter~14]{greenbaum1997iterative} and \citet{} \textbf{TODO!!!}
+
+\subsection{Krylov subspace methods}
+
+Projectional iterative methods are iterative linear equation solvers
+that produce a sequence of approximate solutions $\vec{x}_k$ of the
+linear equation $\vec{x} Q = \vec{b}$ that satisfy the
+Petrov--Galerkin conditions \textbf{TODO Cite}
+\begin{equation}
+  \label{eq:algorithms:krylov:galerkin}
+  \vec{x}_k \in \mathcal{K}_k, \quad \vec{r}_k = \vec{b} - \vec{x}_k Q
+  \perp \mathcal{L}_k \text,
+\end{equation}
+where $\mathcal{K}_k$ and $\mathcal{L}_k$ are two subspaces of
+$\RR^n$ and $\vec{r}_k$ is residual in the $k$th iteration.
+
+Krylov subspace iterative methods correspond to the choice
+\begin{equation}
+  \mathcal{K}_k = \mathcal{K}_{k}(Q, \vec{r}_0) = \Span \{ \vec{r}_0,
+  \vec{r}_0 Q, \vec{r}_0 Q^2, \ldots, \vec{r}_0 Q^{k - 1} \} \text,
+\end{equation}
+where $\mathcal{K}_{k}(Q, \vec{r}_0)$ is the \emph{$k$th Krylov
+  subspace} of $Q$ and the initial residual $\vec{r}_0 = \vec{b} -
+\vec{x}_0 Q$.
+
+The smallest $m \in \NN$ such that
+$\dim \mathcal{K}_m(Q, \vec{r}_0) = \dim \mathcal{K}_{m + 1}(Q,
+\vec{r}_0)$
+is called the \emph{grade} of $Q$ with respect to $\vec{r}_0$. Hence
+$k \le m$ implies $\dim \mathcal{K}_k(Q, \vec{r}_0) = k$. Krylov
+subspace solvers usually suppose that the algorithm terminates at some
+iteration $k^*$ such that $k^* \le m$, therefore the dimension of
+$\mathcal{K}_k$ increases with each iteration. The contary situation
+leads to stagnation, because
+$\mathcal{K}_k \subseteq \mathcal{K}_{k + 1}$ together with
+$\dim \mathcal{K}_k = \dim \mathcal{K}_{k + 1}$ ($k \ge m$) implies
+$\mathcal{K}_k = \mathcal{K}_{k + 1}$.
+
+The subspace $\mathcal{L}_k$ also must be a $k$-dimensional subspace
+of $\RR^n$. Conceptually, while the Krylov subspace $\mathcal{K}_k$
+``expands'' in dimensionality every iteration, the subspace
+$\mathcal{L}_k$ likewise fills the space to make additional residuals
+forbidden by the Petrov--Galerkin condition~%
+\eqref{eq:algorithms:krylov:galerkin}.
+
+If $Q \in \RR^{n \times n}$ is of full rank and grade, Krylov subspace
+solvers find the exact solution of the linear equation in at most $n$
+iterations with exact arithmetic. The only possible orthogonal
+residual is the zero vector $\vec{0}$ if $\mathcal{L}_n = \RR^n$
+holds. While $n$ is usually too large for this to be practical,
+convergence often happens with suitable accuracy after a small number
+of iterations.
+
+Note that problems may arise when $Q$ is singular, which may worsen
+the convergence behaviour. This is the case in \textls{CTMC} analysis,
+where the infinitesimal generator matrix $Q$ is of rank $n - 1$.
+
+Some Krylov subspace methods for nonsymmetric matrices in wide use are
+Generalized Minimum Residual~(\textls{GMRES})~\citep{saad1986gmres},
+Bi-Conjugate Gradient Stabilized~(\textls{BiCGSTAB})
+\citep{van1992bi}, Conjugate Gradient Squared%
+~(\textls{CGS})~\citep{sonneveld1989cgs} and
+\textls{IDR$(s)$}~\citep{sonneveld2008idr}.
+
+\subsubsection{Generalized Minimal Residual (\textls[30]{GMRES})}
+\label{ssec:algorithms:gmres}
+
+Generalized Minimal Residual~(\textls{GMRES})%
+~\mkbibbrackets{\nakedcite[Section~6.5.1]{saad2003iterative};~\nakedcite{saad1986gmres}}
+a Krylov subspace method for nonsymmetric linear systems. It is based
+on the choice
+\begin{equation}
+  \label{eq:algorithms:gmres:lspace}
+  \mathcal{L}_k = \mathcal{K}_k Q = \{ \vec{r}_0Q, \vec{r}_0Q^2,
+  \ldots, \vec{r}_0 Q^k \} \text.
+\end{equation}
+
+With this choice, the Petrov--Galerkin condition~%
+\eqref{eq:algorithms:krylov:galerkin} minimizes the Euclidean norm of
+the residuals in each iteration, i.e.
+\begin{equation}
+  \label{eq:algorithms:gmres:minres}
+  \vec{x}_k \in \mathcal{K}_k \text{ such that } \vec{r}_k = \vec{b} - \vec{x}_k Q \perp
+  \mathcal{L_k} \quad\Longleftrightarrow\quad \vec{x}_k = \argmin_{\vec{x} \in
+    \mathcal{K}_k} \| \vec{b} - \vec{x} Q \|_2 \text.
+\end{equation}
+
+Unfortunately, the solution of \cref{eq:algorithms:gmres:minres}
+requires the storage of a basis of $\mathcal{K}_k$, which is a $k$
+dimensional subspace of $\RR^n$. Thus, each iteration requires the
+allocation of an additional vector. Solution of a linear system with
+\textls{GMRES} requires up to $n$ additional floating-point vectors of
+$n$ elements each, i.e. $O(n^2)$ floating-point numbers. This property
+makes \textls{GMRES} a ``long recurrence'' algorithm.
+
+The high memory requirements may be alleviated by discarding the basis
+of $\mathcal{K}_k$ and restarting the iteration from another initial
+guess $\vec{x}_0$ if no solution is obtained after $\ell$
+iterations. The resulting algorithm is called \textls{GMRES}($\ell$).
+
+The convergence behaviour of full \textls{GMRES} is often
+excellent. However, due to impractical memory requirements, we did not
+implement \textls{GMRES} as a numerical solver in our framefork.  We
+instead use \textls{BiCGSTAB} and
+\textls{IDR}($s$)\textls{STAB($\ell$}), Krylov subspace solvers
+incorporating \textls{GMRES}($\ell$)-like steps.
+
+\subsubsection{Bi-Conjugate Gradient Stabilized (\textls[30]{BiCGSTAB})}
+\label{ssec:algorithms:bicgstab}
+
+Bi-Conjugate Gradient Stabilized~(\textls{BiCGSTAB})%
+~\mkbibbrackets{\nakedcite[Section~7.4.2]{saad2003iterative};~\nakedcite{van1992bi}}
+is a Krylov subspace method where~\citep{simoncini2010interpreting}
+\begin{equation}
+  \label{eq:algorithms:bicgstab:stabpoly}
+  \mathcal{L}_k = \mathcal{K}_k(Q^\T, \tilde{\vec{r}}_0) \cdot
+  (\Omega_k(Q)^\T)^{-1}, \quad
+  \Omega_k(Q) = \begin{cases}
+    \Omega_{k - 1}(Q) \cdot (I - \omega_k Q) & \text{if $k \ge 1$,} \\
+    I & \text{if $k = 0$.}
+  \end{cases}
+\end{equation}
+The \emph{initial shadow residual} $\tilde{\vec{r}}_0$ must satisfy
+$\vec{r}_0 \tilde{\vec{r}}_0^\T \ne 0$ and must not be an eigenvector
+of $Q^\T$. Usually, $\tilde{\vec{r}}_0 = \vec{r}_0$, which is the
+convention we use in our implementation.
+
+Equivalently, \textls{BiCGSTAB} is a Krylov subspace method which
+produces residuals
+\begin{equation}
+  \label{eq:algorithms:bicgstab:sonneveld}
+  \vec{r}_k \in \mathcal{G}_k, \quad
+  \mathcal{G}_k = \begin{cases}
+    (\mathcal{G}_{k} \cap \tilde{\vec{r}}_0^{\perp}) (I - \omega_k
+    Q) & \text{if $k \ge 1$}, \\
+    \RR^n & \text{if $k = 0$,}
+  \end{cases}
+\end{equation}
+where $\mathcal{A}^{\perp}$ is the set of vector orthogonal to
+$\mathcal{A}$. It can be shown that%
+~\citep{sleijpen2010exploiting}
+\begin{equation}
+  \mathcal{G}_k = \mathcal{S}(\Omega_k, Q, \tilde{\vec{r}}_0) = \{
+  \vec{v} \cdot \Omega_k(Q) : \vec{v} \perp \mathcal{K}_k(Q^\T,
+  \tilde{\vec{r}}_0) \} \text,
+\end{equation}
+where $\mathcal{S}(\Omega, Q, \tilde{\vec{r}}_0)$ is the
+$\Omega$\kern0.5pt th \emph{Sonneveld subspace} generated by $Q$ and
+$\tilde{\vec{r}}_0)$ of order $k = \deg \Omega$. Hence
+$\mathcal{L}_k = \mathcal{G}_k^{\perp}$, which makes \textls{BiCGSTAB}
+equivalent to another Krylov subspace method, Induced Dimensionality
+Reduction (\textls{IDR})~\citep{sleijpen2010exploiting} in exact
+arithmetic.
+
+\textls{BiCGSTAB} is a ``short recurrence'', that is, the number of
+allocated intermediate vectors does not depend on the number of
+variables in equation system.
+
+\paragraph{Implementation}
+
+We selected \textls{BiCGSTAB} as the first Krylov subspace solver
+integrated into our framework because of its good convergence
+behaviour and low memory requirements. \textls{BiCGSTAB} only requires
+the storage of 7 vectors, which makes it suitable even for large state
+spaces with large state vectors.
+
+\begin{algorithmpage}
+  \KwIn{matrix $A \in \RR^{n \times n}$, right vector $\vec{b} \in
+    \RR^n$, initial guess $\vec{x} \in \RR^n$, tolerance $\tau > 0$}
+  \KwOut{approximate solution of $\vec{x}A = \vec{b}$}
+  \KwAllocate{$\vec{r}, \tilde{\vec{r}}_0, \vec{v}, \vec{p}, \vec{s}, \vec{t}
+    \in \RR^n$}\;
+  $\vec{r} \gets \vec{b}$
+  \Operation*{VectorSet}
+  $\vec{r} \gets \vec{r} + (-1) \cdot \vec{x} A$
+  \Operation*{VectorMatrixAccumulateMultiplyFromLeft}
+  \If{$\| \vec{r} \| \le \tau$}{
+    \KwMessage{initial guess is correct, skipping iteration}\;
+    \KwRet{$\vec{x}$}\;
+  }
+  $\tilde{\vec{r}}_0 \gets \vec{r}, \vec{v} \gets \vec{0}, \vec{p} \gets
+  \vec{0}, \rho' \gets 1, \alpha \gets 1, \omega \gets 1$\;
+  \While{\KwTrue}{
+    \AlgSection{\textls[30]{Bi-CG} step}
+    $\rho \gets \vec{r_0} \cdot \vec{r}$\label{nl:algorithms:bicgstab:bicg-start}
+    \Operation*{VectorScalarProduct}
+    \lIf{$\rho \approx 0$}{%
+      \KwError{breakdown: $\vec{r} \perp \tilde{\vec{r}}_0$}
+    }
+    $\beta \gets \rho / \rho' \cdot \alpha / \omega$\;
+    $\vec{p} \gets \vec{r} + \beta \cdot \vec{p}$
+    \Operation*{VectorAdd}
+    $\vec{p} \gets \vec{p} + (-\beta \omega) \cdot \vec{v}$
+    \Operation*{\InPlace VectorAdd}
+    $\vec{v} \gets \vec{p} Q$
+    \Operation*{VectorMatrixMultiplyFromLeft}
+    $\alpha \gets \rho / (\tilde{\vec{r}}_0 \cdot \vec{v})$
+    \Operation*{ScalarProduct}
+    $\vec{r} \gets \vec{s} + (-\alpha) \cdot \vec{s}$
+    \Operation*{VectorAdd}
+    \If{$\| \vec{s} \| < \tau$}{
+      $\vec{x} \gets \vec{x} + \alpha \cdot \vec{p}$
+      \Operation*{\InPlace VectorAdd}
+      \KwMessage{early return with vanishing $\vec{s}$}\;
+      \KwRet{$\vec{x}$}\label{nl:algorithms:bicgstab:bicg-end}\;
+    }
+    \AlgSection{\textls[30]{GMRES}(1) step}
+    $\vec{t} \gets \vec{s} A$\label{nl:algorithms:bicgstab:gm-start}
+    \Operation*{VectorMatrixMultiplyFromLeft}
+    $\textit{tLengthSquared} \gets \vec{t} \cdot \vec{t}$
+    \Operation*{ScalarProduct}
+    \lIf{$\textit{tLengthSquared} \approx 0$}{%
+      \KwError{breakdown: $\vec{t} \approx \vec{0}$}
+    }
+    $\omega \gets (\vec{t} \cdot \vec{s}) / \textit{tLengthSquared}$
+    \Operation*{ScalarProduct}
+    \lIf{$\omega \approx 0$}{%
+      \KwError{breakdown: $\omega \approx 0$}
+    }
+    $\epsilon \gets 0$\;
+    \For{$i \gets 0$ \KwTo $n - 1$}{
+      $\textit{change} \gets \alpha p[i] + \omega s[i]$,
+      $\epsilon \gets \epsilon + \lvert \textit{change} \rvert$.
+      $x[i] \gets x[i] + \textit{change}$\;
+    }
+    \lIf{$\epsilon \le \tau$}{%
+      \KwRet{$\vec{x}$}
+    }
+    $\vec{s} \gets \vec{t} + (-\omega) \cdot \vec{r}$
+    \Operation*{VectorAdd}
+    $\rho' \gets \rho$\label{nl:algorithms:bicgstab:gm-end}\;
+  }
+  \caption{\textls{BiCGSTAB} iteration without preconditioning.}
+  \label{alg:algorithms:iterative:bicgstab}
+\end{algorithmpage}
+
+\Vref{alg:algorithms:iterative:bicgstab} shows the pseudocode for
+\textls{BiCGSTAB}. Our implementation is based on the \textsc{Matlab}
+code\footnote{\url{http://www.netlib.org/templates/matlab/bicgstab.m}}
+by \citet{barrett1994templates}.
+
+The inner loop of \textls{BiCGSTAB} is the composed of two
+procedures. The bi-conjucate gradient (\textls{Bi-CG}) part in lines~%
+\ref{nl:algorithms:bicgtab:bicg-start}--\ref{nl:algorithms:bicgtab:bicg-end}
+calculates a residual $\vec{t} \in \mathcal{G}_{k - 1} Q$ and its
+associated approximate solution $\vec{x} \in \mathcal{K}_k$. The
+\textls{GMRES}($1$) part in lines~%
+\ref{nl:algorithms:bicgtab:gm-start}--\ref{nl:algorithms:bicgtab:gm-end}
+selects $\omega_k \in \RR$ and calculates a new residual
+$\vec{r} \in \mathcal{G}_{k}$ such that the Euclidean norm
+$\| \vec{r} \|_2$ is minimized. This part improves convergence over
+the original Bi-Conjucate Gradient algorithm.
+
+Solving preconditioned equations in the form
+$\vec{x} A M^{-1} = \vec{b} M^{-1}$ could improve convergence, but was
+omitted from our current implementation. As the choice of appropriate
+preconditioner matrices $M$ is not trivial%
+~\citep{DBLP:journals/informs/LangvilleS04}, implementation and sudy
+of preconditioners for Markov chains, especially with block Kronecker
+decomposition, is in the scope of our future work.
+
+Because six vectors are allocated in addition to $\vec{x}$ and
+$\vec{b}$, the amount of available memory may be a significant
+bottleneck.
+
+Similar to \vref{obs:algorithms:iterative:power-keepnorm}, it can be
+seen that the sum $\vec{x} \vec{1}^\T$ stays constant throughout
+\textls{BiCGSTAB} iteration. Thus, we can find probability vectors
+satisfying homogenous equations by the initialization in%
+~\vref{eq:algorithms:iterative:power-init}.
+
+\subsubsection{Induced Dimensionality Reduction Stabilized (\textls[30]{IDRSTAB})}
+\label{ssec:algorithms:idrstab}
+
+Induced Dimensionality Reduction Stabilized%
+~(\textls{IDR}($s$)\textls{STAB}($\ell$))%
+~\citep{sleijpen2010exploiting} is Krylov subspace solver that
+generalizes \textls{BiCGSTAB} and \textls{IDR} techniques to provide
+converge behaviors closely matching \textls{GMRES} while maintaining
+the short recurrence property.
+
+As the algorithm developed relatively recently in
+\citeyear{sleijpen2010exploiting}, high performance implementations of
+\textls{IDR}($s$)\textls{STAB}($\ell$) are not widely available. To
+our best knowledge, \textls{IDR}($s$)\textls{STAB}($\ell$) was not
+investigated for use in \textls{CTMC} analysis despite its promising
+results solving differential equations arising from finite element
+problems. Therefore, we are currently focusing research and
+development effort into integrating
+\textls{IDR}($s$)\textls{STAB}($\ell$) into our stochastic analysis.
+Special attention is paid to its behaviour on steady-state equations
+with infinitesimal generator matrices and other linear systems arising
+from \textls{CTMC} analysis.
+
+\textls{IDR}($s$)\textls{STAB}($\ell$) merges two generalizations of
+\textls{BiCGSTAB}:
+
+\begin{itemize}
+\item The first idea comes from \textls{IDR}($s$)%
+  ~\citep{sonneveld2008idr}, a Krylov subspace solver based on
+  Sonneveld subspaces. A block version of
+  \cref{eq:algorithms:bicgstab:sonneveld} constraints the residual
+  $\vec{r}_k$
+  \begin{equation}
+    \vec{r}_k \in \mathcal{G}_k = \mathcal{S}(\Omega_k, Q, \widetilde{R}_0) =
+    \{ \vec{v} \cdot \Omega_k(Q) : \vec{v} \perp \mathcal{K}_k(Q,
+    \tilde{R}_0) \}\text,
+  \end{equation}
+  where $\mathcal{K}_k(Q, \tilde{R}_0)$ is the $k$th \emph{row} Krylov
+  subspace of $Q \in \RR^{n \times n}$ with respect to
+  $\tilde{R}_0 \in \RR^{s \times n}$
+  \begin{equation}
+    \mathcal{K}_k(Q, \widetilde{R}_0) = \Span \{ \tilde{\vec{r}}_0[i],
+    \tilde{\vec{r}}_0[i] Q, \ldots, \tilde{\vec{r}}_0[i] Q^{k - 1} : i =
+    0, 1, \ldots, s - 1 \}
+  \end{equation}
+  and $\tilde{\vec{r}}_0[i]$ is the $i$th row $\tilde{R}_0$.
+
+  Higher values of $s$, i.e.~higher dimensional initial shadow spaces,
+  may accelerate convergence, at the cost of allocation additional
+  intermediate vectors.
+
+\item The second generalization, which is called
+  \textls{BiCGSTAB}($\ell$)~\citep{sleijpen1993bicgstab}, replaces the
+  stabilizer polynomial $\Omega_k$ from
+  \cref{eq:algorithms:bicgstab:stabpoly} with
+  \begin{equation}
+    \Omega_k(Q) = \Omega_{k - 1}(Q) \cdot (I - \gamma[0] Q - \gamma[1] Q^2
+    - \cdots - \gamma[\ell - 1] Q^{\ell}) \text,
+  \end{equation}
+  i.e.~degree of the stabilizer polynomial $\Omega$ increases by $\ell$
+  instead of $1$ every iteration. The increase is described by the
+  vector $\vecarrow{\gamma} \in \RR^\ell$.
+
+  The higher-order stabilization, also called a \textls{GMRES}($\ell$)
+  step, improves convergence behavior with unsymmetrix matrices that
+  have complex spectrum. However, the number of intermediate vectors,
+  thus the amount of required memory, also grows.
+\end{itemize}
+
+A single dimensional initial shadow space ($s = 1$) and first-order
+stabilization ($\ell = 1$) make
+\textls{IDR}($s$)\textls{STAB}($\ell$) identical to
+\textls{BiCGSTAB}. Moreover, $\ell = 1$ results is behavior equivalent
+to \textls{IDR}($s$), while $s = 1$ results in behavior equivalent to
+\textls{BiCGSTAB}($\ell$).
+
+These correspondences make \textls{IDR}($s$)\textls{STAB}($\ell$) a
+promising candidate for use in configurable stochastic analysis, as
+different settings of $(s, \ell)$ bring the power of multiple
+algorithms to the modelers' disposal.
+
+\paragraph{Implementation}
+
+The pseudocode of our implementation of
+\textls{IDR}($s$)\textls{STAB}($\ell$), which is based on the
+pseudocode of \citet{sleijpen2010exploiting}, is show in
+\textbf{TODO}.
+
+For convenient representation of memory requirements, we employ two
+different typographical styles for vectors. Vectors in bold,
+e.g.~$\vec{x} \in \RR^n$ are ``long'' vectors, while vectors with
+arrows, e.g.~$\vecarrow{\gamma}$ are ``short'' vectors of length $s$
+or $\ell \ll n$. Storage space of long vectors dominated memory
+requirements and their manipulations including vector--matrix products
+dominate computation time.
+
+The algorithm works with three arrays of vectors,
+$\vec{R} \in \RR^{(\ell + 1) \times n}$,
+$\vec{U}, \vec{V} \in \RR^{((\ell + 2) \times s) \times n}$,
+i.e.~$\vec{r}[j'], \vec{u}[j, q], \vec{v}[j, q] \in \RR^n$ for all
+$j' = 0, 1, \ldots, \ell$; $j = 0, 1, \ldots, \ell + 1$;
+$q = 0, 1, \ldots, s - 1$.
+
+The \textls{IDR} part performs the projections, called a ``repetition
+step'',
+{\small\begin{equation}
+    \newcommand*{\rightproj}[1]{\overset{\smash{\clap{%
+            \raisebox{3pt}{$\mathsurround=0pt\Pi_{#1}$}}}}\rightarrow}%
+    \newcommand*{\neproj}[1]{{\nearrow}\mathrlap{\,\Pi_{#1}}}%
+    \newcommand*{\mulA}{{\downarrow}\mathrlap{\,Q}}%
+    \newcommand*{\noMulA}{{\color{black!50}\mulA}}%
+    \newcommand*{\noEquation}{{\color{black!50}\downarrow}}%
+  \begin{array}{*{7}{c}@{\,\,}c@{\,\,}c}
+     \vec{x}_{-} & \rightarrow & \vec{x} & & \vec{v}[0,0] & & \vec{v}[0,1] & \cdots & \vec{v}[0, s - 1] \text, \\
+    & & \noEquation & \neproj{0} & \noMulA & \neproj{0} & \noMulA & & \noMulA \\
+    \vec{r}_{-}[0] & \rightproj{1} & \vec{r}[0] & & \vec{v}[1,0] & & \vec{v}[1,1] & \cdots & \vec{v}[1, s - 1] \mathrlap{\text,} \\
+    & & \noMulA & \neproj{1} & \noMulA & \neproj{1} & \noMulA & & \noMulA \\
+    \vec{r}_{-}[1] & \rightproj{2} & \vec{r}[1] & & \vec{v}[2,0] & & \vec{v}[2,1] & \cdots & \vec{v}[2, s - 1] \mathrlap{\text,}, \\
+    \vdots & & \vdots & & \vdots & & \vdots & & \vdots \\
+    \vec{r}_{-}[j - 2] & \rightproj{j - 1} & \vec{r}[j - 2] & & \vec{v}[j - 1,0] & & \vec{v}[j - 1,1] & \cdots & \vec{v}[j - 1, s - 1] \mathrlap{\text,} \\
+    & & \noMulA & \neproj{j - 1} & \noMulA & \neproj{j - 1} & \noMulA & & \noMulA \\
+    \vec{r}_{-}[j - 1] & \rightproj{j} & \vec{r}[j - 1] & & \vec{v}[j,0] & & \vec{v}[j,1] & \cdots & \vec{v}[j, s - 1] \mathrlap{\text,} \\
+    & & \mulA & \neproj{j} & \mulA & \neproj{j} & \mulA & & \mulA \\
+    & & \boxed{\vec{r}[j]} & & \boxed{\vec{v}[j + 1,0]} & & \boxed{\vec{v}[j + 1,1]} & \cdots & \boxed{\vec{v}[j + 1, s - 1]}
+  \end{array}\label{eq:algorithms:idrstab:projections}
+\end{equation}}
+for $j = 1, 2, \ldots, \ell$. After the repetition step is complete,
+$\vec{U}$ and $\vec{V}$ are swapped and the process starts again with
+increased $j$ or the \textls{GMRES}($\ell$) part commences. Symbols
+with a subscript ``$-$'' sign refer to vectors from the previous
+repetition step.
+
+The projections $\Pi_i$ ($i = 0, 1, \ldots, j$) are defined as
+\begin{equation}
+  \Pi_i = I - A^{j - i} \widetilde{R}_0 \largesigma^{-1} (U[i, \cdot])^\T,
+  \quad \largesigma = \widetilde{R}_0 (U[j, \cdot])^\T \text,
+\end{equation}
+where the matrix $U[k, \cdot]$ is the $s \times n$ matrix that has the
+vector $\vec{u}[k, q]$ as its $q$th row. They ensure that the rows of
+$U[j, \cdot]$ form a basis of the Krylov subspace
+$\mathcal{K}_s(Q \Pi_j, \vec{r} Q^j \Pi_j)$ after the $j$th repetition
+step.
+
+The relationships $\vec{r}[i + 1] = \vec{r}{i} Q$,
+$\vec{u}[i + 1, q] = \vec{u}[i, q] Q$,
+$\vec{v}[i + 1, q] = \vec{v}[i, q]$ are maintained throughout the
+algorithm via the projections. This is signified by the gray
+{\color{black!50}$\downarrow Q$} arrows in
+\cref{eq:algorithms:idrstab:projections}. Notice that this means
+$\vec{r}[0] Q^i = \vec{r}[i]$ and $U[0, \cdot] Q^i = U[i, \cdot]$.
+
+In the case of $\vec{r}[j]$ and $\vec{v}[j + 1, q]$, a matrix
+multiplication is performed as shown by the $\downarrow Q$
+arrows. Vectors generated by matrix multiplication are shown in
+borders.
+
+For improving numerical properties, \citet{sleijpen2010exploiting}
+recommend performing Gram--Schmidt ortonormalization on $U[j, \cdot]$.
+The same subtractions and normalization operations must be performed
+on the rows of $U[i, \cdot]$, $i \ne j$ that are performed in
+$U[j, \cdot]$ in order to maintain their relationships. We realized
+the orthonormalization by the modified Gram--Schmidt process in lines
+\textbf{TODO} and \textbf{TODO}.
+
+The storage of $\vec{R}$, $\vec{U}$ and $\vec{V}$ requires
+$(\ell + 1) + 2 \cdot (\ell + 1) \cdot s$ vectors of length $n$, while
+the initial shadow residual matrix $\widetilde{R}_0$ requires space
+equal to $s$ vectors of length $n$. Thus, $1 + \ell + 3s + 2\ell s$
+intermediate vectors are needed in addition to the initial guess
+$\vec{x}_0$ and the right vectors $\vec{b}$. Although the memory
+requiremens of \textls{IDR}($s$)\textls{STAB}($\ell$) are quite high,
+$s$ and $\ell$ can be selected to ensure that the solution fits in the
+available memory.
+
+A different formulation of the \textls{IDR}($s$)\textls{STAB}($\ell$)
+principles is \textls{GBi-CGSTAB}($s, \ell$)~\citep{tanio2010gbi},
+which avoids the allocation of $\vec{V}$ by updating $\vec{U}$ in
+place, albeit with lesser numerical properties due to the lack of
+orthonormalization steps. Another variant by
+\textcite{aihara2014variant} replaces some vector updates with matrix
+multiplications to improve accuracy.
+
+\paragraph{Numerical problems and breakdown}
+
+\textbf{TODO Leiras, diagram}
+
+\section{Transient analysis}
+
+\subsection{Uniformization}
+\label{ssec:algorithms:uniformization}
+
+The \emph{uniformization} or \emph{randomization} method solves the
+initial value problem
+\begin{gather}
+  \frac{\dd \vec{\uppi}(t)}{\dd t} = \vec{\uppi}(t) \, Q, \quad
+  \vec{\uppi}(t) = \vec{\uppi}{0}
+  \tag{\ref{eq:background:ctmc:diffeq}~revisited}\\
+  \shortintertext{by computing}
+  \vec{\uppi}(t) = \sum_{k = 0}^{\infty} \vec{\uppi}_0 P^k e^{-\alpha
+    t} \frac{(\alpha t)^k}{k!}\text,
+  \label{eq:algorithms:transient:uniformization}
+\end{gather}
+where $P = \alpha^{-1} Q + I$,
+$\alpha \ge \max_{i} \lvert a[i, i] \rvert$ and
+$e^{-\alpha t} \frac{(\alpha t)^k}{k!}$ is the value of the Poisson
+probabilty function with rate $\alpha t$ at $k$.
+
+Integrating both sides of
+\vref{eq:algorithms:transient:uniformization} to compute $\vec{L}(t)$
+yields~\citep{reibman1989markov}
+\begin{align}
+  \int_{0}^t \vec{\uppi}(u) \,\dd u = \vec{L}(t)
+  &= \sum_{k = 0}^{\infty} \vec{\uppi}_0 P^k \int_{0}^{t} e^{-\alpha
+    u} \frac{(\alpha u)^k}{k!} \,\dd u \\
+  &= \sum_{k = 0}^{\infty} \vec{\uppi}_0 P^k \frac{1}{\alpha} \sum_{l
+    = k + 1}^{\infty} e^{-\alpha t} \frac{(\alpha t)^l}{l!} \\
+  &= \frac{1}{\alpha} \sum_{k = 0}^{\infty} \vec{\uppi}_0 P^k \mleft(
+    1 - \sum_{l = 0}^{k} e^{-\alpha t} \frac{(\alpha t)^l}{l!}
+    \mright) \text.
+    \label{eq:algorithms:transient:aggregate-uniformization}
+\end{align}
+
+Both \vref{eq:algorithms:transient:uniformization,%
+eq:algorithms:transient:aggregate-uniformization} can be realized
+as
+\begin{equation}
+  \vec{x} = \frac{1}{W} \mleft(\; \sum_{k = 0}^{k_{\text{left}} - 1} w_{\text{left}}
+  \vec{\uppi}_0 P^k + \sum_{k = k_{\text{left}}}^{k_{\text{right}}}
+  w[k - k_{\text{left}}] \vec{\uppi}_0 P^k \!\mright) \text,
+  \label{eq:algorithms:transient:uniformization-impl}
+\end{equation}
+where $\vec{x}$ is either $\vec{\uppi}(t)$ or $\vec{L}(t)$,
+$k_{\text{left}}$ and $k_{\text{right}}$ are \emph{trimming constants}
+selected based on the required precision, $\vec{w}$ is a vector of
+(possibly accumulated) Poisson weights and $W$ is a scaling
+factor. The weight before the left cutoff $w_{\text{left}}$ is $1$ if
+the accumulated probability vector $\vec{L}(t)$ is calculated, $0$
+otherwise.
+
+\begin{algorithm}
+  \KwIn{infinitesimal generator $Q \in \RR^{n \times n}$, initial
+    probability vector $\vec{\uppi}_0 \in \RR^n$, truncation
+    parameters $k_{\text{left}}, k_{\text{right}} \in \NN$, weights
+    $w_{\text{left}} \in \RR$,
+    $\vec{w} \in \RR^{k_{\text{right}} - k_{\text{left}}}$, scaling
+    constant $W \in \RR$, tolerance $\tau > 0$}
+  \KwOut{instantenous or accumulated probability vector $\vec{x} \in
+    \RR^n$}
+  \KwAllocate{$\vec{x}, \vec{p}, \vec{q} \in \RR^n$}\;
+  $\alpha^{-1} \gets 1 / \max_{i} \lvert a[i,i] \rvert$
+  \label{ln:algorithms:transient:uniformization:alpha}\;
+  $\vec{p} \gets \vec{\uppi}_0$\;
+  \leIf(\Operation*[f]{VectorScale})
+  {$w_{\text{left}} = 0$}{$\vec{x} \gets \vec{0}$}
+  {$\vec{x} \gets w_{\text{left}} \cdot \vec{p}$}
+  \For{$k \gets 1$ \KwTo $k_{\text{right}}$}{
+    $\vec{q} \gets \vec{p} Q$
+    \Operation*{VectorMatrixMultiplyFromLeft}
+    $\vec{q} \gets \alpha^{-1} \cdot \vec{q}$
+    \Operation*{\InPlace VectorScale}
+    $\vec{q} \gets \vec{q} + \vec{p}$
+    \Operation*{\InPlace VectorAdd}
+    \If{$\| \vec{q} - \vec{p} \| \le \tau$}{
+      \label{ln:algorithms:transient:uniformization:steadystate-det}
+      $\vec{x} \gets \vec{x} + \mleft( \sum_{l = k}^{k_\text{right}}
+      w[l - k_{\text{left}}] \mright) \cdot \vec{q}$
+      \Operation*{\InPlace VectorAdd}
+      \KwSty{break}\;
+    }
+    \lIf(\Operation*[f]{\InPlace VectorAdd})
+    {$k < k_{\text{left}} \land w_{\text{left}} \ne 0$}{%
+      $\vec{x} \gets \vec{x} + w_{\text{left}} \cdot \vec{q}$
+    }
+    \lElseIf(\Operation*[f]{\InPlace VectorAdd})
+    {$k \ge k_{\text{left}}$}{%
+      $\vec{x} \gets \vec{x} + w[k - k_{\text{left}}] \cdot \vec{q}$
+    }
+    Swap the references to $\vec{p}$ and $\vec{q}$
+  }
+  $\vec{x} \gets W^{-1} \cdot \vec{x}$
+  \Operation*{\InPlace VectorScale}
+  \KwRet{$\vec{x}$}\;
+  \caption{Uniformization.}
+  \label{alg:algorithms:transient:uniformization}
+\end{algorithm}
+
+\Vref{eq:algorithms:transient:uniformization-impl} is implemented by
+\vref{alg:algorithms:transient:uniformization}. The algorithm performs
+\emph{steady-state} detection in line%
+~\ref{ln:algorithms:transient:uniformization:steadystate-det} to avoid
+unneccessary work once the iteration vector $\vec{p}$ reaches the
+steady-state distribution $\vec{\uppi}(\infty)$,
+i.e.~$\vec{p} \approx \vec{p} P$. If the initial distribution
+$\vec{\uppi}_0$ is not further needed or can be generated efficiently
+(as it is the case with a single initial state), the result vector
+$\vec{x}$ may share the same storing, resulting in a memory overhead
+of only two vectors $\vec{p}$ and $\vec{q}$.
+
+\begin{algorithmpage}
+  \KwIn{Poisson rate $\lambda = \alpha t$, tolerance $\tau >
+    10^{-50}$}
+  \KwOut{truncation parameters $k_{\text{left}}, k_{\text{right}} \in
+    \NN$, weights $\vec{w} \in \RR^{k_{\text{right}} -
+      k_{\text{left}}}$, scaling constant $W \in \RR$}
+  \AlgSection{Calculate weights with high precision}
+  $M_w \gets 30, M_a \gets 44, M_s \gets 21$
+  \tcp*{Constants determine cutoff estimation accuracy}
+  $m \gets \lfloor \lambda \rfloor, \textit{tSize} \gets \lfloor
+  M_w \sqrt{\lambda} + M_a \rfloor, \textit{tStart} \gets \max
+  \{m + M_s - \lfloor \textit{tSize} / 2 \rfloor, 0 \}$\;
+  \KwAllocate{$\textbf{tWeights} \in \RR^{\textit{tSize}}$}\;
+  $\textit{tWeights}[m - \textit{tStart}] \gets 2^{176}$\;
+  \For{$j \gets m - \textit{tStart}$ \KwDownto $1$}{%
+    $\textit{tWeights}[j - 1] = (j + \textit{tStart})\,
+    \textit{tWeights}[j] / \lambda$
+  }
+  \For{$j \gets m - \textit{tStart} + 1$ \KwTo $\textit{tSize}$}{%
+    $\textit{tWeights}[j + 1] = \lambda\, \textit{tWeights}[j] / (j +
+    \textit{tStart})$
+  }
+  \AlgSection{Determine normalization constant and cutoff points}
+  $W \gets 0$\;
+  \For{$j \gets 0$ \KwTo $m - \textit{tStart} - 1$}{%
+    $W \gets W + \textit{tWeights}[j]$
+  }
+  $\textit{sum1} \gets 0$
+  \tcp*{Avoid adding small numbers to larger numbers}
+  \For{$j \gets \textit{tSize} - 1$ \KwDownto $m -
+    \textit{tStart}$}{%
+    $\textit{sum1} \gets \textit{sum1} + \textit{tWeights}[j]$
+  }
+  $W \gets W + \textit{sum1}, \textit{threshold} \gets W \tau / 2,
+  \textit{cdf} \gets 0, i \gets 0$\;
+  \While{$\textit{cdf} < \textit{threshold}$}{%
+    $\textit{cdf} \gets \textit{cdf} + \textit{tWeights}[i]$\;
+    $i \gets i + 1$
+  }
+  $k_{\text{left}} \gets \textit{tStart} + i, \textit{cdf} \gets 0, i
+  \gets \textit{tSize} - 1$\;
+  \While{$\textit{cdf} < \textit{threshold}$}{%
+    $\textit{cdf} \gets \textit{cdf} + \textit{tWeights}[i]$\;
+    $i \gets i - 1$
+  }
+  $k_{\text{right}} \gets \textit{tStart} + i$\;
+  \AlgSection{Copy weights between cutoff points}
+  \KwAllocate{$\vec{w} \in \RR^{k_{\text{right}} -
+      k_{\text{left}}}$}\;
+  \For{$j \gets k_{\text{left}}$ \KwTo $k_{\text{right}}$}{%
+    $w[j - k_{\text{left}}] \gets \textit{tWeights}[j - \textit{tStart}]$
+  }
+  \KwRet{$k_{\text{left}}, k_{\text{right}}, \vec{w}, W$}\;
+  \caption{\citeauthor{DBLP:journals/corr/Burak14}'s algorithm for
+    calculating the Poisson weights.}
+  \label{alg:algorithms:transient:poisson}
+\end{algorithmpage}
+
+The weights and trimming constants may be calculated by the famous
+algorithm of \citet{DBLP:journals/cacm/FoxG88}. However, their
+algorithm is extremely complicated due to the limitations of
+single-precision floating-point arithmetic%
+~\citep{jansen2011understanding}. We implemented
+\citeauthor{DBLP:journals/corr/Burak14}'s significantly simpler
+algorithm~\citep{DBLP:journals/corr/Burak14} in double precision
+instead (\vref{alg:algorithms:transient:poisson}), which avoids
+underflow by a scaling factor $W \gg 1$.
+
+\subsection{\textls*[35]{TR-BDF2}}
+\label{ssec:algorithms:trbdf2}
+
+A weakness of the uniformization algorithm is the poor tolerance of
+\emph{stiff} Markov chains. The \CTMC\ is called stiff if the
+$\lvert \lambda_{\min} \rvert \ll \lvert \lambda_{\max} \rvert$, where
+$\lambda_{\min}$ and $\lambda_{\max}$ are the nonzero eigenvalues of
+the infinitesimal generator matrix $Q$ of minimum and maximum absolute
+value~\citep{DBLP:journals/cor/ReibmanT88}. In other words, stiff
+Markov chains have behaviors on drastically different timescales, for
+example, clients are served frequently while failures happen
+infrequently.
+
+Stiffness leads to very large values of $\alpha$ in
+line~\ref{ln:algorithms:transient:uniformization:alpha} of
+\vref{alg:algorithms:transient:uniformization}, thus a large right
+cutoff $k_{\text{right}}$ is required for computing the transient
+solution with sufficient accuracy. Moreover, the slow stabilization
+results in taking many iterations before steady-state detection in
+line~\ref{ln:algorithms:transient:uniformization:steadystate-det}.
+
+Some methods that can handle stiff \textls{CTMCs} efficiently are
+stochastic complementation~\citep{meyer1989stochastic}, which
+decouples the slow and fast behaviors of the system, and adaptive
+uniformization~\citep{van1994adaptive}, which varies the uniformization
+rate $\alpha$. Alternatively, an $L$-stable differential equation
+solver may be used to solve \vref{eq:background:ctmc:diffeq}, such as
+\mbox{\textls{TR-BDF2}}~\citep{DBLP:journals/cor/ReibmanT88,%
+DBLP:journals/tcad/BankCFGRS85}.
+
+\textls{TR-BDF2} is an implicit integrator with alternating trapezoid
+rule (\textls{TR}) steps
+\begin{equation}
+  \vec{\uppi}_{k + \gamma} (2I + \gamma h_k Q) = 2 \vec{\uppi}_{k} +
+  \gamma h_k \vec{\uppi}_k Q
+\end{equation}
+and second order backward difference steps
+\begin{equation}
+  \vec{\uppi}_{k + 1} [(2 - \gamma) I - (1 - \gamma) h_k Q] =
+  \frac{1}{\gamma} \vec{\uppi}_{k + \gamma} - \frac{(1 -
+    \gamma)^2}{\gamma} \vec{\uppi}_k \text,
+\end{equation}
+which advance the time together by a step of size $h_k$. The constant
+$0 < \gamma < 1$ sets the breakpoint between the two steps. We set it
+to $\gamma = 2 - \sqrt{2} \approx 0.59$ following the recommendation
+of \citet{DBLP:journals/tcad/BankCFGRS85}.
+
+As a guess for the initial step size $h_0$, we chose the
+uniformization rate of $Q$. The $k$th step size $h_k > 0$, including
+the $0$th one, is selected such that the local error estimate
+\begin{equation}
+  \label{eq:algorithms:transient:trbdf-lte}
+  \textit{\textls{LTE}}_{k + 1} = \mleft\| 2 \frac{-3\gamma^4 + 4\gamma - 2}{24 -
+    12\gamma} h_k \mleft[ -\frac{1}{\gamma} \vec{\uppi}_k +
+  \frac{1}{\gamma (1 - \gamma)} \vec{\uppi}_{k + \gamma} - \frac{1}{1
+    - \gamma} \vec{\uppi}_{k + 1} \mright] \mright\|
+\end{equation}
+is bounded by the local error tolerance
+\begin{equation}
+  \textit{\textls{LTE}}_{k + 1} \le \mleft( \frac{ \tau - \sum_{i = 0}^k
+    \textit{\textls{LTE}}_{i} }{ t - \sum_{i = 0}^k k_i } \mright) h_{k + 1}
+  \text.
+\end{equation}
+This Local Error per Unit Step (\textls{LEPUS}) error control
+\enquote{produces excellent results for many problems}, but is usually
+costly~\citep{DBLP:journals/cor/ReibmanT88}. Moreover, the accumulated
+error at the end of integration may be larger than the prescribed
+tolerance $\tau$, since \vref{eq:algorithms:transient:trbdf-lte} is
+only an approximation of the true error.
+
+\begin{algorithmpage}
+  \KwIn{infinitesimal generator $Q \in \RR^{n \times n}$, initial
+    distribution $\vec{\uppi}_0$,\\mission time $t > 0$, tolerance
+    $\tau > 0$}
+  \KwOut{transient distribution $\vec{\uppi}(t)$}
+  \KwAllocate{$\vec{\uppi}_k, \vec{\uppi}_{k + \gamma}, \vec{\uppi}_{k +
+      1}, \vec{d}_k, \vec{d}_{k + 1}, \vec{y} \in \RR^n$}\;
+  $\textit{maxIncrease} \gets 10, \textit{leastDecrease} \gets 0.9$\;
+  $\textit{timeLeft} \gets t, h \gets 1 / \max_{i} \lvert q[i,i]
+  \rvert, \gamma \gets 2 - \sqrt{2}, C \gets \mleft\lvert \frac{-3\gamma^4 +
+    4\gamma - 2}{24 - 12\gamma} \mright\rvert, \textit{errorSum} \gets 0$\;
+  $\vec{\uppi}_k \gets \vec{\pi}_0$,
+  $\vec{d}_k \gets \vec{\uppi}_k Q$
+  \Operation*{VectorMatrixMultiplyFromLeft}
+  \While{$\textit{timeLeft} > 0$}{%
+    $\textit{stepFailed} \gets \KwFalse, h \gets \min \{h,
+    \textit{timeLeft}\}$\;
+    \While{$\KwTrue$}{
+      \AlgSection{\textls[30]{TR} step}
+      $\vec{y} \gets 2 \cdot \vec{\uppi}_k$
+      \Operation*{VectorScale}
+      $\vec{y} \gets \vec{y} + \gamma h \cdot \vec{d}_k$
+      \Operation*{\InPlace VectorAdd}
+      Solve $\vec{\uppi}_{k + \gamma} (2I + -\gamma h Q) = \vec{y}$
+      for $\vec{\uppi}_{k + \gamma}$ with initial guess
+      $\vec{\uppi}_k$\label{ln:algorithms:transient:trbdf2:solve1}\;
+      \AlgSection{\textls[30]{BDF2} step}
+      $\vec{y} \gets -\frac{(1 - \gamma)^2}{\gamma} \cdot
+      \vec{\uppi}_k$
+      \Operation*{VectorScale}
+      $\vec{y} \gets \frac{1}{\gamma} \cdot \vec{\uppi}_{k + \gamma}$
+      \Operation*{\InPlace VectorScale}
+      Solve $\vec{\uppi}_{k + 1} ( (2 - \gamma) I + (\gamma - 1) h Q ) =
+      \vec{y}$ for $\vec{\uppi}_{k + 1}$ with initial guess
+      $\vec{\uppi}_{k + \gamma}$\label{ln:algorithms:transient:trbdf2:solve2}\;
+      \AlgSection{Error control and step size estimation}
+      $\vec{y} \gets -\frac{1}{\gamma} \vec{d}_k$
+      \Operation*{VectorScale}
+      $\vec{y} \gets \vec{y} + \frac{1}{\gamma (1 - \gamma)}
+      \vec{\uppi}_{k + \gamma} Q$
+      \Operation*{VectorMatrixAccumulateMultiplyFromLeft}
+      $\vec{d}_{k + 1} \gets \vec{\uppi}_{k + 1} Q$
+      \Operation*{VectorMatrixMultipleFromLeft}
+      $\vec{y} \gets \vec{y} + \mleft(-\frac{1}{1 - \gamma}\mright)
+      \vec{d}_{k + 1}$
+      \Operation*{\InPlace VectorAdd}
+      $\textit{\textls{LTE}} \gets 2 C h \| \vec{y} \|, \textit{localTol} \gets
+      (\tau - \textit{errorSum}) / \textit{timeLeft} \cdot h$\;
+      \If(\tcp*[f]{Successful step}){$\textit{\textls{LTE}} < \textit{localTol}$}{%
+        $\textit{timeLeft} \gets \textit{timeLeft} - h,
+        \textit{errorSum} \gets \textit{errorSum} +
+        \textit{\textls{LTE}}$\;
+        \tcp{Do not try to increase h after a failed step}
+        \lIf{$\neg \textit{stepFailed}$}{%
+          $h \gets h \cdot \min\{ \textit{maxIncrease},
+          \sqrt[3]{\textit{localTol} / \textit{\textls{LTE}}} \}$
+        }
+        \KwSty{break}\;
+      }
+      $\textit{stepFailed} \gets \KwTrue, h \gets h \cdot \min\{
+      \textit{leastDecrease}, \sqrt[3]{\textit{localTol} /
+        \textit{\textls{LTE}}} \}$\;
+    }
+    Swap the references to $\vec{\uppi}_k, \vec{\uppi}_{k + 1}$ and
+    $\vec{d}_k, \vec{d_{k + 1}}$\;
+  }
+  \KwRet{$\vec{\uppi}_k$}\;
+  \caption{\textls{TR-BDF2} for transient analysis.}
+  \label{alg:algorithms:transient:trbdf2}
+\end{algorithmpage}
+
+An implementation of \textls{TR-BDF2} based on the pseudocode of
+\citet{DBLP:journals/cor/ReibmanT88} is shown in
+\vref{alg:algorithms:transient:trbdf2}.
+
+In lines~\ref{ln:algorithms:transient:trbdf2:solve1} and~%
+\ref{ln:algorithms:transient:trbdf2:solve2} any linear equation solver
+from \vref{sec:algorithms:solvers} may be used except power iteration,
+since the matrices, in general, do not have strictly negative
+diagonals. Due to the way the matrices, which are linear combinations
+of $I$ and $Q$, are passed to the inner solvers, our \textls{TR-BDF2}
+integrator is currently limited to $Q$ matrices which are not in block
+form.
+
+The vectors $\vec{\uppi}_0, \vec{\uppi}_k$ and
+$\vec{\uppi}_{k + \gamma}, \vec{d}_{k + 1}$ may share storage,
+respectively, therefore only 4 state-space sized vectors are required
+in addition to the initial distribution $\vec{\uppi}_0$.
+
+The most computationally intensive part is the solution of two linear
+equation per every attempted step, which may make \textls{TR-BDF2}
+extremely slow. However, its performance does \emph{not} depend on the
+stiffness of the Markov chain, which may make it better suited to stiff
+\textls{CTMCs} than uniformization%
+~\citep{DBLP:journals/cor/ReibmanT88}.
+
+\section{Mean time to first failure}
+
+In \textls{MTFF} calculation (\vref{ssec:background:mtff}), quantities
+of the forms
+\begin{equation}
+  \MTFF = - \underbrace{\vec{\uppi}_U Q_{UU}^{-1}}_{\vec{\upgamma}} \vec{1}^\T, \quad
+  \Pr(X(\TFF_{+ 0}) = y) = - \underbrace{\vec{\uppi}_U Q_{UU}^{-1}}_{\vec{\upgamma}} \vec{q}_{UD'}^\T
+  \tag{\ref{eq:background:mtff}, \ref{eq:background:failure-mode}
+    revisited}
+\end{equation}
+are computed, where $U, D, D'$ are the set of operations states,
+failure states and a specific failure mode $D' \subsetneq D$,
+respectively.
+
+The vector $\vec{\upgamma} \in \RR^{\lvert U \rvert}$ is the solution
+of the linear equation
+\begin{equation}
+  \label{eq:algorithms:mtff:gamma}
+  \vec{\upgamma} Q_{UU} = \vec{\uppi}_{U}
+\end{equation}
+and may be obtained by any linear equation solver.
+
+The sets $U, D = D_1 \cup D_2 \cup \cdots$ are constructed by the
+evaluation of \CTL\ expressions. If the failure mode $D_i$ is
+described by $\varphi_i$, then the sets $D$ and $U$ are described by
+\CTL\ formulas
+$\varphi_D = \neg \ctlAX \KwTrue \lor \varphi_1 \lor \varphi_2 \lor
+\cdots$
+and $\varphi_U = \neg \varphi_D$, where the deadlock condition
+$\neg \ctlAX \KwTrue$ is added to make \eqref{eq:algorithms:mtff:gamma}
+irreducible.
+
+After the set $U$ is generated symbolically, the matrix $Q_{UU}$ may be
+decomposed in the same way as the whole state space $S$. Thus, the
+vector-matrix operations required for solving
+\eqref{eq:algorithms:mtff:gamma} can be executed as in steady-state
+analysis.

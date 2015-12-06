@@ -7,6 +7,11 @@
 \DeclareMathOperator{\Pr}{\mathbb{P}}
 \DeclareMathOperator{\Ex}{\mathbb{E}}
 \DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator{\Span}{span}
+\DeclareMathOperator{\grade}{grade}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
 
 \newcommand*{\dd}{\mathrm{d}}
 \newcommand*{\T}{\mathrm{T}}
@@ -17,6 +22,7 @@
 \newcommand*{\krplus}{}\let\krplus\oplus
 \newcommand*{\bigkrplus}{}\let\bigkrplus\bigoplus
 \newcommand*{\eltimes}{}\let\eltimes\odot
+\newcommand*{\largesigma}{\mathlarger{\sigma}}
 
 \newcommand*{\mathabbrev}[1]{\textit{\textls{#1}}}
 
@@ -41,6 +47,27 @@
 \newcommand*{\ZZ}{\mathbb{Z}} % Whole numbers
 \newcommand*{\NN}{\mathbb{N}} % Naturals
 \newcommand*{\NNpos}{\NN^{+}} % Positive whole numbers
+
+%
+% Operations
+%
+
+\newcommand*{\operationname}{}
+
+\newcommand*{\InPlace}{In-place}
+\SetKwComment{OperationComment}{$\triangleright$~}{}
+\makeatletter
+\def\OperationFormat@Quark{\OperationFormat@Quark}
+\newcommand*{\OperationFormat}[1]{%
+  \futurelet\@InPlace\OperationFormat@#1\OperationFormat@Quark}
+\def\OperationFormat@{%
+  \ifx\@InPlace\InPlace\relax\expandafter\@firstoftwo\else
+  \expandafter\@secondoftwo\fi
+  \OperationFormat@InPlace\OperationFormat@@}
+\def\OperationFormat@InPlace\InPlace{\relax\InPlace~\OperationFormat@@}
+\def\OperationFormat@@#1\OperationFormat@Quark{\operationname{#1}}
+\newcommand*{\Operation}{\tdk@comment\OperationComment\OperationFormat}
+\makeatother
 
 %
 % Markov chains
@@ -76,6 +103,12 @@
 }
 
 %
+% Stochastic Automata Networks
+%
+
+\newcommand*{\SAN}{\mathabbrev{SAN}}
+
+%
 % Stochastic Reward Nets
 %
 
@@ -102,8 +135,8 @@
 %
 
 \newcommand*{\CTL}{\textls{CTL}}
-\newcommand*{\KwTrue}{\textsf{true}}
-\newcommand*{\KwFalse}{\textsf{false}}
+\newcommand*{\KwTrue}{\textrm{true}}
+\newcommand*{\KwFalse}{\textrm{false}}
 \newcommand*{\ctlAX}{\textbf{\textsf{\textls[30]{AX}}}\,}
 
 %

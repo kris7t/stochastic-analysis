@@ -1,0 +1,1112 @@
+\chapter{Background}
+\label{chap:background}
+
+In this section we overview the basic formalisms and scope of our
+work. At first, Petri net based formalisms are introduced, which is
+the modelling language our framework uses to express stochastic
+models. Then the basic stochastic modelling background is discussed
+and Kronecker algebra is also introduced to give a base for the later sections.
+
+\section{Petri nets}
+\label{chap:background:sec:petri-nets}
+
+Petri nets are a widely used graphical and mathematical modeling tool
+for systems which are concurrent, asynchronous, distributed, parallel
+or nondeterministic.
+
+\begin{dfn}
+  A \emph{Petri net} is a 5-tuple $\PN = (P, T, F, W, M_0)$, where
+  \begin{asparaitem}
+  \item $P = \{p_0, p_1, \ldots, p_{n - 1}\}$ is a finite set of places;
+  \item $T = \{t_0, t_1, \ldots, t_{m - 1}\}$ is a finite set of transitions;
+  \item $F \subseteq (P \times T) \cup (P \times T)$ is a set of
+    arcs, also called the flow relation;
+  \item $W: F \to \NNpos$ is an arc weight function;
+  \item $M_0: P \to \NN$ is the initial marking;
+  \item $P \cap T = \emptyset$ and $P \cup T \neq
+    \emptyset$~\citep{murata1989petri}.
+  \end{asparaitem}
+\end{dfn}
+
+Arcs from $P$ to $T$ are called \emph{input arcs}. The input places of
+a transition $t$ are denoted by $\inarc{t} = \{ p : (p, t) \in F
+\}$.
+In contrast, arcs of the form $(t, p)$ are called \emph{output arcs}
+and the output places of $t$ are denoted by
+$\outarc{t} = \{p : (t, p) \in F \}$.
+
+A \emph{marking} $M: P \to \NN$ assigns a number of \emph{tokens} to each
+place. The transition $t$ is \emph{enabled} in the marking $M$
+\paren{written as $M\,\tranto{t}\,$} when $M(p) \ge W(p, t)$ for all $p \in
+\inarc{t}$.
+
+Petri nets are graphically represented as edge weighted directed
+bipartite graphs. Places are drawn as circles, while transitions are
+drawn as bars or rectangles. Edge weights of $1$ are ususally omitted
+from presentation. Dots on places correspond to tokens in the current
+marking.
+
+If $M\,\tranto{t}$ holds the transition $t$ can be \emph{fired} to get a
+new marking $M'$ \paren{written as $M \tranto{t} M'$} by
+decreasing the token counts for each place $p \in \inarc{t}$ by
+$W(p, t)$ and increasing the token counts for each place
+$p \in \outarc{t}$ by $W(t, p)$. Note that in general, $\inarc{t}$ and
+$\outarc{t}$ need not be disjoint. Thus, the firing rule can be
+written as
+\begin{equation}
+  \label{eq:background:petri:fire}
+  M'(p) = M(p) - W(p, t) + W(t, p) \text,
+\end{equation}
+where we take $W(x, y) = 0$ if $(x, y) \notin F$ for brevity.
+
+A marking $M'$ is \emph{reachable} from the marking $M$ (written as
+$M \reachto M'$) if there exists a sequence of markings and transitions
+for some finite $k$ such that
+\begin{equation}
+  M = M_1 \tranto{t_{i_1}} M_2 \tranto{t_{i_2}} M_3 \tranto{t_{i_3}}
+  \cdots \tranto{t_{i_{k - 1}}} M_{k - 1} \tranto{t_{i_k}} M_k = M'\text.
+\end{equation}
+A marking $M$ is in the reachable \emph{state space} of the net if
+$M_0 \reachto M$. The set of all markings reachable from $M_0$ is
+denoted by
+\begin{equation}
+  \RS = \{ M : M_0 \reachto M \} \text.
+\end{equation}
+
+\begin{dfn}
+  The Petri net $\PN$ is $k$-\emph{bounded} if $M(p) \le k$ for all $M
+  \in \RS$ and $p \in P$. $\PN$ is \emph{bounded} if it is $k$-bounded
+  for some (finite) $k$.
+\end{dfn}
+
+The reachable state space $\RS$ is finite if and only if the Petri net
+is bounded.
+
+\begin{figure}
+  \centering
+  \newcommand*{\examplenet}[3]{
+    \begin{tikzpicture}
+      \matrix [column sep=1cm,ampersand replacement=\&] {
+        \node [petri net place] (h2) {#1}; \& \& \\
+        \& \node [petri net transition] (t) {} ; \& \node [petri net place] (h2o) {#3}; \\
+        \node [petri net place] (o2) {#2}; \& \& \\
+      };
+      \draw [-{Latex}] (h2) edge node [above] {$2$} (t) (o2) edge (t)
+      (t) edge node [above] {$2$} (h2o);
+      \node [below=0cm of h2] {$p_{\text{H$_2$}}$};
+      \node [below=0cm of o2] {$p_{\text{O$_2$}}$};
+      \node [below=0cm of h2o] {$p_{\text{H$_2$O}}$};
+      \node [below=0cm of t] {$t$};
+    \end{tikzpicture}}
+
+  $\vcenter{\hbox{\examplenet{\token\token}{\token\token}{}}}
+  \quad\vcenter{\hbox{$\tranto{t}$}}\quad
+  \vcenter{\hbox{\examplenet{}{\token}{\token\token}}}$
+  \caption{A Petri net model of the reaction of hydrogen and oxygen.}
+  \label{fig:background:petri:h2o}
+\end{figure}
+
+\begin{example}
+  The Petri net in~\cref{fig:background:petri:h2o} models the chemical
+  reaction
+  \begin{equation}
+    2 \, \mathrm{H}_2 + \mathrm{O}_2 \rightarrow 2 \,
+    \mathrm{H}_2\mathrm{O} \text.
+  \end{equation}
+  In the initial marking \paren{left} there are two hydrogen and two
+  oxygen molecules, represented by tokens on the places $p_{\text{H$_{2}$}}$
+  and $p_{\text{O$_{2}$}}$, therefore the transition $t$ is
+  enabled. Firing $t$ yields the marking on the right where the two
+  tokens on $p_{\text{H$_{2}$O}}$ are the products of the reaction. Now $t$ is no
+  longer enabled.
+\end{example}
+
+\begin{figure}
+  \centering
+  \begin{tikzpicture}
+    \runningExamplePetriNet
+  \end{tikzpicture}
+  \caption{The \emph{SharedResource} Petri net model.}
+  \label{fig:background:petri:sharedresource}
+\end{figure}
+
+\begin{runningExample}
+  In~\cref{fig:background:petri:sharedresource} we introduce the
+  \emph{SharedResource} model which will serve as a running example
+  throughout this report.
+
+  The model consists of a single shared resource $S$ and two
+  consumers. Each consumer can be in one of the following states:
+  $C_i$ \paren{calculating locally}, $W_i$ \paren{waiting for
+    resource} and $S_i$ \paren{using shared resource}. The
+  transitions $r_i$ \paren{request resource}, $a_i$ \paren{acquire
+    resource} and $d_i$ \paren{done} correspond to behaviors of the
+  consumers. The net is \mbox{$1$-bounded}, therefore it has finite
+  $\RS$.
+
+  The Petri net model allows the verification of safety properties,
+  e.g.~we can show that there is mutual exclusion
+  --~$M(S_1) + M(S_2) \le 1$ for all reachable markings~-- or that
+  deadlock cannot occur. 
+  %In contrast, we cannot compute dependability
+  %or performability measures \paren{e.g.~the utilization of the shared
+  %  resource or number of calculations completed per unit time}
+  %because the model does not describe the temporal behavior of the
+  %system.
+\end{runningExample}
+
+\subsection{Petri nets extended with inhibitor arcs}
+
+Inhibitor arcs are widely used extensions of Petri nets that can disable transitions even when the firing rule defined in \cref{chap:background:sec:petri-nets} is satisfied. 
+%One of the most frequently used extensions of Petri nets is the
+%addition of inhibitor arcs, which constrains the rule for transition
+%enablement. 
+This modification gives Petri nets expressive power
+equivalent to Turing
+machines~\citep{DBLP:conf/apn/Chrzastowski-Wachtel99}.
+
+\begin{dfn}
+  A \emph{Petri net with inhibitor arcs} is a 3-tuple $\PNI = (\PN,
+  I, W_I)$, where
+  \begin{asparaitem}
+  \item $\PN = (P, T, F, W, M_0)$ is a Petri net;
+  \item $I \subseteq P \times T$ is the set of inhibitor arcs;
+  \item $W_I: I \to \NNpos$ is the inhibitor arc weight function.
+  \end{asparaitem}
+\end{dfn}
+
+Let $\inharc{t} = \{ p : (p, t) \in I\}$ denote the set of inhibitor
+places of the transition $t$. The enablement rule for Petri nets with
+inhibitor arcs can be formalized as
+\begin{equation}
+  \label{eq:background:petri:inh-fire}
+  M\,\tranto{t} \Longleftrightarrow \text{\strut$M(p) \ge W(p, t)$ for all
+    $p \in \inarc{t}$ and $M(p) < W_I(p, t)$ for all $p \in
+    \inharc{t}$.}
+\end{equation}
+The firing rule \eqref{eq:background:petri:fire} remains unchanged in
+Petri nets with inhibitor arcs..
+
+\section{Continuous-time Markov chains}
+
+Continuous-time Markov chains are mathematical tools for describing the
+behavior of systems in countinous time where the stochastic behavior of
+the system only depends on its current state.
+
+\begin{dfn}
+  A \emph{Continuous-time Markov Chain} \paren{\CTMC}
+  $X(t) \in S, t \ge 0$ over the finite state
+  space $S = \{0, 1, \ldots, n - 1\}$ is a continuous-time random
+  process with the \emph{Markovian} or memoryless property:
+  \begin{multline}\allowdisplaybreaks[0]
+    \Pr(X(t_k) = x_k \mid X(t_{k - 1}) = x_{k - 1}, X(t_{k -
+      2}) = x_{k - 2}, \ldots, X(t_{0}) = x_{0}) \\
+    = \Pr(X(t_k) = x_k \mid X(t_{k - 1}) = x_{k - 1}) \text,
+  \end{multline}
+  where $t_0 \le t_1 \le \cdots \le t_k$ and $X(t_k)$ is a random variable denoting the current state of the \CTMC\ at time $t_k$. A \CTMC\ is said to be
+  \emph{time-homogenous} if it also satisfies
+  \begin{equation}
+    \Pr(X(t_k) = x_k \mid X(t_{k - 1}) = x_{k - 1}) = \Pr(X(t_k - t_{k -
+      1}) = x_k \mid X(0) = x_{k - 1}) \text,
+  \end{equation}
+  i.e.~it is invariant to time shifting.
+\end{dfn}
+
+In this report we will restrict our attention to time-homogenous \CTMC
+s over finite state spaces. The state probabilities of these
+stochastic processes at time $t$ form a finite-dimensional vector
+$\vec{\uppi}(t) \in \RR^n$,
+\begin{equation}
+  \pi(t)[x] = \Pr(X(t) = x)
+\end{equation}
+that satisfies the differential equation
+\begin{equation}
+  \label{eq:background:ctmc:diffeq}
+  \frac{\dd \vec{\uppi}(t)}{\dd t} = \vec{\uppi}(t) \, Q
+\end{equation}
+for some square matrix $Q$. The matrix $Q$ is called the
+\emph{infinitesimal generator matrix} of the \CTMC\ and can be
+interpreted as follows:
+\begin{itemize}
+\item The diagonal elements $q[x, x] < 0$ describe the holding times
+  of the \CTMC. If $X(t) = x$, the \emph{holding time}
+  $h_x = \inf \{ h > 0 : X(t) = x, X(t + h) \ne x \}$ spent in state $x$ is
+  exponentially distributed with rate $\lambda_x = -q[x, x]$. If
+  $q[x, x] = 0$, then no transitions are possible from state $x$ and
+  it is said to be \emph{absorbing}.
+\item The off-diagonal elements $q[x, y] \ge 0$ describe the state
+  transitions. In state~$x$ the \CTMC\ will jump to state~$y$ at the
+  next state transition with probability $-q[x, y] / q[x, x]$.
+  Equivalently, there is expontentially distributed countdown in the
+  state $x$ for each $y : q[x, y] > 0$ with \emph{transition rate}
+  $\lambda_{xy} = q[x, y]$. The first countdown to finish will trigger
+  a state change to the corresponding state $y$. Thus, the \CTMC\ is a
+  transition system with exponentially distributed timed transitions.
+\item Elements in each row of $Q$ sum to $0$, hence it satisfies
+  $Q \vec{1}^\T = \vec{0}^\T$.
+\end{itemize}
+
+For more algebraic properties of infinitesimal generator matrices, we
+refer to \citet{plemmons1979nonnegative,stewart1994introduction}.
+
+A state $y$ is said to be \emph{reachable} from the state $x$
+($x \reachto y$) if there exists a sequence of states
+\begin{equation}
+  x = z_1, z_2, z_3, \ldots, z_{k - 1}, z_k = y
+\end{equation}
+such that $q[z_i, z_{i + 1}] > 0$ for all $i = 1, 2, \ldots, k -
+1$.
+If $y$ is reachable from $x$ for all $x, y \in S$ $y$, the Markov chain
+is said to be \emph{irreducible}.
+
+The \emph{steady-state probability distribution}
+$\vec{\uppi} = \lim_{t \to \infty} \vec{\uppi}(t)$ exists and is
+independent from the \emph{initial distribution}
+$\vec{\uppi}(0) = \vec{\uppi}_0$ if and only if the finite \CTMC\ is
+irreducible. The steady-state distribution satisfies the linear
+equation
+\begin{equation}
+  \label{eq:background:ctmc:steadystate}
+  \frac{\dd \vec{\uppi}}{\dd t} = \vec{\uppi} \, Q = \vec{0},
+  \quad \vec{\uppi} \vec{1}^\T = 1 \text.
+\end{equation}
+
+\begin{figure}
+  \begin{minipage}{.49\linewidth}
+    \centering
+    \begin{tikzpicture}
+      \matrix [column sep=1.5cm, every node/.style={inner
+        sep=0pt,minimum size=.85cm, draw,circle,tdk highlight}] {
+        \node (s0) {0}; & \node (s1) {1}; & \node (s2) {2}; \\
+      }; \draw [every edge/.append style={-{Latex},bend left}, every
+      node/.append style={above}] (s0) edge node {$\lambda_1$} (s1)
+      (s1) edge node {$\lambda_2$} (s2) (s2) edge node {$\mu_2$} (s1)
+      (s1) edge node {$\mu_1$} (s0) (s2) edge [bend left=45] node
+      {$\mu_3$} (s0);
+    \end{tikzpicture}
+  \end{minipage}
+  \begin{minipage}{.49\linewidth}
+    \centering
+    $\begin{blockarray}{rccc}
+      & 0 & 1 & 2 \\
+      \begin{block}{r(ccc)}
+        0 & -\lambda_1 & \lambda_1 & 0 \\
+        Q = 1 & \mu_1 & -\lambda_2 - \mu_1 & \lambda_2 \\
+        2 & \mu_3 & \mu_2 & -\mu_2 - \mu_3 \\
+      \end{block}
+    \end{blockarray}$
+    \vspace{0.5cm}
+  \end{minipage}
+  \caption{Example \CTMC\ with 3 states and its generator matrix.}
+  \label{fig:background:ctmc:repair}
+\end{figure}
+
+\begin{example}
+  \Cref{fig:background:ctmc:repair} shows a \CTMC\ with $3$
+  states. The transitions from state $0$ to $1$ and from $1$ to $2$
+  are associated with exponentially distributed countdowns with rates
+  $\lambda_1$ and $\lambda_2$ respectively, while transitions in the
+  reverse direction have rates $\mu_1$ and $\mu_2$. The transition
+  form state $2$ to $0$ is also possible with rate $\mu_3$.
+  
+  The rows \paren{corresponding to source states} and
+  columns \paren{destination states} of the infinitesimal generator
+  matrix $Q$ are labeled with the state numbers. The diagonal element
+  $q[1, 1]$ is $-\lambda_2 - \mu_1$, hence the holding time in state
+  $1$ is exponentially distributed with rate $\lambda_2 + \mu_1$. The
+  transition from state $1$ to $0$ is taken with probability
+  $-q[1, 0] / q[1, 1] = \mu_1 / (\lambda_2 + \mu_1)$, while the
+  transition to $2$ is taken with probability
+  $\lambda_2 / (\lambda_2 + \mu_1)$.
+
+  The \CTMC\ is irreducible, because every state is reachable from
+  every other state. Therefore, there is a unique steady-state
+  distribution $\vec{\uppi}$ independent from the initial distribution
+  $\vec{\uppi}_0$.
+\end{example}
+
+\subsection{Markov reward models}
+
+Continuous-time Markov chains may be employed in the estimation of
+performance measures of models by defining \emph{rewards} that
+associate \emph{reward rates} with the states of a \CTMC. The
+reward rate random variable $R(t)$ can describe performance
+measures defined at a single point of time, such as resource
+utilization or probability of failure, while the \emph{accumulated
+  reward} random variable $Y(t)$ may correspond to performance
+measures associated with intervals of time, such as total downtime.
+
+\begin{dfn}
+  A \emph{Continuous-time Markov Reward Process} over a finite state
+  space $S = \{0, 1, \ldots, n - 1\}$ is a pair $(X(t), \vec{r})$,
+  where $X(t)$ is a \CTMC\ over $S$ and $\vec{r} \in \RR^n$ is a
+  \emph{reward rate vector}.
+\end{dfn}
+
+The element $r[x]$ of the reward vector is a momentary reward rate in
+state $x$, therefore the reward rate random variable can be written as
+$R(t) = r[X(t)]$. The accumulated reward until time $t$ is defined by
+\begin{equation}
+  Y(t) = \int_{0}^t R(\tau) \, \dd \tau \text.
+\end{equation}
+
+The computation of the distribution function of Y(t) is a
+computationally intensive task (a summary is available at \citep[Table
+1]{RACZ02h}), while its mean, $\Ex Y(t)$, can be computed
+efficiently as discussed below.
+
+Given the initial probability distribution vector
+$\vec{\uppi}(0) = \vec{\uppi}_0$ the expected value of the reward rate
+at time $t$ can be calculated as
+\begin{equation}
+  \label{eq:background:ctmc:reward}
+  \Ex R(t) = \sum_{i = 0}^{n - 1} \pi(t)[i] r[i] = \vec{\uppi}(t)
+  \, \vec{r}^\T \text,
+\end{equation}
+which requires the solution of the initial value problem%
+~\citep{DBLP:journals/cor/Grassmann77,reibman1989markov}
+\begin{equation}
+  \label{eq:background:ctmc:transient-ivp}
+  \frac{\dd \vec{\uppi}(t)}{\dd t} = \vec{\uppi}(t) \, Q, \quad
+  \vec{\uppi}(0) = \vec{\uppi}_0
+\end{equation}
+to form the inner product $\Ex R(t) = \vec{\uppi}(t) \, \vec{r}^\T$.
+
+To obtain the expected steady-state reward rate (if it exists) the
+linear equation~\eqref{eq:background:ctmc:steadystate} should be
+solved instead of \cref{eq:background:ctmc:transient-ivp} in order to
+acquire the steady-state probability vector $\vec{\uppi}$. The
+computation of the reward value proceeds by
+\cref{eq:background:ctmc:reward} in the same way as in transient
+analysis.
+
+The expected value of the accumulated reward is
+\begin{align}
+  \Ex Y(t) &= \Ex\mleft[ \int_0^t R(\tau) \,\dd\tau \mright] =
+             \int_0^t \Ex[R(\tau)] \,\dd\tau \\
+           &= \int_0^t \sum_{i = 0}^{n - 1} \pi(\tau)[i] r[i]
+             \,\dd\tau = \sum_{i = 0}^{n - 1} \int_0^t \pi(\tau)[i]
+             \,\dd\tau \, r[i] \\
+           &= \int_0^t \vec{\uppi}(t) \,\dd\tau \, \vec{r}^\T =
+             \vec{L}(t) \, \vec{r}^\T \text,
+\end{align}
+where $\vec{L}(t) = \int_0^t \vec{\uppi}(t) \,\dd\tau$ is the accumulated
+probability vector, which is the solution of the initial value
+problem~\citep{reibman1989markov}
+\begin{equation}
+  \label{eq:background:ctmc:L-ivp}
+  \frac{\dd \vec{L}(t)}{\dd t} = \vec{\uppi}(t), \quad \frac{\dd
+    \vec{\uppi}(t)}{\dd t} = \vec{\uppi}(t) \, Q, \quad
+  \vec{L}(0) = \vec{0}, \quad \vec{\uppi}(0) = \vec{\uppi}_0.
+\end{equation}
+
+\begin{example}
+  Let $c_0$, $c_1$ and $c_2$ denote operating costs per unit time
+  associated with the states of the \CTMC\ in
+  \cref{fig:background:ctmc:repair}. Consider the Markov reward
+  process $(X(t), \vec{r})$ with reward rate vector
+  \begin{equation}
+    \vec{r} = \begin{pmatrix} c_0 & c_1 & c_2 \end{pmatrix} \text.
+  \end{equation}
+  The random variable $R(t)$ describes the momentary operating cost,
+  while $Y(t)$ is the total operating expenditure until time $t$. The
+  steady-state expectation of $R$ is the average maintenance cost per
+  unit time of the long-running system.
+\end{example}
+
+\subsection{Sensitivity}
+
+Sensitivity analysis is widely used to assess the robustnes of information systems.
+Consider a reward process $(X(t), \vec{r})$ where both the
+infinitesimal generator matrix $Q(\vec{\uptheta})$ and the reward rate
+vector $\vec{r}(\vec{\uptheta})$ may depend on some \emph{parameters}
+$\vec{\uptheta} \in \RR^m$. The \emph{sensitivity} analysis of the
+rewards $R(t)$ may reveal performance or reliability bottlenecks of
+the modeled system and help designers in achieving desired performance measures and robustnes values.
+
+\begin{dfn}
+  The \emph{sensitivity} of the expected reward rate~$\Ex R(t)$ to the
+  parameter~$\theta[i]$ is the partial derivative
+  \begin{equation}
+    \frac{\partial \Ex R(t)}{\partial \theta[i]} \text.
+  \end{equation}
+\end{dfn}
+
+Considering parameters with high absolute sensitivity the model reacts to the changes of those parameters more prominently, therefore they can be promising directions of system optimization.
+
+To calculate the sensivity of $\Ex R(t)$, the partial derivative of
+both sides of \cref{eq:background:ctmc:reward} is taken, yielding
+\begin{equation}
+  \label{eq:background:ctmc:sensitivity:productrule}
+  \frac{\partial \Ex R(t)}{\partial \theta[i]} = \frac{\partial
+    \vec{\uppi}(t)}{\partial \theta[i]} \vec{r}^\T + \vec{\uppi}(t)
+  \mleft(\frac{\partial \vec{r}}{\partial \theta[i]}\mright)^\T =
+  \vec{s}_i(t) \, \vec{r}^\T + \vec{\uppi}(t)
+  \mleft(\frac{\partial \vec{r}}{\partial \theta[i]}\mright)^\T \text,
+\end{equation}
+where $\vec{s}_i$ is the sensitivity of $\vec{\uppi}$ to the parameter
+$\theta[i]$.
+
+In transient analysis, the sensitivity vector $\vec{s}_i$ is the
+solution of the initial value problem
+\begin{equation}
+  \frac{\dd \vec{s}_i(t)}{\dd t} = \vec{s}_i(t) Q + \vec{\pi}(t) V_i,
+  \quad \frac{\dd \vec{\uppi}(t)}{\dd t} = \vec{\uppi}_i(t) Q,
+  \quad \vec{s}_i(0) = \vec{0}, \quad \vec{\uppi}(0) = \vec{\uppi}_0
+  \text,
+\end{equation}
+where $V_i = \partial Q(\vec{\uptheta}) / \partial \theta[i]$ is the
+partial derivative of the generator
+matrix~\citep{DBLP:conf/sigmetrics/RameshT93}. A similar initial value
+problem can be derived for the sensitivity of $\vec{L}(t)$ and $Y(t)$.
+
+To obtain the sensitivity $\vec{s}_i$ of the steady-state probability
+vector $\vec{\uppi}$, the system of linear equations
+\begin{equation}
+  \label{eq:background:ctmc:sensitvity:s}
+  \vec{s}_i Q = -\vec{\uppi} V_i, \quad \vec{s}_i \vec{1}^T = 0
+\end{equation}
+is solved~\citep{DBLP:conf/sigmetrics/BlakeRT88}.
+
+Another type of sensitivity analysis considers \emph{unstructured}
+small perturbations of the infinitesimal generator matrix $Q$ instead
+of dependecies on parameters%
+~\citep{funderlic1986sensitivity,ipsen1994uniform}. This latter,
+unstructured analysis may be used to study the numerical stability and
+conditioning of the solutions of the Markov chain.
+
+\subsection{Time to first failure}
+\label{ssec:background:mtff}
+
+Computing the first time of a system failure (provided it was fully operational when it was started) has many applications in reliability engineering.
+
+Let $D \subsetneq S$ be a set of \emph{failure states} of the \CTMC\ 
+$X(t)$ and $U = S \setminus D$ be a set of operating states. We will
+assume without loss of generality that $U = \{0, 1, \ldots, n_U - 1\}$
+and $D = \{ n_U, n_U + 1, \ldots, n - 1 \}$.
+
+The matrix
+\begin{equation}
+  Q_{UD} = \begin{pmatrix}
+    Q_{UU} & \vec{q}_{UD}^\T \\
+    \vec{0} & 0
+  \end{pmatrix}
+\end{equation}
+is the infinitesimal generator of a \CTMC\ $X_{UD}(t)$ in which all
+the failures states $D$ were merged into a single state $n_U$ and all
+outgoing transitions from $D$ were removed. The matrix $Q_{UU}$ is the
+$n_U \times n_U$ upper left submatrix of $Q$, while the vector
+$\vec{q}_{UD} \in \RR^{n_U}$ is defined as
+\begin{equation}
+  q_{UD}[x] = \sum_{y \in D} q[x, y] \text.
+\end{equation}
+
+If the initial distribution $\vec{\uppi}_0$ is $0$ for all failure
+states (i.e.~$\pi_0[x] = 0$ for all $x \in D$), the \emph{Time
+  to First Failure}
+\begin{equation}
+  \TFF = \inf \{ t \ge 0 : X(t) \in D \} = \inf \{ t \ge 0 : X_{UD}(t)
+  = n_U \}
+\end{equation}
+is \emph{phase-type distributed} with parameters
+$(\vec{\pi}_{U}, Q_{UU})$~\citep{NEUT75}, where $\vec{\uppi}_U$ is the
+vector containing the first $n_U$ elements of $\vec{\pi}_0$. In
+particular, the \emph{Mean Time to First Failure} is computed as follows:
+\begin{equation}
+  \label{eq:background:mtff}
+  \MTFF = \Ex[\TFF] = - \vec{\uppi}_U Q_{UU}^{-1} \vec{1}^\T \text.
+\end{equation}
+
+\noindent
+The probability of a $D'$-mode failure ($D' \in D$) is
+\begin{equation}
+  \label{eq:background:failure-mode}
+  \Pr(X(\TFF_{+ 0}) = y) = - \vec{\uppi}_UQ_{UU}^{-1} \vec{q}_{UD'}^\T \text,
+\end{equation}
+where $\vec{q}_{UD'} \in \RR^{n_U}$,
+$q_{UD'}[x] = \sum_{y \in D'} q[x, y]$ is the vector of transition
+rates from operational states to failure states $D'$.
+
+\section{Stochastic Petri nets}
+
+While reward processes based on continuous-time Markov chains allow
+the study of dependability or reliability, the explicit
+specification of stochastic processes and rewards is often
+cumbersome. More expressive formalisms include queueing networks,
+stochastic process algebras such as
+\textls{PEPA}~\citep{DBLP:conf/cpe/GilmoreH94,donatelli1993superposed},
+Stochastic Automata Networks~\citep{DBLP:conf/mascots/FernandesPS95}
+and Stochastic Petri Nets (\textls{SPN}).
+
+Stochastic Petri Nets extend Petri nets by assigning
+exponentially distributed random delays to
+transitions~\citep{DBLP:conf/apn/Marsan88}. After the delay associated
+with an enabled transition is elapsed the transition fires
+\emph{atomically} and transitions delays are reset.
+
+\begin{dfn}
+  \label{dfn:background:spn}
+  A Stochastic Petri Net is a pair $\SPN = (\PN, \Lambda)$, where
+  $\PN$ is a Petri net $(P, T, F, W, M_0)$ and $\Lambda: T \to \RRpos$
+  is a transition rate function.
+
+  Likewise, a stochastic Petri net with inhibitor arcs is a pair
+  $\SPN_I = (\PN_I, \Lambda)$, where $\PN_I$ is a Petri net with
+  inhibitor arcs.
+\end{dfn}
+
+\needspace{5ex}
+
+A finite \CTMC\ can be associated with a bounded stochastic Petri net
+(with inhibitor arcs) as follows:
+\begin{enumerate}
+\item The reachable state space of the Petri net is explored. We
+  associate consecutive natural numbers with the states such that
+  the state space is
+  \begin{equation}
+    \RS = \{ M_0, M_1, M_2, \ldots, M_{n - 1} \} \text,
+  \end{equation}
+  where $M_0$ is the initial marking. From now on, we will use
+  markings $M_x \in \RS$ and natural numbers $x \in \{0, 1, \ldots, n
+  - 1\}$ to refer to states (in \textls{CTMC} terminology) and
+  markings (in \textls{SPN} terminology) of the model interchangably.
+\item We define a \CTMC\ $X(t)$ over the finite state space
+  \begin{equation}
+    S = \{ 0, 1, 2, \ldots, n - 1 \} \text.
+  \end{equation}
+  The initial distribution vector will be set to
+  \begin{equation}
+    \vec{\uppi}(0) = \vec{\uppi}_0 = \begin{pmatrix}
+      1 & 0 & 0 & \cdots & 0
+    \end{pmatrix}
+  \end{equation}
+  in the analysis step ($\pi_0[x] = \delta_{0,x}$).
+\item The generator matrix $Q \in \RR^{n \times n}$ encodes the
+  possible state transitions of the Petri net and the associated
+  transition rate $\Lambda(\,\cdot\,)$ as
+  \begin{gather}
+    q_O[x, y] = \sum_{\mathclap{\substack{t \in T \\ M_{x} \tranto{t} M_y}}}
+    \Lambda(t) \quad \text{if $x \ne y$} \text,
+    \label{eq:background:spn:q-d}\\
+    q_O[x, x] = 0 \text, \\
+    Q = Q_O - \diag \{ Q_O \vec{1}^\T \} \text,
+  \end{gather}
+  where the summation is done over all transition from the marking
+  $M_x$ to $M_y$, while $Q_O$ and $Q_D = -\diag \{ Q_O \vec{1}^\T \}$
+  are the off-diagonal and diagonal parts of $Q$, respectively.
+\end{enumerate}
+
+\begin{figure}
+  \centering
+  \begin{tikzpicture}
+    \runningExampleSPN
+  \end{tikzpicture}
+  \caption{Example stochastic Petri net for the \emph{SharedResource}
+    model.}
+  \label{fig:background:spn:sharedresource}
+\end{figure}
+
+\begin{table}
+  \centering
+  $\mathllap{\RS = }\left\{\;\text{\small%
+    \begin{tabular}{@{}r*{7}{c}l@{}}
+      \toprule
+      \multicolumn{1}{@{}c}{$P$:} & $S$ & $C_1$ & $W_1$ & $S_1$ & $C_2$ & $W_2$ & $S_2$ & \\
+      \midrule
+      $M_0$ & 1 & 1 & 0 & 0 & 1 & 0 & 0 & initial \\
+      $M_1$ & 1 & 0 & 1 & 0 & 1 & 0 & 0 & client 1 waiting \\
+      $M_2$ & 1 & 1 & 0 & 0 & 0 & 1 & 0 & client 2 waiting \\
+      $M_3$ & 1 & 0 & 1 & 0 & 0 & 1 & 0 & 1 waiting, 2 waiting \\
+      $M_4$ & 0 & 0 & 0 & 1 & 1 & 0 & 0 & client 1 shared working \\
+      $M_5$ & 0 & 0 & 0 & 1 & 0 & 1 & 0 & 1 shared working, 2 waiting \\
+      $M_6$ & 0 & 1 & 0 & 0 & 0 & 0 & 1 & client 2 shared working \\
+      $M_7$ & 0 & 0 & 1 & 0 & 0 & 0 & 1 & 1 waiting, 2 shared working \\
+      \bottomrule
+    \end{tabular}}%
+  \;\right\}$
+  \caption{Reachable state space of the \emph{SharedResource} model.}
+  \label{tab:background:spn:sharedresource-rs}
+\end{table}
+
+\begin{figure}
+  \centering
+  \begin{tikzpicture}
+    \newcommand*{\state}[2][]{\node [#1] (m#2) {$M_{#2}$};}
+    \newcommand*{\tran}[4][above]{\draw [-{Latex},#1]
+      (m#2) edge node [#1] {$#4$} (m#3);}
+
+    \matrix [column sep=1.2cm, row sep=1.2cm,
+    every node/.append style={tdk highlight, draw, circle,
+      inner sep=0pt, minimum size=0.8cm}] {
+      \state[thick]{0} & \state{1} & \state{4} \\
+      \state{2} & \state{3} & \state{5} \\
+      \state{6} & \state{7} \\
+    };
+
+    \tran[font=\footnotesize,above]{0}{1}{\frac{1}{\theta[0]}}
+    \tran{1}{4}{1}
+    \tran[bend right=60,above,pos=0.25,yshift=2pt]{4}{0}{0.5}
+    \tran[font=\footnotesize,left]{0}{2}{\frac{1}{\theta[1]}}
+    \tran[font=\footnotesize,left]{1}{3}{\frac{1}{\theta[1]}}
+    \tran[font=\footnotesize,left]{4}{5}{\frac{1}{\theta[1]}}
+    \tran[font=\footnotesize,above]{2}{3}{\frac{1}{\theta[0]}}
+    \tran{3}{5}{1}
+    \tran[bend right=60,above,pos=0.25,yshift=2pt]{5}{2}{0.5}
+    \tran[left]{2}{6}{1}
+    \tran[left]{3}{7}{1}
+    \tran[font=\footnotesize,above]{6}{7}{\frac{1}{\theta[0]}}
+    \tran[bend left=60,left,pos=0.25]{6}{0}{1.1}
+    \tran[bend left=60,left,pos=0.25]{7}{1}{1.1}
+  \end{tikzpicture}
+  \caption{The \CTMC\ associated with the \emph{SharedResource}
+    \textls{SPN} model.}
+  \label{fig:background:spn:sharedresouce-ctmc}
+\end{figure}
+
+\begin{runningExample}
+  \Cref{fig:background:spn:sharedresource} shows the \textls{SPN} 
+  model for \emph{SharedResouce}, which is the Petri net
+  from \vref{fig:background:petri:sharedresource} extended with
+  exponential transition rates.
+
+  The transitions $a_1$, $d_1$, $a_2$ and $d_2$ have rates $1.0$,
+  $0.5$, $1.0$ and $1.1$, respectively. The vector $\vec{\uptheta} = (0.625, 1.25) \in \RR^2$ of model parameters is introduced such
+  that the transitions $r_1$ and $r_2$ have rates $1 / \theta[0]$ and
+  $1 / \theta[1]$.
+
+  The reachable state space
+  (\cref{tab:background:spn:sharedresource-rs}) contains $8$ markings
+  which are mapped to the integers $S = \{0, 1, \ldots, 7\}$. The
+  state graph along with the transition rates of the \CTMC\ is
+  shown in \cref{fig:background:spn:sharedresouce-ctmc}. The generator matrix is (also depicting state indices):
+
+  \begin{equation}
+    Q =
+    \begin{blockarray}{l*{8}{c}}
+      & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 \\
+      \begin{block}{l(*{8}{c})}
+        0 & \ast & \frac{1}{\theta[0]} & \frac{1}{\theta[1]} & 0 & 0 & 0 & 0 & 0 \\
+        1 & 0 & \ast & 0 & \frac{1}{\theta[1]} & 1 & 0 & 0 & 0 \\
+        2 & 0 & 0 & \ast &  \frac{1}{\theta[0]} & 0 & 0 & 1 & 0 \\
+        3 & 0 & 0 & 0 & \ast & 0 & 1 & 0 & 1 \\
+        4 & 0.5 & 0 & 0 & 0 & \ast & \frac{1}{\theta[1]} & 0 & 0 \\
+        5 & 0 & 0 & 0.5 & 0 & 0 & \ast & 0 & 0 \\
+        6 & 1.1 & 0 & 0 & 0 & 0 & 0 & \ast & \frac{1}{\theta[0]} \\
+        7 & 0 & 1.1 & 0 & 0 & 0 & 0 & 0 & \ast \\
+      \end{block}
+    \end{blockarray}\;\;\text,
+  \end{equation}
+  where in each row the diagonal element is the negative of the sum of
+  the other elemens so that $Q \vec{1}^\T = \vec{0}^\T$. The \CTMC\ is
+  irreducible, therefore it has a well-defined steady-state distribution.
+\end{runningExample}
+
+Extensions of stochastic Petri nets include transitions with general
+or phase-type delay distributions%
+~\citep{DBLP:journals/tse/MarsanBBCCC89,Longo:2015:TSR:2767455.2767457},
+Generalized Stochastic Petri Nets~(\textls{GSPN}) with immediate
+transitions~\citep{DBLP:journals/tocs/MarsanCB84,DBLP:journals/tse/TeruelFP03}
+and Deterministic Stochastic Petri Nets~(\textls{DSPN}) with
+deterministic firing delays~\citep{DBLP:conf/apn/1986}. Among these,
+only phase-type distributed delays and \textls{GSPNs} can be handled
+with purely Markovian analysis. Stochastic Well-formed
+Nets~(\textls{SWN}) are a class of colored Petri nets especially
+amenable to stochastic analysis%
+~\citep{DBLP:journals/tc/ChiolaDFH93}. Stochastic Activity
+Networks~(\textls{SAN}) also allow colored places, moreover, they
+introduce input and output gates for more flexible
+modeling~\citep{DBLP:conf/pnpm/1985}.
+
+\subsection{Stochastic reward nets}
+
+The stochastic reward net formalism is an extension of stochastic Petri
+nets that allows the definition of performance measures on the net
+level for use in the stochastic analysis workflow.
+
+\begin{dfn}
+  \label{dfn:background:srn}
+  A \emph{Stochastic Reward Net} is a triple
+  $\SRN = (\SPN, \rateReward, \impulseReward)$, where $\SPN$ is a
+  stochastic Petri net,
+  $\rateReward: \NN^P \to \RR$ is a \emph{rate reward function} and
+  $\impulseReward: T \times \NN^P \to \RR$ is an \emph{impulse reward}
+  function. A stochastic Reward net with inhibitor arcs is a triple
+  $\SRN_I = (\SPN_I, \rateReward, \impulseReward)$, where $\SPN_I$ is
+  a stochastic Petri net with inhibitor arcs.
+\end{dfn}
+
+The rate reward $\rateReward(M)$ is the reward gained per unit time in
+marking $M$, while $\impulseReward(t, M)$ is the reward gained when
+the transition $t$ fires in marking $M$.
+
+If $\impulseReward(t, M) \equiv 0$, the \textls{SRN} is
+equivalent to the Markov reward process $(X(t), \vec{r})$, where
+$X(t)$ is the \CTMC\ associated with the stochastic Petri net and
+\begin{equation}
+  \vec{r} \in \RR^n, \quad r[x] = \rateReward(M_x) \text.
+\end{equation}
+
+If there are impulse rewards, exact calculation of the expected reward
+rate $\Ex R(t)$ and expected accumulated reward $\Ex Y(t)$ can be
+performed on reward process $(X, \vec{r})$,
+\begin{equation}
+  r[x] = \rateReward(M_x) + \sum_{\mathclap{t \in T, M_x
+      \tranto{t}}} \Lambda(t) \, \impulseReward(t, M_x) \text,
+\end{equation}
+where the summation is taken over all enabled
+transitions~\citep{DBLP:journals/pe/CiardoMT91}. In general, the
+distribution of the accumulated reward $Y(t)$ cannot be derived by this method~\citep{RACZ99a}.
+
+\begin{runningExample}
+  \label{ex:background:srn}
+  The \textls{SRN} model
+  \begin{equation}
+    \label{eq:background:srn:example-1}
+    \rateReward_1(M) = M(p_{S_1}) + M(p_{S_2}), \quad
+    \impulseReward_1(t, M) \equiv 0
+  \end{equation}
+  describes the utilization of the shared resouce in the
+  \emph{SharedResouce} \textls{SPN}
+  (\vref{fig:background:spn:sharedresource}). $R_1(t) = 1$ if the
+  resource is allocated, hence $\Ex R_1(t)$ is the probability that
+  the resource is in use at time $t$, while $Y(t)$ is the total usage
+  time until $t$.
+
+  Another reward structure
+  \begin{equation}
+    \label{eq:background:srn:example-2}
+    \rateReward_2(M) \equiv 0, \quad \impulseReward_2(t, M) = \begin{cases}
+      1 & \text{if $t \in \{t_{r_1}, t_{r_2}\}$,} \\
+      0 & \text{otherwise}
+    \end{cases}
+  \end{equation}
+  counts the completed calculations, which are modeled by tokens
+  leaving the places $C_1$ and $C_2$. The exprected steady-state
+  reward rate $\lim_{t \to \infty} \Ex R(t)$ equals the number of
+  calculations per unit time in a long-running system, while $Y(t)$ is
+  the number of calculations performed until time $t$.
+
+  The reward vectors associated with these \textls{SRNs} are
+  \begin{align}
+    \begin{blockarray}{l@{\mkern 15mu}*{8}{c}@{\mkern 15mu}r}
+      & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & \\
+      \begin{block}{l@{\mkern 15mu}(*{8}{c})@{\mkern 15mu}r}
+        \vec{r}_1 = & 0 & 0 & 0 & 0 & 1 & 1 & 1 & 1 & \text,\\
+      \end{block}
+      \begin{block}{l@{\mkern 15mu}(*{8}{c})@{\mkern 15mu}r}
+        \vec{r}_2 = & \frac{1}{\theta[0]} + \frac{1}{\theta[1]}
+        & \frac{1}{\theta[1]} & \frac{1}{\theta[0]}
+        & 0 & \frac{1}{\theta[1]} & 0 & \frac{1}{\theta[0]} & 0 & \text.\\
+      \end{block}
+    \end{blockarray}
+  \end{align}
+\end{runningExample}
+
+\subsection{Superposed stochastic Petri nets}
+
+In this section we define the base formalism of the decomposition algorithm introduced in \cref{chap:genstor}.
+
+\begin{dfn}
+  \label{dfn:background:sspn}
+  A \emph{Superposed Stochastic Petri Net} (\textls{SSPN}) is a pair
+  $\SSPN = (\SPN, \partitions)$, where
+  $\partitions = \{ \loc{P}{0}, \loc{P}{1}, \ldots, \loc{P}{J - 1} \}$
+  is the partitioning of the set of places and $P = \loc{P}{0} \cup \loc{P}{1} \cup \cdots \cup \loc{P}{J -
+    1}$~\citep{DBLP:conf/apn/Donatelli94}.
+  Superposed stochastic Petri nets with inhibitor arcs
+  $\SSPN_I = (\SPN_I, \partitions)$ are defined analogously.
+\end{dfn}
+
+The $j$th \emph{local net}
+$\LN{j} = ((\loc{P}{j}, \loc{T}{j} = \loc{T_L}{j} \cup \loc{T_S}{j},
+\loc{F}{j}, \loc{W}{j}, \loc{M_0}{j}), \loc{\Lambda}{j})$
+can be constructed as follows:
+\begin{itemize}
+\item $\loc{P}{j}$ is the corresponding set from the partitioning of the original net.
+\item $\loc{T}{j}$ contains the local transition $\loc{T_L}{j}$ and
+  synchronization transitions $\loc{T_S}{j}$.
+
+  A transition is \emph{local} to $\LN{j}$ if it only affects places
+  in $\loc{P}{j}$, that is,
+  \begin{equation}
+    \label{eq:background:sspn:localtran}
+    \loc{T_L}{j} = \{ t \in T : \inarc{t} \cup \outarc{t} \subseteq
+    \loc{P}{j} \} \text.
+  \end{equation}
+  No transition may be local to more than one local net.
+
+  A transition \emph{synchronizes} with $\LN{j}$ if it affects some
+  places in $\loc{P}{j}$ but it is not local to $\LN{j}$,
+  \begin{equation}
+    \label{eq:background:sspn:synctran}
+    \loc{T_S}{j} = \{ t \in T : (\inarc{t} \cup \outarc{t}) \cap
+    \loc{P}{j} \ne \emptyset \} \setminus \loc{T_L}{j} \text.
+  \end{equation}
+\item The relation $\loc{F}{j}$ and the functions $\loc{W}{j}$,
+  $\loc{M_0}{j}$, $\loc{\Lambda}{j}$ are the appropriate restrictions
+  of the original structures,
+  $\loc{F}{j} = F \cap ((\loc{P}{j} \times \loc{T}{j}) \cup
+  (\loc{T}{j} \times \loc{J}{j}))$, $\loc{W}{j} = W |_{\loc{F}{j}}$,
+  $\loc{M_0}{j} = M_0 |_{\loc{P}{j}}$, $\loc{\Lambda}{j} = M_0 |_{\loc{T}{j}}$.
+\end{itemize}
+
+If there are inhibitor arcs in $\SSPN_I$, inhibitor arcs must be
+considered when a local net $\LNI{j}$ is constructed. The set
+$\inarc{t} \cup \outarc{t}$ is replaced with
+$\inarc{t} \cup \outarc{t} \cup \inharc{t}$ in
+\cref{eq:background:sspn:localtran,eq:background:sspn:synctran} so
+that the enabling of local transitions only depends on the marking
+of places in $\loc{P}{j}$ and only places in $\loc{P}{j}$ may be
+affected upon firing. In addition, the inhibitor arc relation and
+weight function are restricted as
+$\loc{I}{j} = I \cap (\loc{P}{j} \cap \loc{T}{j})$,
+$\loc{W_I}{j} = W_I |_{\loc{I}{j}}$.
+
+The set of all synchronization transitions is denoted as
+$T_S = \bigcup_{j = 0}^{J - 1} \loc{T_S}{j}$. The \emph{support} of
+the transition $t \in T$ is the set of components it
+is adjacent to, $\supp t = \{j : t \in \loc{T}{j}\}$.
+
+\begin{figure}
+  \centering
+  \begin{tikzpicture}[
+    partition/.style={
+      rounded corners=0.2cm,tdk highlight}
+    ]
+    \runningExamplePetriNet
+    \begin{pgfonlayer}{bg}
+      \draw [partition] ($(S.west)+(-0.65cm,0.5cm)$) rectangle
+      ($(S.east)+(0.65cm,-0.5cm)$);
+      \node [right=0.65cm of S] {$\loc{P}{2}$};
+      \draw [partition] ($(W2.west)+(-0.95cm,0.5cm)$) rectangle
+      ($(r2.east)+(0.95cm,-1.5cm)$);
+      \node [anchor=south east] at ($(r2.east)+(0.95cm,0.52cm)$)
+      {$\loc{P}{1}$};
+      \draw [partition] ($(W1.west)+(-0.95cm,-0.5cm)$) rectangle
+      ($(r1.east)+(0.95cm,1.5cm)$);
+      \node [anchor=north west] at ($(W1.west)+(-0.95cm,-0.52cm)$)
+      {$\loc{P}{0}$};
+    \end{pgfonlayer}
+  \end{tikzpicture}
+  \caption{A partitioning of the \emph{SharedResource} Petri net.}
+  \label{fig:background:sspn:sharedresource}
+\end{figure}
+
+\begin{runningExample}
+  \Cref{fig:background:sspn:sharedresource} shows a possible
+  partitioning of the \emph{Shared\-Resource} \textls{SPN} into a
+  \textls{SSPN}. The components $\loc{P}{0}$ and $\loc{P}{1}$ model
+  the two consumers, while $\loc{P}{2}$ contains the unallocated
+  resource $S$.
+
+  The transitions $r_1$ and $r_2$ are local to $\LN{0}$ and $\LN{1}$,
+  respectively, while $a_1$, $d_1$, $a_2$ and $d_2$ synchronize $\LN{2}$ and the local net associated with their consumers.
+\end{runningExample}
+
+The \emph{local reachable state space} $\loc{\RS}{j}$ of $\LN{j}$ is
+the the set of markings beloning to the state space $\RS$ of the
+original net restricted to the places $\loc{P}{j}$ \paren{duplicates
+  removed},
+\begin{equation}
+  \loc{\RS}{j} = \{ \loc{M}{j} : M \in \RS, \loc{M}{j} = M
+  |_{\loc{P}{j}} \}.
+\end{equation}
+This is a \emph{subset} of the reachable state space of $\LN{j}$, in
+particular, $\loc{\RS}{j}$ is always finite if $\RS$ is finite, even if
+$\LN{j}$ is not bounded. Analysis techniques for generating local
+state spaces include \emph{partial
+  $P$-invariants}~\citep{DBLP:journals/sigmetrics/BuchholzK98} and
+explicit projection of global reachable
+markings~\citep{DBLP:journals/tse/Buchholz99}.
+
+The \emph{potential state space} $\PS$ of an \textls{SSPN} is the
+Cartesian product of the local reachable state spaces of its components
+\begin{equation}
+  \PS = \loc{\RS}{0} \times \loc{\RS}{1} \times \cdots \times
+  \loc{\RS}{J - 1} \text,
+\end{equation}
+which is a (possibly not proper) superset of the global reachable
+state space $\RS$.
+
+We will associate the natural numbers
+$\loc{S}{j} = \{ 0, 1, \ldots, n_j - 1 \}$ with the local reachable
+markings $\loc{\RS}{j} = \{M_0, M_1, \ldots, M_{n_j - 1}\}$ to aid the
+construction of Markov chains and use them interchangably. The
+notation
+\begin{equation}
+  \label{eq:background:sspn:concat}
+  M = \vec{x} = (\loc{x}{0}, \loc{x}{1}, \ldots, \loc{x}{J - 1})
+\end{equation}
+refers to the global state $\vec{x}$ composed from the local markings
+$\loc{x}{j}$, i.e.~the marking
+\begin{equation}
+  M(p) = \loc{M_{\loc{x}{j}}}{j}(p)\text, \quad \text{if $p \in \loc{P}{j}$,}
+\end{equation}
+which is the union of the local markings $\loc{M_{\loc{x}{0}}}{0},
+\loc{M_{\loc{x}{1}}}{1}, \ldots, \loc{M_{\loc{x}{J - 1}}}{J - 1}$.
+
+\begin{table}
+  \centering
+  $
+  \loc{\RS}{0} = \left\{\;\text{\small
+      \begin{tabular}{@{}r*{3}{c}@{}}
+        \toprule
+        \multicolumn{1}{@{}c}{$P$:} & $C_1$ & $W_1$ & $S_1$ \\
+        \midrule
+        $\loc{M}{0}_0$ & 1 & 0 & 0 \\
+        $\loc{M}{0}_1$ & 0 & 1 & 0 \\
+        $\loc{M}{0}_2$ & 0 & 0 & 1 \\
+        \bottomrule
+      \end{tabular}\;}\right\},
+  $\\[2ex]
+  $
+  \loc{\RS}{1} = \left\{\;\text{\small
+      \begin{tabular}{@{}r*{3}{c}@{}}
+        \toprule
+        \multicolumn{1}{@{}c}{$P$:} & $C_2$ & $W_2$ & $S_2$ \\
+        \midrule
+        $\loc{M}{1}_0$ & 1 & 0 & 0 \\
+        $\loc{M}{1}_1$ & 0 & 1 & 0 \\
+        $\loc{M}{1}_2$ & 0 & 0 & 1 \\
+        \bottomrule
+      \end{tabular}\;}\right\},\quad
+  \loc{\RS}{2} = \left\{\;\text{\small
+      \begin{tabular}{@{}rc@{}}
+        \toprule
+        \multicolumn{1}{@{}c}{$P$:}  & $S$ \\
+        \midrule
+        $\loc{M}{2}_0$ & 1 \\
+        $\loc{M}{2}_1$ & 0 \\
+        \bottomrule
+      \end{tabular}\;}\right\}
+  $
+  \caption{Local reachable markings of the \emph{SharedResouce}
+    \textls{SSPN} from \cref{fig:background:sspn:sharedresource}.}
+  \label{tab:background:sspn:sharedresource-states}
+\end{table}
+
+\begin{runningExample}
+  The local reachable markings of the \emph{SharedResource}
+  \textls{SSPN} are enumerated in
+  \cref{tab:background:sspn:sharedresource-states}.
+
+  The transitions $d_1$ and $d_2$ are always enabled in $\LN{2}$
+  because all their input places are located in other components, thus
+  $\LN{2}$ is an unbounded Petri net. Despite this, $\loc{RS}{2}$ is
+  finite, because it only contains the local markings which are
+  reachable in the original net.
+
+  The potential state space $\PS$ contains $3 \cdot 3 \cdot 2 = 18$
+  potential markings, although only $8$ are reachable
+  (\vref{tab:background:spn:sharedresource-rs}). For example, the
+  marking $(2, 2, 0)$ is not reachable, as it would violate mutual
+  exclusion.
+\end{runningExample}
+
+\section{Kronecker algebra}
+
+Kronecker algebra defines the building blocks of the decomposition algorithm being introduced in \cref{chap:genstor}.
+
+\begin{dfn}
+  The \emph{Kronecker product} of matrices
+  $A \in \RR^{n_1 \times m_1}$ and $B \in \RR^{n_2 \times m_2}$ is the
+  matrix $C = A \krtimes B \in \RR^{n_1 n_2 \times m_1 m_3}$, where
+  \begin{equation}
+    c[i_1 n_1 + i_2, j_1 m_1 + j_2] = a[i_1, j_1] b[i_2, j_2] \text.
+  \end{equation}
+\end{dfn}
+
+Some properties of the Kroncker product are
+\begin{enumerate}
+\item Associativity:
+  \begin{equation}
+    A \krtimes (B \krtimes C) = (A \krtimes B) \krtimes C \text,
+  \end{equation}
+  which makes Kronecker products of the form $\loc{A}{0} \krtimes
+  \loc{A}{1} \krtimes \cdots \krtimes \loc{A}{J - 1}$ well-defined.
+\item Distributivity over matrix addition:
+  \begin{equation}
+    (A + B) \krtimes (C + D) = A \krtimes C + B \krtimes C + A
+    \krtimes D + B \krtimes D \text,
+  \end{equation}
+\item Compatibility with ordinary matrix multiplication:
+  \begin{gather}
+    (AB) \krtimes (CD) = (A \krtimes C) (B \krtimes D) \text,
+    \shortintertext{in particular,}
+    A \krtimes B = (A \krtimes I_2) (I_1 \krtimes B)
+  \end{gather}
+  for identity matrices $I_1$ and $I_2$ with appropriate dimensions.
+\end{enumerate}
+
+We will occasionally employ multi-index notation to refer to elements
+of Kronecker product matrices. For example, we will write
+\begin{multline}
+  b[\vec{x}, \vec{y}] = b[(\loc{x}{0}, \loc{x}{1}, \ldots, \loc{x}{J -
+    1}), (\loc{y}{0}, \loc{y}{1}, \ldots, \loc{y}{J - 1})] = \\
+  \loc{a}{0}[\loc{x}{0}, \loc{y}{0}] \loc{a}{1}[\loc{x}{1},
+  \loc{y}{1}] \cdots \loc{a}{J - 1}[\loc{x}{J - 1}, \loc{y}{J - 1}]
+  \text,
+\end{multline}
+where $\vec{x} = (\loc{x}{0}, \loc{x}{1}, \ldots, \loc{x}{J - 1})$,
+$\vec{y} = (\loc{y}{0}, \loc{y}{1}, \ldots, \loc{y}{J - 1})$ and $B$
+is the $J$-way Kronecker product
+$\loc{A}{0} \krtimes \loc{A}{1} \krtimes \cdots \krtimes \loc{A}{J -
+  1}$.
+
+\begin{dfn}
+  The \emph{Kronecker sum} of matrices
+  $A \in \RR^{n_1 \times m_1}$ and $B \in \RR^{n_2 \times m_2}$ is the
+  matrix $C = A \krplus B \in \RR^{n_1 n_2 \times m_1 m_3}$, where
+  \begin{equation}
+    C = A \krtimes I_2 + I_1 \krtimes B \text,
+  \end{equation}
+  where $I_1 \in \RR^{n_1 \times m_1}$ and $I_2 \in \RR^{n_2 \times
+    m_2}$ are identity matrices.
+\end{dfn}
+
+\begin{example}
+  Consider the matrices
+  \begin{align}
+    A &= \begin{pmatrix}
+      1 & 2 \\
+      3 & 4
+    \end{pmatrix} \text,
+    & B &= \begin{pmatrix}
+      0 & 1 \\
+      2 & 0
+    \end{pmatrix} \text.
+  \end{align}
+  Their Kronecker product is
+  \begin{equation}
+    A \krtimes B = \begin{pmatrix}
+      1 \cdot 0 & 1 \cdot 1 & 2 \cdot 0 & 2 \cdot 1 \\
+      1 \cdot 2 & 1 \cdot 0 & 2 \cdot 2 & 2 \cdot 0 \\
+      3 \cdot 0 & 3 \cdot 1 & 4 \cdot 0 & 4 \cdot 1 \\
+      3 \cdot 2 & 3 \cdot 0 & 4 \cdot 2 & 4 \cdot 0
+    \end{pmatrix} = \begin{pmatrix}
+      0 & 1 & 0 & 2 \\
+      2 & 0 & 4 & 0 \\
+      0 & 3 & 0 & 4 \\
+      6 & 0 & 8 & 0
+    \end{pmatrix}\text,
+  \end{equation}
+  while their Kronecker sum is
+  \begin{equation}
+    A \krplus B = \begin{pmatrix}
+      1 & 0 & 2 & 0 \\
+      0 & 1 & 0 & 2 \\
+      3 & 0 & 4 & 0 \\
+      0 & 3 & 0 & 4
+    \end{pmatrix} + \begin{pmatrix}
+      0 & 1 & 0 & 0 \\
+      2 & 0 & 0 & 0 \\
+      0 & 0 & 0 & 1 \\
+      0 & 0 & 2 & 0
+    \end{pmatrix} = \begin{pmatrix}
+      1 & 1 & 2 & 0 \\
+      2 & 1 & 0 & 2 \\
+      3 & 0 & 4 & 1 \\
+      0 & 3 & 2 & 4
+    \end{pmatrix}\text.
+  \end{equation}
+\end{example}

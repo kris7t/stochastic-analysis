@@ -2,190 +2,7 @@
 \label{chap:background}
 
 In this section we overview the basic formalisms and scope of our
-work. At first, Petri net based formalisms are introduced, which is
-the modelling language our framework uses to express stochastic
-models. Then the basic stochastic modelling background is discussed
-and Kronecker algebra is also introduced to give a base for the later sections.
-
-\section{Petri nets}
-\label{chap:background:sec:petri-nets}
-
-Petri nets are a widely used graphical and mathematical modeling tool
-for systems which are concurrent, asynchronous, distributed, parallel
-or nondeterministic.
-
-\begin{dfn}
-  A \emph{Petri net} is a 5-tuple $\PN = (P, T, F, W, M_0)$, where
-  \begin{asparaitem}
-  \item $P = \{p_0, p_1, \ldots, p_{n - 1}\}$ is a finite set of places;
-  \item $T = \{t_0, t_1, \ldots, t_{m - 1}\}$ is a finite set of transitions;
-  \item $F \subseteq (P \times T) \cup (P \times T)$ is a set of
-    arcs, also called the flow relation;
-  \item $W: F \to \NNpos$ is an arc weight function;
-  \item $M_0: P \to \NN$ is the initial marking;
-  \item $P \cap T = \emptyset$ and $P \cup T \neq
-    \emptyset$~\citep{murata1989petri}.
-  \end{asparaitem}
-\end{dfn}
-
-Arcs from $P$ to $T$ are called \emph{input arcs}. The input places of
-a transition $t$ are denoted by $\inarc{t} = \{ p : (p, t) \in F
-\}$.
-In contrast, arcs of the form $(t, p)$ are called \emph{output arcs}
-and the output places of $t$ are denoted by
-$\outarc{t} = \{p : (t, p) \in F \}$.
-
-A \emph{marking} $M: P \to \NN$ assigns a number of \emph{tokens} to each
-place. The transition $t$ is \emph{enabled} in the marking $M$
-\paren{written as $M\,\tranto{t}\,$} when $M(p) \ge W(p, t)$ for all $p \in
-\inarc{t}$.
-
-Petri nets are graphically represented as edge weighted directed
-bipartite graphs. Places are drawn as circles, while transitions are
-drawn as bars or rectangles. Edge weights of $1$ are ususally omitted
-from presentation. Dots on places correspond to tokens in the current
-marking.
-
-If $M\,\tranto{t}$ holds the transition $t$ can be \emph{fired} to get a
-new marking $M'$ \paren{written as $M \tranto{t} M'$} by
-decreasing the token counts for each place $p \in \inarc{t}$ by
-$W(p, t)$ and increasing the token counts for each place
-$p \in \outarc{t}$ by $W(t, p)$. Note that in general, $\inarc{t}$ and
-$\outarc{t}$ need not be disjoint. Thus, the firing rule can be
-written as
-\begin{equation}
-  \label{eq:background:petri:fire}
-  M'(p) = M(p) - W(p, t) + W(t, p) \text,
-\end{equation}
-where we take $W(x, y) = 0$ if $(x, y) \notin F$ for brevity.
-
-A marking $M'$ is \emph{reachable} from the marking $M$ (written as
-$M \reachto M'$) if there exists a sequence of markings and transitions
-for some finite $k$ such that
-\begin{equation}
-  M = M_1 \tranto{t_{i_1}} M_2 \tranto{t_{i_2}} M_3 \tranto{t_{i_3}}
-  \cdots \tranto{t_{i_{k - 1}}} M_{k - 1} \tranto{t_{i_k}} M_k = M'\text.
-\end{equation}
-A marking $M$ is in the reachable \emph{state space} of the net if
-$M_0 \reachto M$. The set of all markings reachable from $M_0$ is
-denoted by
-\begin{equation}
-  \RS = \{ M : M_0 \reachto M \} \text.
-\end{equation}
-
-\begin{dfn}
-  The Petri net $\PN$ is $k$-\emph{bounded} if $M(p) \le k$ for all $M
-  \in \RS$ and $p \in P$. $\PN$ is \emph{bounded} if it is $k$-bounded
-  for some (finite) $k$.
-\end{dfn}
-
-The reachable state space $\RS$ is finite if and only if the Petri net
-is bounded.
-
-\begin{figure}
-  \centering
-  \newcommand*{\examplenet}[3]{
-    \begin{tikzpicture}
-      \matrix [column sep=1cm,ampersand replacement=\&] {
-        \node [petri net place] (h2) {#1}; \& \& \\
-        \& \node [petri net transition] (t) {} ; \& \node [petri net place] (h2o) {#3}; \\
-        \node [petri net place] (o2) {#2}; \& \& \\
-      };
-      \draw [-{Latex}] (h2) edge node [above] {$2$} (t) (o2) edge (t)
-      (t) edge node [above] {$2$} (h2o);
-      \node [below=0cm of h2] {$p_{\text{H$_2$}}$};
-      \node [below=0cm of o2] {$p_{\text{O$_2$}}$};
-      \node [below=0cm of h2o] {$p_{\text{H$_2$O}}$};
-      \node [below=0cm of t] {$t$};
-    \end{tikzpicture}}
-
-  $\vcenter{\hbox{\examplenet{\token\token}{\token\token}{}}}
-  \quad\vcenter{\hbox{$\tranto{t}$}}\quad
-  \vcenter{\hbox{\examplenet{}{\token}{\token\token}}}$
-  \caption{A Petri net model of the reaction of hydrogen and oxygen.}
-  \label{fig:background:petri:h2o}
-\end{figure}
-
-\begin{example}
-  The Petri net in~\cref{fig:background:petri:h2o} models the chemical
-  reaction
-  \begin{equation}
-    2 \, \mathrm{H}_2 + \mathrm{O}_2 \rightarrow 2 \,
-    \mathrm{H}_2\mathrm{O} \text.
-  \end{equation}
-  In the initial marking \paren{left} there are two hydrogen and two
-  oxygen molecules, represented by tokens on the places $p_{\text{H$_{2}$}}$
-  and $p_{\text{O$_{2}$}}$, therefore the transition $t$ is
-  enabled. Firing $t$ yields the marking on the right where the two
-  tokens on $p_{\text{H$_{2}$O}}$ are the products of the reaction. Now $t$ is no
-  longer enabled.
-\end{example}
-
-\begin{figure}
-  \centering
-  \begin{tikzpicture}
-    \runningExamplePetriNet
-  \end{tikzpicture}
-  \caption{The \emph{SharedResource} Petri net model.}
-  \label{fig:background:petri:sharedresource}
-\end{figure}
-
-\begin{runningExample}
-  In~\cref{fig:background:petri:sharedresource} we introduce the
-  \emph{SharedResource} model which will serve as a running example
-  throughout this report.
-
-  The model consists of a single shared resource $S$ and two
-  consumers. Each consumer can be in one of the following states:
-  $C_i$ \paren{calculating locally}, $W_i$ \paren{waiting for
-    resource} and $S_i$ \paren{using shared resource}. The
-  transitions $r_i$ \paren{request resource}, $a_i$ \paren{acquire
-    resource} and $d_i$ \paren{done} correspond to behaviors of the
-  consumers. The net is \mbox{$1$-bounded}, therefore it has finite
-  $\RS$.
-
-  The Petri net model allows the verification of safety properties,
-  e.g.~we can show that there is mutual exclusion
-  --~$M(S_1) + M(S_2) \le 1$ for all reachable markings~-- or that
-  deadlock cannot occur. 
-  %In contrast, we cannot compute dependability
-  %or performability measures \paren{e.g.~the utilization of the shared
-  %  resource or number of calculations completed per unit time}
-  %because the model does not describe the temporal behavior of the
-  %system.
-\end{runningExample}
-
-\subsection{Petri nets extended with inhibitor arcs}
-
-Inhibitor arcs are widely used extensions of Petri nets that can disable transitions even when the firing rule defined in \cref{chap:background:sec:petri-nets} is satisfied. 
-%One of the most frequently used extensions of Petri nets is the
-%addition of inhibitor arcs, which constrains the rule for transition
-%enablement. 
-This modification gives Petri nets expressive power
-equivalent to Turing
-machines~\citep{DBLP:conf/apn/Chrzastowski-Wachtel99}.
-
-\begin{dfn}
-  A \emph{Petri net with inhibitor arcs} is a 3-tuple $\PNI = (\PN,
-  I, W_I)$, where
-  \begin{asparaitem}
-  \item $\PN = (P, T, F, W, M_0)$ is a Petri net;
-  \item $I \subseteq P \times T$ is the set of inhibitor arcs;
-  \item $W_I: I \to \NNpos$ is the inhibitor arc weight function.
-  \end{asparaitem}
-\end{dfn}
-
-Let $\inharc{t} = \{ p : (p, t) \in I\}$ denote the set of inhibitor
-places of the transition $t$. The enablement rule for Petri nets with
-inhibitor arcs can be formalized as
-\begin{equation}
-  \label{eq:background:petri:inh-fire}
-  M\,\tranto{t} \Longleftrightarrow \text{\strut$M(p) \ge W(p, t)$ for all
-    $p \in \inarc{t}$ and $M(p) < W_I(p, t)$ for all $p \in
-    \inharc{t}$.}
-\end{equation}
-The firing rule \eqref{eq:background:petri:fire} remains unchanged in
-Petri nets with inhibitor arcs..
+work. \textbf{TODO}
 
 \section{Continuous-time Markov chains}
 
@@ -518,7 +335,7 @@ particular, the \emph{Mean Time to First Failure} is computed as follows:
 \end{equation}
 
 \noindent
-The probability of a $D'$-mode failure ($D' \in D$) is
+The probability of a $D'$-mode failure ($D' \subset D$) is
 \begin{equation}
   \label{eq:background:failure-mode}
   \Pr(X(\TFF_{+ 0}) = y) = - \vec{\uppi}_UQ_{UU}^{-1} \vec{q}_{UD'}^\T \text,
@@ -527,485 +344,7 @@ where $\vec{q}_{UD'} \in \RR^{n_U}$,
 $q_{UD'}[x] = \sum_{y \in D'} q[x, y]$ is the vector of transition
 rates from operational states to failure states $D'$.
 
-\section{Stochastic Petri nets}
-
-While reward processes based on continuous-time Markov chains allow
-the study of dependability or reliability, the explicit
-specification of stochastic processes and rewards is often
-cumbersome. More expressive formalisms include queueing networks,
-stochastic process algebras such as
-\textls{PEPA}~\citep{DBLP:conf/cpe/GilmoreH94,donatelli1993superposed},
-Stochastic Automata Networks~\citep{DBLP:conf/mascots/FernandesPS95}
-and Stochastic Petri Nets (\textls{SPN}).
-
-Stochastic Petri Nets extend Petri nets by assigning
-exponentially distributed random delays to
-transitions~\citep{DBLP:conf/apn/Marsan88}. After the delay associated
-with an enabled transition is elapsed the transition fires
-\emph{atomically} and transitions delays are reset.
-
-\begin{dfn}
-  \label{dfn:background:spn}
-  A Stochastic Petri Net is a pair $\SPN = (\PN, \Lambda)$, where
-  $\PN$ is a Petri net $(P, T, F, W, M_0)$ and $\Lambda: T \to \RRpos$
-  is a transition rate function.
-
-  Likewise, a stochastic Petri net with inhibitor arcs is a pair
-  $\SPN_I = (\PN_I, \Lambda)$, where $\PN_I$ is a Petri net with
-  inhibitor arcs.
-\end{dfn}
-
-\needspace{5ex}
-
-A finite \CTMC\ can be associated with a bounded stochastic Petri net
-(with inhibitor arcs) as follows:
-\begin{enumerate}
-\item The reachable state space of the Petri net is explored. We
-  associate consecutive natural numbers with the states such that
-  the state space is
-  \begin{equation}
-    \RS = \{ M_0, M_1, M_2, \ldots, M_{n - 1} \} \text,
-  \end{equation}
-  where $M_0$ is the initial marking. From now on, we will use
-  markings $M_x \in \RS$ and natural numbers $x \in \{0, 1, \ldots, n
-  - 1\}$ to refer to states (in \textls{CTMC} terminology) and
-  markings (in \textls{SPN} terminology) of the model interchangably.
-\item We define a \CTMC\ $X(t)$ over the finite state space
-  \begin{equation}
-    S = \{ 0, 1, 2, \ldots, n - 1 \} \text.
-  \end{equation}
-  The initial distribution vector will be set to
-  \begin{equation}
-    \vec{\uppi}(0) = \vec{\uppi}_0 = \begin{pmatrix}
-      1 & 0 & 0 & \cdots & 0
-    \end{pmatrix}
-  \end{equation}
-  in the analysis step ($\pi_0[x] = \delta_{0,x}$).
-\item The generator matrix $Q \in \RR^{n \times n}$ encodes the
-  possible state transitions of the Petri net and the associated
-  transition rate $\Lambda(\,\cdot\,)$ as
-  \begin{gather}
-    q_O[x, y] = \sum_{\mathclap{\substack{t \in T \\ M_{x} \tranto{t} M_y}}}
-    \Lambda(t) \quad \text{if $x \ne y$} \text,
-    \label{eq:background:spn:q-d}\\
-    q_O[x, x] = 0 \text, \\
-    Q = Q_O - \diag \{ Q_O \vec{1}^\T \} \text,
-  \end{gather}
-  where the summation is done over all transition from the marking
-  $M_x$ to $M_y$, while $Q_O$ and $Q_D = -\diag \{ Q_O \vec{1}^\T \}$
-  are the off-diagonal and diagonal parts of $Q$, respectively.
-\end{enumerate}
-
-\begin{figure}
-  \centering
-  \begin{tikzpicture}
-    \runningExampleSPN
-  \end{tikzpicture}
-  \caption{Example stochastic Petri net for the \emph{SharedResource}
-    model.}
-  \label{fig:background:spn:sharedresource}
-\end{figure}
-
-\begin{table}
-  \centering
-  $\mathllap{\RS = }\left\{\;\text{\small%
-    \begin{tabular}{@{}r*{7}{c}l@{}}
-      \toprule
-      \multicolumn{1}{@{}c}{$P$:} & $S$ & $C_1$ & $W_1$ & $S_1$ & $C_2$ & $W_2$ & $S_2$ & \\
-      \midrule
-      $M_0$ & 1 & 1 & 0 & 0 & 1 & 0 & 0 & initial \\
-      $M_1$ & 1 & 0 & 1 & 0 & 1 & 0 & 0 & client 1 waiting \\
-      $M_2$ & 1 & 1 & 0 & 0 & 0 & 1 & 0 & client 2 waiting \\
-      $M_3$ & 1 & 0 & 1 & 0 & 0 & 1 & 0 & 1 waiting, 2 waiting \\
-      $M_4$ & 0 & 0 & 0 & 1 & 1 & 0 & 0 & client 1 shared working \\
-      $M_5$ & 0 & 0 & 0 & 1 & 0 & 1 & 0 & 1 shared working, 2 waiting \\
-      $M_6$ & 0 & 1 & 0 & 0 & 0 & 0 & 1 & client 2 shared working \\
-      $M_7$ & 0 & 0 & 1 & 0 & 0 & 0 & 1 & 1 waiting, 2 shared working \\
-      \bottomrule
-    \end{tabular}}%
-  \;\right\}$
-  \caption{Reachable state space of the \emph{SharedResource} model.}
-  \label{tab:background:spn:sharedresource-rs}
-\end{table}
-
-\begin{figure}
-  \centering
-  \begin{tikzpicture}
-    \newcommand*{\state}[2][]{\node [#1] (m#2) {$M_{#2}$};}
-    \newcommand*{\tran}[4][above]{\draw [-{Latex},#1]
-      (m#2) edge node [#1] {$#4$} (m#3);}
-
-    \matrix [column sep=1.2cm, row sep=1.2cm,
-    every node/.append style={tdk highlight, draw, circle,
-      inner sep=0pt, minimum size=0.8cm}] {
-      \state[thick]{0} & \state{1} & \state{4} \\
-      \state{2} & \state{3} & \state{5} \\
-      \state{6} & \state{7} \\
-    };
-
-    \tran[font=\footnotesize,above]{0}{1}{\frac{1}{\theta[0]}}
-    \tran{1}{4}{1}
-    \tran[bend right=60,above,pos=0.25,yshift=2pt]{4}{0}{0.5}
-    \tran[font=\footnotesize,left]{0}{2}{\frac{1}{\theta[1]}}
-    \tran[font=\footnotesize,left]{1}{3}{\frac{1}{\theta[1]}}
-    \tran[font=\footnotesize,left]{4}{5}{\frac{1}{\theta[1]}}
-    \tran[font=\footnotesize,above]{2}{3}{\frac{1}{\theta[0]}}
-    \tran{3}{5}{1}
-    \tran[bend right=60,above,pos=0.25,yshift=2pt]{5}{2}{0.5}
-    \tran[left]{2}{6}{1}
-    \tran[left]{3}{7}{1}
-    \tran[font=\footnotesize,above]{6}{7}{\frac{1}{\theta[0]}}
-    \tran[bend left=60,left,pos=0.25]{6}{0}{1.1}
-    \tran[bend left=60,left,pos=0.25]{7}{1}{1.1}
-  \end{tikzpicture}
-  \caption{The \CTMC\ associated with the \emph{SharedResource}
-    \textls{SPN} model.}
-  \label{fig:background:spn:sharedresouce-ctmc}
-\end{figure}
-
-\begin{runningExample}
-  \Cref{fig:background:spn:sharedresource} shows the \textls{SPN} 
-  model for \emph{SharedResouce}, which is the Petri net
-  from \vref{fig:background:petri:sharedresource} extended with
-  exponential transition rates.
-
-  The transitions $a_1$, $d_1$, $a_2$ and $d_2$ have rates $1.0$,
-  $0.5$, $1.0$ and $1.1$, respectively. The vector $\vec{\uptheta} = (0.625, 1.25) \in \RR^2$ of model parameters is introduced such
-  that the transitions $r_1$ and $r_2$ have rates $1 / \theta[0]$ and
-  $1 / \theta[1]$.
-
-  The reachable state space
-  (\cref{tab:background:spn:sharedresource-rs}) contains $8$ markings
-  which are mapped to the integers $S = \{0, 1, \ldots, 7\}$. The
-  state graph along with the transition rates of the \CTMC\ is
-  shown in \cref{fig:background:spn:sharedresouce-ctmc}. The generator matrix is (also depicting state indices):
-
-  \begin{equation}
-    Q =
-    \begin{blockarray}{l*{8}{c}}
-      & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 \\
-      \begin{block}{l(*{8}{c})}
-        0 & \ast & \frac{1}{\theta[0]} & \frac{1}{\theta[1]} & 0 & 0 & 0 & 0 & 0 \\
-        1 & 0 & \ast & 0 & \frac{1}{\theta[1]} & 1 & 0 & 0 & 0 \\
-        2 & 0 & 0 & \ast &  \frac{1}{\theta[0]} & 0 & 0 & 1 & 0 \\
-        3 & 0 & 0 & 0 & \ast & 0 & 1 & 0 & 1 \\
-        4 & 0.5 & 0 & 0 & 0 & \ast & \frac{1}{\theta[1]} & 0 & 0 \\
-        5 & 0 & 0 & 0.5 & 0 & 0 & \ast & 0 & 0 \\
-        6 & 1.1 & 0 & 0 & 0 & 0 & 0 & \ast & \frac{1}{\theta[0]} \\
-        7 & 0 & 1.1 & 0 & 0 & 0 & 0 & 0 & \ast \\
-      \end{block}
-    \end{blockarray}\;\;\text,
-  \end{equation}
-  where in each row the diagonal element is the negative of the sum of
-  the other elemens so that $Q \vec{1}^\T = \vec{0}^\T$. The \CTMC\ is
-  irreducible, therefore it has a well-defined steady-state distribution.
-\end{runningExample}
-
-Extensions of stochastic Petri nets include transitions with general
-or phase-type delay distributions%
-~\citep{DBLP:journals/tse/MarsanBBCCC89,Longo:2015:TSR:2767455.2767457},
-Generalized Stochastic Petri Nets~(\textls{GSPN}) with immediate
-transitions~\citep{DBLP:journals/tocs/MarsanCB84,DBLP:journals/tse/TeruelFP03}
-and Deterministic Stochastic Petri Nets~(\textls{DSPN}) with
-deterministic firing delays~\citep{DBLP:conf/apn/1986}. Among these,
-only phase-type distributed delays and \textls{GSPNs} can be handled
-with purely Markovian analysis. Stochastic Well-formed
-Nets~(\textls{SWN}) are a class of colored Petri nets especially
-amenable to stochastic analysis%
-~\citep{DBLP:journals/tc/ChiolaDFH93}. Stochastic Activity
-Networks~(\textls{SAN}) also allow colored places, moreover, they
-introduce input and output gates for more flexible
-modeling~\citep{DBLP:conf/pnpm/1985}.
-
-\subsection{Stochastic reward nets}
-
-The stochastic reward net formalism is an extension of stochastic Petri
-nets that allows the definition of performance measures on the net
-level for use in the stochastic analysis workflow.
-
-\begin{dfn}
-  \label{dfn:background:srn}
-  A \emph{Stochastic Reward Net} is a triple
-  $\SRN = (\SPN, \rateReward, \impulseReward)$, where $\SPN$ is a
-  stochastic Petri net,
-  $\rateReward: \NN^P \to \RR$ is a \emph{rate reward function} and
-  $\impulseReward: T \times \NN^P \to \RR$ is an \emph{impulse reward}
-  function. A stochastic Reward net with inhibitor arcs is a triple
-  $\SRN_I = (\SPN_I, \rateReward, \impulseReward)$, where $\SPN_I$ is
-  a stochastic Petri net with inhibitor arcs.
-\end{dfn}
-
-The rate reward $\rateReward(M)$ is the reward gained per unit time in
-marking $M$, while $\impulseReward(t, M)$ is the reward gained when
-the transition $t$ fires in marking $M$.
-
-If $\impulseReward(t, M) \equiv 0$, the \textls{SRN} is
-equivalent to the Markov reward process $(X(t), \vec{r})$, where
-$X(t)$ is the \CTMC\ associated with the stochastic Petri net and
-\begin{equation}
-  \vec{r} \in \RR^n, \quad r[x] = \rateReward(M_x) \text.
-\end{equation}
-
-If there are impulse rewards, exact calculation of the expected reward
-rate $\Ex R(t)$ and expected accumulated reward $\Ex Y(t)$ can be
-performed on reward process $(X, \vec{r})$,
-\begin{equation}
-  r[x] = \rateReward(M_x) + \sum_{\mathclap{t \in T, M_x
-      \tranto{t}}} \Lambda(t) \, \impulseReward(t, M_x) \text,
-\end{equation}
-where the summation is taken over all enabled
-transitions~\citep{DBLP:journals/pe/CiardoMT91}. In general, the
-distribution of the accumulated reward $Y(t)$ cannot be derived by this method~\citep{RACZ99a}.
-
-\begin{runningExample}
-  \label{ex:background:srn}
-  The \textls{SRN} model
-  \begin{equation}
-    \label{eq:background:srn:example-1}
-    \rateReward_1(M) = M(p_{S_1}) + M(p_{S_2}), \quad
-    \impulseReward_1(t, M) \equiv 0
-  \end{equation}
-  describes the utilization of the shared resouce in the
-  \emph{SharedResouce} \textls{SPN}
-  (\vref{fig:background:spn:sharedresource}). $R_1(t) = 1$ if the
-  resource is allocated, hence $\Ex R_1(t)$ is the probability that
-  the resource is in use at time $t$, while $Y(t)$ is the total usage
-  time until $t$.
-
-  Another reward structure
-  \begin{equation}
-    \label{eq:background:srn:example-2}
-    \rateReward_2(M) \equiv 0, \quad \impulseReward_2(t, M) = \begin{cases}
-      1 & \text{if $t \in \{t_{r_1}, t_{r_2}\}$,} \\
-      0 & \text{otherwise}
-    \end{cases}
-  \end{equation}
-  counts the completed calculations, which are modeled by tokens
-  leaving the places $C_1$ and $C_2$. The exprected steady-state
-  reward rate $\lim_{t \to \infty} \Ex R(t)$ equals the number of
-  calculations per unit time in a long-running system, while $Y(t)$ is
-  the number of calculations performed until time $t$.
-
-  The reward vectors associated with these \textls{SRNs} are
-  \begin{align}
-    \begin{blockarray}{l@{\mkern 15mu}*{8}{c}@{\mkern 15mu}r}
-      & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & \\
-      \begin{block}{l@{\mkern 15mu}(*{8}{c})@{\mkern 15mu}r}
-        \vec{r}_1 = & 0 & 0 & 0 & 0 & 1 & 1 & 1 & 1 & \text,\\
-      \end{block}
-      \begin{block}{l@{\mkern 15mu}(*{8}{c})@{\mkern 15mu}r}
-        \vec{r}_2 = & \frac{1}{\theta[0]} + \frac{1}{\theta[1]}
-        & \frac{1}{\theta[1]} & \frac{1}{\theta[0]}
-        & 0 & \frac{1}{\theta[1]} & 0 & \frac{1}{\theta[0]} & 0 & \text.\\
-      \end{block}
-    \end{blockarray}
-  \end{align}
-\end{runningExample}
-
-\subsection{Superposed stochastic Petri nets}
-
-In this section we define the base formalism of the decomposition algorithm introduced in \cref{chap:genstor}.
-
-\begin{dfn}
-  \label{dfn:background:sspn}
-  A \emph{Superposed Stochastic Petri Net} (\textls{SSPN}) is a pair
-  $\SSPN = (\SPN, \partitions)$, where
-  $\partitions = \{ \loc{P}{0}, \loc{P}{1}, \ldots, \loc{P}{J - 1} \}$
-  is the partitioning of the set of places and $P = \loc{P}{0} \cup \loc{P}{1} \cup \cdots \cup \loc{P}{J -
-    1}$~\citep{DBLP:conf/apn/Donatelli94}.
-  Superposed stochastic Petri nets with inhibitor arcs
-  $\SSPN_I = (\SPN_I, \partitions)$ are defined analogously.
-\end{dfn}
-
-The $j$th \emph{local net}
-$\LN{j} = ((\loc{P}{j}, \loc{T}{j} = \loc{T_L}{j} \cup \loc{T_S}{j},
-\loc{F}{j}, \loc{W}{j}, \loc{M_0}{j}), \loc{\Lambda}{j})$
-can be constructed as follows:
-\begin{itemize}
-\item $\loc{P}{j}$ is the corresponding set from the partitioning of the original net.
-\item $\loc{T}{j}$ contains the local transition $\loc{T_L}{j}$ and
-  synchronization transitions $\loc{T_S}{j}$.
-
-  A transition is \emph{local} to $\LN{j}$ if it only affects places
-  in $\loc{P}{j}$, that is,
-  \begin{equation}
-    \label{eq:background:sspn:localtran}
-    \loc{T_L}{j} = \{ t \in T : \inarc{t} \cup \outarc{t} \subseteq
-    \loc{P}{j} \} \text.
-  \end{equation}
-  No transition may be local to more than one local net.
-
-  A transition \emph{synchronizes} with $\LN{j}$ if it affects some
-  places in $\loc{P}{j}$ but it is not local to $\LN{j}$,
-  \begin{equation}
-    \label{eq:background:sspn:synctran}
-    \loc{T_S}{j} = \{ t \in T : (\inarc{t} \cup \outarc{t}) \cap
-    \loc{P}{j} \ne \emptyset \} \setminus \loc{T_L}{j} \text.
-  \end{equation}
-\item The relation $\loc{F}{j}$ and the functions $\loc{W}{j}$,
-  $\loc{M_0}{j}$, $\loc{\Lambda}{j}$ are the appropriate restrictions
-  of the original structures,
-  $\loc{F}{j} = F \cap ((\loc{P}{j} \times \loc{T}{j}) \cup
-  (\loc{T}{j} \times \loc{J}{j}))$, $\loc{W}{j} = W |_{\loc{F}{j}}$,
-  $\loc{M_0}{j} = M_0 |_{\loc{P}{j}}$, $\loc{\Lambda}{j} = M_0 |_{\loc{T}{j}}$.
-\end{itemize}
-
-If there are inhibitor arcs in $\SSPN_I$, inhibitor arcs must be
-considered when a local net $\LNI{j}$ is constructed. The set
-$\inarc{t} \cup \outarc{t}$ is replaced with
-$\inarc{t} \cup \outarc{t} \cup \inharc{t}$ in
-\cref{eq:background:sspn:localtran,eq:background:sspn:synctran} so
-that the enabling of local transitions only depends on the marking
-of places in $\loc{P}{j}$ and only places in $\loc{P}{j}$ may be
-affected upon firing. In addition, the inhibitor arc relation and
-weight function are restricted as
-$\loc{I}{j} = I \cap (\loc{P}{j} \cap \loc{T}{j})$,
-$\loc{W_I}{j} = W_I |_{\loc{I}{j}}$.
-
-The set of all synchronization transitions is denoted as
-$T_S = \bigcup_{j = 0}^{J - 1} \loc{T_S}{j}$. The \emph{support} of
-the transition $t \in T$ is the set of components it
-is adjacent to, $\supp t = \{j : t \in \loc{T}{j}\}$.
-
-\begin{figure}
-  \centering
-  \begin{tikzpicture}[
-    partition/.style={
-      rounded corners=0.2cm,tdk highlight}
-    ]
-    \runningExamplePetriNet
-    \begin{pgfonlayer}{bg}
-      \draw [partition] ($(S.west)+(-0.65cm,0.5cm)$) rectangle
-      ($(S.east)+(0.65cm,-0.5cm)$);
-      \node [right=0.65cm of S] {$\loc{P}{2}$};
-      \draw [partition] ($(W2.west)+(-0.95cm,0.5cm)$) rectangle
-      ($(r2.east)+(0.95cm,-1.5cm)$);
-      \node [anchor=south east] at ($(r2.east)+(0.95cm,0.52cm)$)
-      {$\loc{P}{1}$};
-      \draw [partition] ($(W1.west)+(-0.95cm,-0.5cm)$) rectangle
-      ($(r1.east)+(0.95cm,1.5cm)$);
-      \node [anchor=north west] at ($(W1.west)+(-0.95cm,-0.52cm)$)
-      {$\loc{P}{0}$};
-    \end{pgfonlayer}
-  \end{tikzpicture}
-  \caption{A partitioning of the \emph{SharedResource} Petri net.}
-  \label{fig:background:sspn:sharedresource}
-\end{figure}
-
-\begin{runningExample}
-  \Cref{fig:background:sspn:sharedresource} shows a possible
-  partitioning of the \emph{Shared\-Resource} \textls{SPN} into a
-  \textls{SSPN}. The components $\loc{P}{0}$ and $\loc{P}{1}$ model
-  the two consumers, while $\loc{P}{2}$ contains the unallocated
-  resource $S$.
-
-  The transitions $r_1$ and $r_2$ are local to $\LN{0}$ and $\LN{1}$,
-  respectively, while $a_1$, $d_1$, $a_2$ and $d_2$ synchronize $\LN{2}$ and the local net associated with their consumers.
-\end{runningExample}
-
-The \emph{local reachable state space} $\loc{\RS}{j}$ of $\LN{j}$ is
-the the set of markings beloning to the state space $\RS$ of the
-original net restricted to the places $\loc{P}{j}$ \paren{duplicates
-  removed},
-\begin{equation}
-  \loc{\RS}{j} = \{ \loc{M}{j} : M \in \RS, \loc{M}{j} = M
-  |_{\loc{P}{j}} \}.
-\end{equation}
-This is a \emph{subset} of the reachable state space of $\LN{j}$, in
-particular, $\loc{\RS}{j}$ is always finite if $\RS$ is finite, even if
-$\LN{j}$ is not bounded. Analysis techniques for generating local
-state spaces include \emph{partial
-  $P$-invariants}~\citep{DBLP:journals/sigmetrics/BuchholzK98} and
-explicit projection of global reachable
-markings~\citep{DBLP:journals/tse/Buchholz99}.
-
-The \emph{potential state space} $\PS$ of an \textls{SSPN} is the
-Cartesian product of the local reachable state spaces of its components
-\begin{equation}
-  \PS = \loc{\RS}{0} \times \loc{\RS}{1} \times \cdots \times
-  \loc{\RS}{J - 1} \text,
-\end{equation}
-which is a (possibly not proper) superset of the global reachable
-state space $\RS$.
-
-We will associate the natural numbers
-$\loc{S}{j} = \{ 0, 1, \ldots, n_j - 1 \}$ with the local reachable
-markings $\loc{\RS}{j} = \{M_0, M_1, \ldots, M_{n_j - 1}\}$ to aid the
-construction of Markov chains and use them interchangably. The
-notation
-\begin{equation}
-  \label{eq:background:sspn:concat}
-  M = \vec{x} = (\loc{x}{0}, \loc{x}{1}, \ldots, \loc{x}{J - 1})
-\end{equation}
-refers to the global state $\vec{x}$ composed from the local markings
-$\loc{x}{j}$, i.e.~the marking
-\begin{equation}
-  M(p) = \loc{M_{\loc{x}{j}}}{j}(p)\text, \quad \text{if $p \in \loc{P}{j}$,}
-\end{equation}
-which is the union of the local markings $\loc{M_{\loc{x}{0}}}{0},
-\loc{M_{\loc{x}{1}}}{1}, \ldots, \loc{M_{\loc{x}{J - 1}}}{J - 1}$.
-
-\begin{table}
-  \centering
-  $
-  \loc{\RS}{0} = \left\{\;\text{\small
-      \begin{tabular}{@{}r*{3}{c}@{}}
-        \toprule
-        \multicolumn{1}{@{}c}{$P$:} & $C_1$ & $W_1$ & $S_1$ \\
-        \midrule
-        $\loc{M}{0}_0$ & 1 & 0 & 0 \\
-        $\loc{M}{0}_1$ & 0 & 1 & 0 \\
-        $\loc{M}{0}_2$ & 0 & 0 & 1 \\
-        \bottomrule
-      \end{tabular}\;}\right\},
-  $\\[2ex]
-  $
-  \loc{\RS}{1} = \left\{\;\text{\small
-      \begin{tabular}{@{}r*{3}{c}@{}}
-        \toprule
-        \multicolumn{1}{@{}c}{$P$:} & $C_2$ & $W_2$ & $S_2$ \\
-        \midrule
-        $\loc{M}{1}_0$ & 1 & 0 & 0 \\
-        $\loc{M}{1}_1$ & 0 & 1 & 0 \\
-        $\loc{M}{1}_2$ & 0 & 0 & 1 \\
-        \bottomrule
-      \end{tabular}\;}\right\},\quad
-  \loc{\RS}{2} = \left\{\;\text{\small
-      \begin{tabular}{@{}rc@{}}
-        \toprule
-        \multicolumn{1}{@{}c}{$P$:}  & $S$ \\
-        \midrule
-        $\loc{M}{2}_0$ & 1 \\
-        $\loc{M}{2}_1$ & 0 \\
-        \bottomrule
-      \end{tabular}\;}\right\}
-  $
-  \caption{Local reachable markings of the \emph{SharedResouce}
-    \textls{SSPN} from \cref{fig:background:sspn:sharedresource}.}
-  \label{tab:background:sspn:sharedresource-states}
-\end{table}
-
-\begin{runningExample}
-  The local reachable markings of the \emph{SharedResource}
-  \textls{SSPN} are enumerated in
-  \cref{tab:background:sspn:sharedresource-states}.
-
-  The transitions $d_1$ and $d_2$ are always enabled in $\LN{2}$
-  because all their input places are located in other components, thus
-  $\LN{2}$ is an unbounded Petri net. Despite this, $\loc{RS}{2}$ is
-  finite, because it only contains the local markings which are
-  reachable in the original net.
-
-  The potential state space $\PS$ contains $3 \cdot 3 \cdot 2 = 18$
-  potential markings, although only $8$ are reachable
-  (\vref{tab:background:spn:sharedresource-rs}). For example, the
-  marking $(2, 2, 0)$ is not reachable, as it would violate mutual
-  exclusion.
-\end{runningExample}
-
 \section{Kronecker algebra}
-
-Kronecker algebra defines the building blocks of the decomposition algorithm being introduced in \cref{chap:genstor}.
 
 \begin{dfn}
   The \emph{Kronecker product} of matrices
@@ -1110,3 +449,320 @@ $\loc{A}{0} \krtimes \loc{A}{1} \krtimes \cdots \krtimes \loc{A}{J -
     \end{pmatrix}\text.
   \end{equation}
 \end{example}
+
+\section{Continuous-time stochastic automata networks}
+
+\begin{dfn}
+  A \emph{Continuous-time stochastic automata network} is a triple
+  $\SAN = \bigl(E, \bigl( \loc{A}{j} \bigr)_{j = 0}^{J - 1},
+  \lambda\bigr)$, where
+  \begin{asparaitem}
+  \item $E$ is a finite set of synchronizing \emph{events},
+  \item $\loc{A}{j} = (\loc{S}{j}, \loc{x_0}{j}, \loc{E}{j},
+    \loc{T}{j})$ is a \emph{stochastic automaton}, such that
+    $\loc{E}{j} \subseteq E$ and $E = \bigcup_{j = 0}^{J - 1}
+    \loc{E}{j}$,
+  \item $\lambda: E \to \RRpos$ is an \emph{event rate function}.
+  \end{asparaitem}
+\end{dfn}
+
+\begin{dfn}
+  A \emph{stochastic automaton} is a $4$-tuple
+  $A = (S, x_0, E, T)$, where
+  \begin{asparaitem}
+  \item $S$ is a finite set of \emph{states},
+  \item $x_0 \in S$ is the \emph{initial state},
+  \item $E$ is a finite set of synchronizing events,
+  \item $T \subset E \times S \times S \times \RRpos$ is the
+    \emph{local transition relation}, such that
+    $(e, x, y, \mu) \in T$, written as $x \xrightarrow{e, \mu} y$,
+    denotes a transition from $x$ to $y$ with rate $\mu$ synchronized
+    on the event $e$. It is required that $x \xrightarrow{e, \mu} y, x
+    \xrightarrow{e, \nu} y \implies \mu = \nu$, i.e. the rate of a
+    transition is a (partial) function of its start and end states and
+    synchronizing event.
+  \end{asparaitem}
+\end{dfn}
+
+Parenthesised superscripts will be used to denote elements of
+automatons of a \textls{SAN},
+e.g.~$\loc{A}{j} = (\loc{S}{j}, \loc{x_0}{j}, \loc{E}{j}, \loc{T}{j})$
+is the $j$th automaton of $\SAN$ with
+$\lvert \loc{S}{j} \rvert = \loc{n}{j}$ states.
+
+The set of \emph{potential states} of $\SAN$ is
+\begin{equation}
+  \PS = \loc{S}{0} \times \loc{S}{1} \times \cdots \times \loc{S}{J -
+    1} \text,
+\end{equation}
+i.e. the Cartesian product of the state spaces of the automata. Thus,
+\emph{global states} are vectors $\vec{x} = (\loc{x}{0}, \loc{x}{1},
+\ldots, \loc{x}{J - 1})$. The initial global state is $\vec{x}_0 =
+(\loc{x}{0}, \loc{x}{1}, \ldots, \loc{x}{J - 1})$.
+
+\needspace{10ex}
+
+The global state changes from $\vec{x} \in \PS$ to $\vec{y} \in \PS$
+when the event $e \in E$ occurs,
+\begin{equation}
+  \label{eq:bakcground:san:transition}
+  \vec{x} \tranto{e} \vec{y} \quad\Longleftrightarrow\quad
+  \text{for all $0 \le j \le J - 1$ } \begin{cases}
+    (e, \loc{x}{j}, \loc{y}{j}, \loc{\mu}{j}) \in \loc{T}{j}
+    & \text{if $e \in \loc{E}{j}$,} \\
+    \loc{x}{j} = \loc{y}{j} & \text{if $e \notin \loc{E}{j}$.}
+  \end{cases}
+\end{equation}
+
+The \emph{support} of the event $e$ is the set of automata which
+respond to it, $\supp e = \{ j : e \in \loc{E}{j} \}$. If $\supp e =
+\{ j \}$, $e$ is \emph{local} to $\loc{A}{j}$.
+
+The events local to $\loc{A}{j}$ are
+$\loc{E_L}{j} = \{ e : \supp e = \{ j \}\}$. Events which affect other
+automata are $\loc{E_S}{j} = \loc{E}{j} \setminus \loc{E_L}{j}$
+synchronizing events of $\loc{A}{j}$. The set of all local events
+is $E_L = \bigcup_{j = 0}^{J - 1} \loc{E_L}{j}$, while the set of all
+synchronizing events is $E_S = \bigcup_{j = 0}^{J - 1} \loc{E_S}{j} =
+E \setminus E_L$.
+
+A state $\vec{y}$ is \emph{reachable} from the state $\vec{x}$
+(written as $\vec{x} \reachto \vec{y}$) if there exists a sequence of
+states and events for some finite $k$ such that
+\begin{equation}
+  \vec{x} = \vec{x}_1 \tranto{e_{i_1}} \vec{x}_2 \tranto{e_{i_2}}
+  \vec{x}_3 \tranto{e_{i_3}} \cdots \tranto{e_{i_{k - 1}}} \vec{x}_{k
+    - 1} \tranto{e_{i_k}} \vec{x}_k = \vec{y} \text.
+\end{equation}
+
+The state $\vec{y} \in \PS$ is in the \emph{reachable state space} of
+$\SAN$ if $\vec{x}_0 \reachto \vec{y}$, hence the reachable state
+space is
+\begin{equation}
+  \RS = \{ \vec{y} \in \PS : \vec{x}_0 \reachto \vec{y} \} \subseteq
+  \PS \text.
+\end{equation}
+
+The term \emph{state space explosion} refers to the phenomenon that
+even small models may have a very large number of states. For example,
+if $\loc{n}{j} = c$ for all $0 \le j \le J - 1$, $\lvert \PS \rvert =
+c^J$, hence $\RS$ may contain $O(c^J)$ elements.
+
+We will assume a bijection
+$\RS \leftrightarrow \{0, 1, \ldots, n - 1 \}$ between the reachable
+state space and the natural numbers such that $\vec{x}_0 \mapsto 0$.
+Moreover, we will assume a bijection
+$\loc{S}{j} \leftrightarrow \{0, 1, \ldots, n_j - 1\}$ such that
+$\loc{x_0}{j} \mapsto 0$. From now on, we will use natural number
+state indices and abstract state vectors interchangeably.
+
+\subsection{Stochastic automata networks as Markov chains}
+
+We associate a Markov chain $X(t)$ with a \textls{SAN} as follows:
+\begin{itemize}
+\item The state space of the Markov chain is $S = \{0, 1, \ldots, n -
+  1\}$, i.e.~the reachable states $\RS$ of $\SAN$ according to the
+  assumed bijection.
+\item The transition rate from $\vec{x}$ to $\vec{y}$ due to the event
+  $e$ is $\lambda(e) \cdot \prod_{j \in \supp e} \loc{\mu}{j}$, where
+  $\loc{x}{j} \xrightarrow{e, \loc{\mu}{j}} \loc{y}{j}$. Thus, the
+  infinitesimal generator matrix $Q$ matrix of the $X(t)$ is formed
+  by off-diagonal ($Q_O$) diagonal ($Q_D$) parts as
+  \begin{gather}
+    Q = Q_O + Q_D \text, \\
+    q_O[x, y] = \begin{cases}
+      0 & \text{if $x = y$,} \\
+      \displaystyle \sum_{e \in E, \vec{x} \tranto{e} \vec{y}} \!\!
+      \lambda(e) \cdot \prod_{j = 0\vphantom{[}}^{J - 1} \loc{\mu_e}{j} &
+      \text{if $x \ne y$, where $\loc{x}{j}
+        \xrightarrow{e, \loc{\mu_e}{j}} \loc{y}{j}$,}
+    \end{cases} \\
+    Q_D = - \diag \{ Q_O \vec{1}^\T \} \text. \\
+  \end{gather}
+\item The initial distribution concentrates all the probability mass
+  at $\vec{x}_0$,
+  \begin{equation}
+    \vec{\pi}_0 = \begin{pmatrix}
+      1 & 0 & 0 & \cdots & 0
+    \end{pmatrix}\text,
+  \end{equation}
+  that is, $\pi_0[x] = \delta_{0,x}$.
+\end{itemize}
+
+The generator matrix requires $O(n^2)$ memory if a two-dimensional
+dense array format is used.
+
+Suppose that for each event $e$ and source state $\vec{x}$,
+$\vec{x} \tranto{e} \vec{y}$ holds only for a number of different
+target states $\vec{y}$ bounded from above by $k \in \NN$. Therefore,
+each row of $Q$ contains up to $k \lvert E \rvert + 1$ nonzero
+elements including the diagonal element. This means $Q$ requires
+$O(n k \lvert E \rvert)$ memory if a sparse format is chosen, which is
+preferable over dense arrays for larger models.
+
+Unfortunately, both of these storage methods may be prohibitively
+costly for large models due to state space explosion. In addition,
+explicit enumeration of large $\RS$ may take an extreme amout of time.
+
+\subsection{Kronecker generator matrices}
+
+To alleviate the high memory requirements of $Q$, the Kronecker
+decomposition for a \textls{SAN} with $J$ automata expresses the
+infinitesimal generator matrix of the associated \CTMC\ in the form
+\begin{equation}
+  \label{eq:genstor:explicit:kronecker}
+  Q = Q_O + Q_D, \quad Q_O = \bigkrplus_{j = 0}^{J - 1} \loc{Q_L}{j}
+  + \sum_{e \in E_S} \lambda(e) \bigkrtimes_{j = 0}^{J - 1}
+  \loc{Q_{e}}{j}, \quad Q_D = -\diag \{ Q_O \vec{1}^\T \} \text,
+\end{equation}
+where $Q_O$ and $Q_D$ are the off-diagonal and diagonal parts of
+$Q$. The matrix
+\begin{equation}
+  \loc{Q_L}{j} = \sum_{e \in \loc{E_L}{j}} \lambda(e) \, \loc{Q_e}{j}
+\end{equation}
+is the \emph{local} transition matrix of the component $j$, while
+the matrix
+\begin{equation}
+  \loc{Q_e}{j} \in \RR^{n_j \times n_j}, \quad
+  \loc{q_e}{j}[\loc{x}{j},\loc{y}{j}] = \begin{cases}
+    \mu & \text{if $\loc{x}{j} \xrightarrow{e, \mu} \loc{y}{j}$,} \\
+    0 & \text{otherwise}
+  \end{cases}
+\end{equation}
+describes the effects of the event $e$ on $\loc{A}{j}$. $\loc{Q_e}{j}$
+has a nonzero element for every local state transition caused by
+$e$. If $j \notin \supp e$, $\loc{Q_e}{j}$ is an $n_j \times n_j$
+identity matrix.
+
+The matrices $\loc{Q_L}{j}$ and $\loc{Q_e}{j}$ and the vector
+$-Q_O \vec{1}^\T$ together are usually much smaller than the full
+generator matrix $Q$ even when stored in a sparse matrix form. Hence
+Kronecker decomposition may save a significant amount of storage at
+the expense of some computation time.
+
+Unfortunately, the Kronecker generator $Q$ is a
+$n_0 n_1 \cdots n_{J - 1} \times n_0 n_1 \cdots n_{J - 1}$ matrix,
+i.e.~in encodes the state transitions in the potential state space
+$\PS$ instead of the reachable state space $\RS$.
+
+\emph{Potential Kronecker methods}%
+~\citep{DBLP:journals/informs/BuchholzCDK00} perform computations with
+the $\lvert \PS \rvert \times \lvert \PS \rvert$ $Q$ matrix and
+vectors of length $\lvert \PS \rvert$. In addition to increasing
+storage requirements, this may lead to problems in some numerical
+solution algorithms, because the \CTMC\ over $\PS$ is not neccessarily
+irreducible even if it is irreducible over $\RS$.
+
+In contrast, \emph{actual Kronecker methods}~%
+\citep{DBLP:journals/tse/Kemper96,%
+  DBLP:journals/informs/BuchholzCDK00,%
+  DBLP:journals/fgcs/BenoitPS06} work with vectors of length
+$\lvert \RS \rvert$. However, additional conversions must be performed
+between the actual dense indexing of the vectors and the potential
+sparse indexing of the $Q$ matrix, which leads to implementation
+complexities and computational overhead.
+
+A third approach, which we discuss in the next subsection, imposes a
+hierarchical structure on $\RS$~%
+\citep{DBLP:conf/cpe/BauseBK98,%
+  DBLP:journals/sigmetrics/BuchholzK98,%
+  DBLP:journals/tse/Buchholz99}.
+
+\subsection{Block kronecker matrix composition}
+
+A \emph{hierarchical decomposition} of the reachable state space expresses
+$\RS$ as
+\begin{equation}
+  \RS = \bigcup_{\macro{\vec{x}} \in \Macro{\RS}} \,
+  \bigtimes_{\vphantom{\Macro{\RS}}j = 0}^{J - 1}
+  \, \loc{\RS}{j}_{\loc{\macro{x}}{j}}, \quad
+  \loc{\RS}{j} = \bigcup_{\mathclap{\loc{\macro{x}}{j} \in \loc{\Macro{\RS}}{j}}}
+  \,\, \loc{\RS}{j}_{\loc{\macro{x}}{j}} \text,
+\end{equation}
+where
+$\Macro{\RS} = \{\macro{0}, \macro{1}_1, \ldots, \Macro{\macro{n} - 1}
+\}$
+a set of \emph{global macro states},
+$\loc{\Macro{\RS}}{j} = \{\loc{\macro{0}}{j}, \loc{\macro{1}}{j},
+\ldots, \loc{\Macro{\macro{n}_j - 1}}{j} \}$ is the set of \emph{local
+macro states} of $\loc{A}{j}$, and $\loc{\RS}{j}_{x} = \{\loc{0}{j}_x,
+\loc{1}{j}_x, \ldots, \loc{(n_{j, x} - 1)}{j}_x \}$ are the
+\emph{local micro states} in the local macro state
+$\loc{\macro{x}}{j}$. The product symbol denotes the composition of
+local states into a global state vector.
+
+The decomposition of the state space into global macro states allows
+$Q$ to be expressed as a block matrix, where each matrix block is
+expressed using Kronecker decomposition.
+
+The matrices $\loc{Q_e}{j}[\loc{\macro{x}}{j}, \loc{\macro{x}}{j}]$
+and $\loc{Q_L}{j}[\loc{\macro{x}}{j}, \loc{\macro{x}}{j}] \in
+\RR^{n_{j,x} \times n_{n, y}}$ describe
+the effects of a single event $e \in E$ and the aggregated effects of
+local transitions on $\loc{A}{j}$ as its state changes from the local
+macro state $\loc{\macro{x}}{j}$ to $\loc{\macro{y}}{j}$,
+respectively. Formally,
+\begin{gather}
+  \loc{q_e}{j}[\loc{\macro{x}}{j},
+  \loc{\macro{y}}{j}][\loc{a_x}{j}, \loc{b_y}{j}] = \begin{cases}
+    \mu & \text{if $\loc{a_x}{j} \xrightarrow{e, \mu} \loc{b_y}{j}$,} \\
+    0 & \text{otherwise,}
+  \end{cases} \label{eq:genstor:explicit:block:tran-matrix}\\
+  \loc{Q_L}{j}[\loc{\macro{x}}{j}, \loc{\macro{y}}{j}] = \sum_{e \in
+    \loc{E_L}{j}} \lambda(e) \, \loc{Q_e}{j}[\loc{\macro{x}}{j},
+  \loc{\macro{y}}{j}] \label{eq:genstor:explicit:block:local-matrix} \text.
+\end{gather}
+In the case $j \notin \supp e$, we define $\loc{Q_e}{j}[\loc{\macro{x}}{j},
+\loc{\macro{y}}{j}]$ as an identity matrix if $\loc{\macro{x}}{j} =
+\loc{\macro{y}}{j}$ and a zero matrix otherwise.
+
+Let us call macro state pairs $(\macro{\vec{x}}, \macro{\vec{y}})$
+\emph{single local macro state transitions} (slmst.) at $h$ if $\macro{\vec{x}}$
+and $\macro{\vec{y}}$ differ only in a single index $h$
+($\loc{\macro{x}}{h} \ne \loc{\macro{y}}{j}$).
+
+The off-diagonal part $Q_O$ of $Q$ is written as a block matrix with
+$\macro{n} \times \macro{n}$ blocks. A single block is expressed as
+\begin{equation}
+  \label{eq:genstor:explicit:block:block}
+  Q_O[\macro{\vec{x}}, \macro{\vec{y}}] = \begin{cases}
+    \begin{multlined}[c][7cm]
+      \bigkrplus_{j = 0}^{J - 1}
+      \loc{Q_L}{j}[\loc{\macro{x}}{j}, \loc{\macro{x}}{j}]\\[-4.5ex]
+      + \sum_{e \in E_S} \lambda(e) \bigkrtimes_{j = 0}^{J - 1}
+      \loc{Q_e}{j}[\loc{\macro{x}}{j}, \loc{\macro{x}}{j}]
+    \end{multlined}
+    & \text{if $\macro{\vec{x}} = \macro{\vec{y}}$,} \\[6.5ex]
+    \begin{multlined}[c][7cm]
+      I_{N_1 \times N_1} \krtimes
+      \loc{Q_L}{h}[\loc{\macro{x}}{h}, \loc{\macro{x}}{h}] \krtimes
+      I_{N_2 \times N_2} \\[-1.5ex]
+      + \sum_{e \in E_S} \lambda(e) \bigkrtimes_{j = 0}^{J - 1}
+      \loc{Q_e}{j}[\loc{\macro{x}}{j}, \loc{\macro{x}}{j}]
+    \end{multlined}
+    & \text{if
+      $(\macro{\vec{x}}, \macro{\vec{y}})$ slmst.~at $h$,} \\[5ex]
+    \displaystyle \sum_{e \in E_S} \lambda(e) \bigkrtimes_{j = 0}^{J - 1}
+      \loc{Q_e}{j}[\loc{\macro{x}}{j}, \loc{\macro{x}}{j}] &
+      \text{otherwise,}
+  \end{cases}
+\end{equation}
+where $I_1 = \prod_{f = 0}^{h - 1} n_{h, \loc{x}{h}}$,
+$I_2 = \prod_{f = h + 1}^{J - 1} n_{h, \loc{x}{h}}$. If
+$\vec{x} = \vec{y}$, the matrix block describes transitions which
+leave the global macro state unchanged, therefore any local transition
+may fire. If $(\macro{\vec{x}}, \macro{\vec{y}})$ is slmst.~at $h$,
+only local transitions on the component $h$ may cause the global state
+transition, since no other local transition may affect
+$\loc{A}{h}$. In every other case, only synchronizing transitions may
+occur.
+
+This expansion of block matrices is equivalent to
+\vref{eq:genstor:explicit:kronecker} except the considerations to the
+hierarchical structure of the state space.
+
+The full $Q$ matrix is written as
+\begin{equation}
+  Q = Q_O + Q_D, \quad Q_D = -\diag\{ Q_O \vec{1}^\T \}
+\end{equation}
+as usual.

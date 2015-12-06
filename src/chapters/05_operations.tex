@@ -1,0 +1,252 @@
+\chapter{Configurable data structure and operations}
+\label{chap:operations}
+
+\textbf{TODO Ezt a fejezetet osszerakni}
+
+\section{Matrix storage}
+
+Existing linear algebra and matrix libraries, such as%
+~\citep{mathdotnet,bluebit,extremeopt,eigen,sanderson2010armadillo},
+usually have unsatisfactory support for operations required in
+stochastic analysis algorithms with decomposed matrices, for example,
+multiplications with Kronecker and block Kronecker
+matrices. Therefore, we have decided to develop a linear algebra
+framework in C\#.NET specifically for stochastic
+algorithms as a basis of our stochastic analysis framework.
+
+\begin{figure}
+  \centering
+  \begin{minipage}{0.5\linewidth}
+    \begin{equation}
+      A = \
+      \begin{pmatrix}
+        1 & 0 & 0 & 2.5 \\
+        3 & 1 & 0 & 0 \\
+        4 & 0 & 0 & 1 \\
+        5 & 0 & 0 & 0
+      \end{pmatrix}
+    \end{equation}
+  \end{minipage}%
+  \begin{minipage}{0.5\linewidth}
+    \begin{align}
+      A = \{&\{(1,0), (3,1), (4,2), (5,3)\}, \\
+      &\{(1,1)\}, \\
+      &\{\}, \\
+      &\{(2.5,0), (1,2)\}\}
+    \end{align}
+  \end{minipage}
+  \caption{Compressed Column Storage of a matrix.}
+  \label{fig:genstor:matrix:ccs}
+\end{figure}
+
+Sparse matrices are stored in Compressed Column Storage (\textls{CCS})
+format, i.e.~an array or values and row indices are stored for each
+column of the matrix, as illustrated in
+\cref{fig:genstor:matrix:ccs}. This facilitates multiplication from
+left with row vectors. To reduce pressure on the garbage collector
+(\textls{GC}), matrices are vectors are stored in manually allocated
+and managed memory.
+
+While other sparse matrix formats, such as sliced \textls{LAPACK} are
+more amenable to parallel and \textls{SIMD} processing
+\citet{DBLP:journals/corr/KreutzerHWFB13}, \textls{CCS} was selected
+due to implementation simplicity and the small number of nonzero
+entries in each column of the matrix, which reduces the potential
+benefits of \textls{SIMD} implementations.
+
+\begin{figure}
+  \centering
+  \begin{tikzpicture}
+    \matrix [every node/.append style={
+      text width=2.1cm,minimum height=1.2cm,align=center,
+      draw,tdk highlight
+    },column sep=1cm,row sep=0.3cm] {
+      \node (block) {Block\\Matrix}; & \node (lin) {Linear\\Combination};
+      & \node (kr) {Kronecker\\Matrix}; & \node (sparse) {Sparse\\Matrix}; \\
+      & & & \node (id) {Identity\\Matrix}; \\
+      & & \node (diag) {Diagonal Matrix}; & \node (vec) {Vector}; \\
+    };
+    \draw [{Diamond[length=10pt]}-,
+    every node/.append style={at end,above,anchor=south east}]
+    (block) edge node {$\ast$} (lin) (lin) edge node {$\ast$} (kr)
+    (kr) edge node {$\ast$} (sparse)
+    (diag) edge node [below,anchor=north east,yshift=-1] {1} (vec);
+    \draw [every node/.append style={at end,below,anchor=north east,yshift=-1pt}]
+    ($(lin.east)+(0.5cm,0)$) |- node {0..1} (diag)
+    ($(kr.east)+(0.5cm,0)$) |- node {$\ast$} (id);
+  \end{tikzpicture}
+  \caption{Data structure for block Kronecker matrices.}
+  \label{fig:genstor:kronecker:datastructure}
+\end{figure}
+
+Decomposed Kronecker and block Kronecker matrices are stored as
+algebraic expression trees as shown in
+\cref{fig:genstor:kronecker:datastructure}. Matrix multiplication
+and manipulation algorithms for expression trees are detailed in
+\vref{sec:algorithms:vector-matrix}.
+
+The expression tree approach allows the use of arbitrary matrix
+decompositions that can be expressed with block matrices, linear
+combinations and Kronecker products. The implementation of additional
+opeartional primitives is also straightforward. The data structure
+forms a flexible basis for the development of stochastic analysis
+algorithms with decomposed matrix representations.
+
+\section{Efficient vector-matrix products}
+\label{sec:algorithms:vector-matrix}
+
+\begin{algorithm}
+  \KwIn{block vector $\vec{b} \in \RR^{n_0 + n_1 + \cdots + n_{k -
+        1}}$,\\block matrix $A \in \RR^{(n_0 + n_1 + \cdots + n_{k -
+        1}) \times (m_0 + m_1 + \cdots + m_{l - 1})}$}
+  \KwOut{$\vec{c} = \vec{b} A \in \RR^{m_0 + m_1 + \cdots + m_{l -
+        1}}$}
+  \KwAllocate{$\vec{c}\in \RR^{m_0 + m_1 + \cdots + m_{l - 1}}$}\;
+  \ParFor{$j \gets 0$ \KwTo $l - 1$}{
+    $\vec{c}[j] \gets \vec{0}$\;
+    \For{$i \gets 0$ \KwTo $k - 1$}{
+      $\vec{c}[j] \gets \vec{c}[j] + \vec{b}[i] A[i, j]$
+      \tcp*{Scaled addition of vector-matrix product}
+    }
+  }
+  \caption{Parallel block vector-matrix product.}
+  \label{alg:algorithms:matmul:block}
+\end{algorithm}
+
+\begin{algorithm}
+  \KwIn{$\vec{b} \in \RR^n$, $A = \nu_0 A_0 + \nu_1 A_1 + \cdots +
+    \nu_{k - 1} A_{k - 1}$, where $A_h \in \RR^{n \times m}$}
+  \KwOut{$\vec{c} = \vec{b} A \in \RR^m$}
+  \KwAllocate{$\vec{c} \in \RR^m$ if no target buffer is provided}\;
+  $\vec{c} \gets \vec{0}$\;
+  \For{$h \gets 0$ \KwTo $k - 1$}{
+    $\vec{c} \gets \nu_h \cdot \vec{b} A_h$
+    \tcp*{In-place scaled addition of vector-matrix product}
+  }
+  \KwRet{$\vec{c}$}\;
+  \caption{Product of a vector with a linear combination matrix.}
+  \label{alg:algorithms:matmul:lincomb}
+\end{algorithm}
+
+\begin{algorithm}
+  \KwIn{$\vec{b} \in \RR^{n_0 n_1 \cdots n_{k - 1}}$, $A = \loc{A}{0}
+    \krtimes \loc{A}{1} \krtimes \cdots \krtimes \loc{A}{k - 1}$,
+    where $\loc{A}{h} \in \RR^{n_h \times m_h}$}
+  \KwOut{$\vec{c} = \vec{b} A \in \RR^{m_0 m_1 \cdots m_{k - 1}}$}
+  $n \gets n_0 n_1 \cdots n_{k - 1},\quad m \gets m_0 m_1 \cdots m_{k - 1}$\;
+  $\textit{tempLength} \gets \max_{h = -1, 0, 1, \ldots, k - 1} \prod_{f =
+    0}^h m_f \prod_{f = h + 1}^{k - 1} n_f$\;
+  \KwAllocate{$\vec{x}, \vec{x}'$ with at least $\textit{tempLength}$
+    elements}\;
+  $\vec{x}[0{:}1{:}n] \gets \vec{b},\quad
+  i_{\text{left}} \gets 1,\quad
+  i_{\text{right}} \gets \prod_{h = 1}^{k - 1} n_h$\;
+  \For{$h \gets 0$ \KwTo $k - 1$}{
+    \If{$\loc{A}{h}$ is not an identity matrix}{
+      $i_{\text{base}} \gets 0, j_{\text{base}} \gets 0$\;
+      \For{$\textit{il} \gets 0$ \KwTo $i_{\text{left}} - 1$}{
+        \label{ln:algorithms:matmul:shuffle:innerloop}
+        \For{$\textit{ir} \gets 0$ \KwTo $i_{\text{right}} - 1$}{
+          $\vec{x}'[j_{\text{base}}{:}m_h{:}i_{\text{right}}] \gets
+          \vec{x}[i_{\text{base}}{:}n_h{:}i_{\text{right}}] \loc{A}{h}$\;
+          $i_{\text{base}} \gets i_{\text{base}} + n_h
+          i_{\text{right}},\quad
+          j_{\text{base}} \gets j_{\text{base}} + m_h
+          i_{\text{right}}$\;
+        }
+      }
+      Swap the references to $\vec{x}$ and $\vec{x}'$\;
+    }
+    $i_{\text{left}} \gets i_{\text{left}} \cdot m_h$\;
+    \lIf{$h \ne k - 1$}
+    {$i_{\text{right}} \gets i_{\text{right}} / n_{h + 1}$}
+  }
+  \KwRet{$\vec{c} = \vec{x}[0{:}1{:}m]$}\;
+  \caption{The \textsc{Shuffle} algorithm for vector-matrix
+    multiplication.}
+  \label{alg:algorithms:matmul:shuffle}
+\end{algorithm}
+
+Iterative linear equation and transient distribution solvers require
+several vector-matrix products per iteration. Therefore, efficient
+vector-matrix multiplication algorithms are required for the various
+matrix storage methods (i.e.~dense, sparse and block Kronecker
+matrices) to support configurable stochastic analysis.
+
+Our data structure supports run-time reconfiguration of operations,
+for example, to switch between parallel and sequential matrix
+multiplication implementations for different parts of an
+algorithm, depending on the characteristics of the model and the
+hardware which runs the analysis.
+
+Implemented matrix multiplication for the data structure
+(see~\vref{fig:genstor:kronecker:datastructure}) routines are
+\begin{itemize}
+\item Multiplication of vectors with dense and sparse matrices. Sparse
+  matrix multiplication may be parallelized by splitting the columns
+  of the matrix into chunck and submitting each chunk to the executor
+  thread pool.
+
+  Operations with vectors and sparse matrices are implemented in an
+  \texttt{unsafe}%
+  \footnote{\url{https://msdn.microsoft.com/en-us/library/chfa2zb8.aspx}}
+  context. The elements of the data structures are not under the
+  influence of the Garbage Collector runtime, but stored in natively
+  allocated memory. This allows the handling of large matrices without
+  adversely impacting the performance of other parts of the program,
+  albeit the cost of allocations in increased.
+\item Multiplication with block matrices by delegation to the
+  constituent blocks of the matrix%
+  ~(\vref{alg:algorithms:matmul:block}). The input and output vectors
+  are converted to block vectors before multiplication. If parallel
+  execution is required, each block of the output vector can be
+  computed in a different task, since it is independent from the
+  others.
+\item Multiplication by a linear combination of matrices is delegated
+  to the constituent matrices
+  (\vref{alg:algorithms:matmul:lincomb}). An in-place scaled addition
+  of vector-matrix product to a vector operation is required for this
+  delegation. To facilitate this, each vector-matrix multiplication
+  algorithm is implemented also as an in-place addition and in-place
+  scaled addition of vector-matrix product, and the appropriate
+  implementation is selected based on the function call aruments.
+\item Multiplications $\vec{b} \cdot \diag\{\vec{a}\}$ by diagonal
+  matrices are executed as elementwise product
+  $\vec{b} \eltimes \vec{a}$. The special case of multiplication by an
+  identity matrix is equivalent to a vector copy.
+\item Multiplications by Kronecker products is performed by the
+  \textsc{Shuffle} algorithm~%
+  \citep{DBLP:journals/informs/BuchholzCDK00,benoit2001memory} as
+  shown in \vref{alg:algorithms:matmul:shuffle}.
+
+  The algorithm requires access to slices of a vector, denoted as
+  $\vec{x}[i_0{:}s{:}l]$, which refers to the elements
+  $x[i], x[i + s], x[i + 2s], \ldots, x[i + (l - 1)s]$. Thus, slices
+  were integrated into the operations framework as first-class
+  elements, and multiplication algorithms are implemented with support
+  for vector slice indexing.
+
+  \textsc{Shuffle} rewrites the Kronecker products as
+  \begin{equation}
+    \bigkrtimes_{h = 0}^{k - 1} \loc{A}{h} = \prod_{h = 0}^{k - 1}
+    I_{\prod_{f = 0}^{h - 1} n_f \times \prod_{f = 0}^{h - 1} n_f} \krtimes
+    \loc{A}{h} \krtimes I_{\prod_{f = h + 1}^{k - 1} m_f \times
+      \prod_{f = h + 1}^{k - 1} m_f} \text,
+  \end{equation}
+  where $I_{a \times a}$ denotes an $a \times a$ identity matrix.
+  Multiplications by terms of the form
+  $I_{N \times N} \otimes \loc{A}{h} \otimes I_{M \times M}$ are
+  carried out in the loop at line%
+  ~\ref{ln:algorithms:matmul:shuffle:innerloop} of
+  \cref{alg:algorithms:matmul:shuffle}.
+
+  The temporary vectors $\vec{x}, \vec{x}'$ are large enough store the
+  results of the successive matrix multiplications. They are cached
+  for every worker thread to avoid repeated allocations.
+
+  Other algorithms for vector-Kronecker product multiplication are the
+  \textsc{Slice}~\citep{fernandes2005alternative} and \textsc{Split}~%
+  \citep{DBLP:conf/springsim/CzeksterRFLW10} algorithms, which are
+  more amenable to parallel execution than \textsc{Shuffle}. Their
+  implementation is in the scope of our future work.
+\end{itemize}
