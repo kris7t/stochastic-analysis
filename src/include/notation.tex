@@ -52,6 +52,10 @@
 % Operations
 %
 
+\newcommand*{\partialVec}[1]{\partialElement{\vec{#1}}}
+\newcommand*{\partialElement}[4]{#1[#2{:}#3{:}#4]}
+\newcommand*{\partialMat}[7]{#1[#2{:}#3{:}#4, #5{:}#6{:}#7]}
+
 \newcommand*{\operationname}{}
 
 \newcommand*{\InPlace}{In-place}
@@ -68,6 +72,22 @@
 \def\OperationFormat@@#1\OperationFormat@Quark{\operationname{#1}}
 \newcommand*{\Operation}{\tdk@comment\OperationComment\OperationFormat}
 \makeatother
+
+%
+% UML
+%
+
+\tikzset{
+  uml class/.style={draw, tdk highlight, inner xsep=5pt,font=\strut\ttfamily},
+  uml not a class/.style={font=\strut},
+  uml lollipop/.style={draw,circle,tdk highlight,inner sep=3pt},
+  uml inheritance/.style={draw,{Triangle[open,fill=white,angle=90:8pt]}-{}}
+}
+
+\newcommand{\umlLollipop}[3][4em,2em]{
+  \path (#2) edge ++(#1);
+  \node at ($(#2)+(#1)$) [uml lollipop,label=0:{#3}] {};
+}
 
 %
 % Markov chains

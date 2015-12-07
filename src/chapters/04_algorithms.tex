@@ -1008,11 +1008,13 @@ algorithms to the modelers' disposal.
   }
   \AlgSection{Iteration}
   \While{$\| \vec{r}[0] \| > \epsilon$}{
-    Perform \textls{IDR} step from \textbf{TODO}\;
-    Perform \textls{GMRES}($\ell$) step from \textbf{TODO}\;
+    Perform \textls{IDR} step from \cref{alg:algorithms:idrstab:idr}\;
+    Perform \textls{GMRES}($\ell$) step from
+    \cref{alg:algorithms:idrstab:gmres}\;
   }
   \KwRet{$\vec{x}$}
   \caption{\textls{IDR}($s$)\textls{STAB}($\ell$).}
+  \label{alg:algorithms:idrstab:idrstab}
 \end{algorithm}
 
 \begin{algorithm}
@@ -1078,6 +1080,7 @@ algorithms to the modelers' disposal.
       %\AlgSection{Gram--Schmidt orthonormalization}
       \For(\tcp*[f]{Attempt orthonormalization}){%
         $i \gets 0$ \KwTo $q - 1$}{
+        \label{nl:algorithms:idrstab:idr:gs-start}
         $\textit{proj} \gets \vec{v}[j, q] \cdot \vec{v}[j, i]$
         \Operation*{VectorScalarProduct}
         \HlNl{
@@ -1105,6 +1108,7 @@ algorithms to the modelers' disposal.
       \lFor(\Operation*[f]{\InPlace VectorScale}){%
         $k \gets 0$ \KwTo $j + 1$}{%
         $\vec{v}[k, q] \gets (1 / \textit{norm}) \, \vec{v}[k, q]$%
+        \label{nl:algorithms:idrstab:idr:gs-end}%
       }
     }
     \HlNl{
@@ -1113,6 +1117,7 @@ algorithms to the modelers' disposal.
     Swap the references to $\vec{U}$ and $\vec{V}$\;
   }
   \caption{\textls{IDR}($s$)\textls{STAB}($\ell$) \textls{IDR} step.}
+  \label{alg:algorithms:idrstab:idr}
 \end{algorithm}
 
 \begin{algorithm}
@@ -1146,7 +1151,9 @@ algorithms to the modelers' disposal.
       \Operation*{\InPlace VectorAdd}
     }
   }
-  \caption{\textls{IDR}($s$)\textls{STAB}($\ell$) \textls{GMRES}($\ell$) step.}
+  \caption{\textls{IDR}($s$)\textls{STAB}($\ell$)
+    \textls{GMRES}($\ell$) step.}
+  \label{alg:algorithms:idrstab:gmres}
 \end{algorithm}
 
 The pseudocode of our implementation of
@@ -1228,8 +1235,10 @@ recommend performing Gram--Schmidt ortonormalization on $U[j, \cdot]$.
 The same subtractions and normalization operations must be performed
 on the rows of $U[i, \cdot]$, $i \ne j$ that are performed in
 $U[j, \cdot]$ in order to maintain their relationships. We realized
-the orthonormalization by the modified Gram--Schmidt process in lines
-\textbf{TODO} and \textbf{TODO}.
+the orthonormalization by the modified Gram--Schmidt process in lines%
+~\ref{nl:algorithms:idrstab:idr:gs-start}%
+--\ref{nl:algorithms:idrstab:idr:gs-end} of
+\cref{alg:algorithms:idrstab:idr}.
 
 The storage of $\vec{R}$, $\vec{U}$ and $\vec{V}$ requires
 $(\ell + 1) + 2 \cdot (\ell + 1) \cdot s$ vectors of length $n$, while

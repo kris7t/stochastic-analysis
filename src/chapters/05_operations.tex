@@ -1,18 +1,483 @@
 \chapter{Configurable data structure and operations}
 \label{chap:operations}
 
-\textbf{TODO Ezt a fejezetet osszerakni}
+In this chapter, we present the linear algebra library that was
+developed as a foundation for configurable stochastic analysis.
 
-\section{Matrix storage}
+The library is composed of a data structure and its related
+operations. The \emph{data structure} provides abstraction for the
+numerical solution algorithms over the used matrix and vectors storage
+formats. Matrices stored as dense or sparse arrays, and even complex
+expression involving sums and Kronecker products that arise from
+matrix decompositions can be handled in a general way.
+
+While direct read write access to elements is supported for most
+matrices and vectors, the majority of manipulations, such as
+vector--matrix products or vector additions, structure are performed
+as \emph{operations}. Instead of being impelemented as methods of the
+data structure classes, operations are decoupled into separata
+entities. This allows operation execution with multiple dispatch,
+selecting optimized implementations accoringd to dynamic types of all
+operation arguments and other runtime properties, e.g.~the numer of
+elements in the vector.
+
+Another advantage of the decoupled operations framework is runtime
+configurability. The dispatch logic may be replaced between the
+execution of algorithms in the stochastic analysis workflow, therefore
+low level linear algebra operations may customized to suit the
+algorithm and the matrix decomposition in use, as well as the
+hardware. For example, paralell and sequential execution may be
+switched as neccessary.
 
 Existing linear algebra and matrix libraries, such as%
 ~\citep{mathdotnet,bluebit,extremeopt,eigen,sanderson2010armadillo},
 usually have unsatisfactory support for operations required in
-stochastic analysis algorithms with decomposed matrices, for example,
+stochastic analysis algorithms with decomposed matrices, such as
 multiplications with Kronecker and block Kronecker
-matrices. Therefore, we have decided to develop a linear algebra
-framework in C\#.NET specifically for stochastic
+matrices. Therefore, we have decided to develop out linear algebra
+framework from scratch in C\#.NET specifically for stochastic
 algorithms as a basis of our stochastic analysis framework.
+
+\section{Data structure}
+
+The data structure library contains matrix and vector classes for
+stochastic analysis.
+
+Client code interacts with the data strucutre through interfaces only,
+no classes are exposed on the public API. The main interfaces are
+\texttt{IVector} and \texttt{IMatrix} for vectors and matrices,
+respectively. The instances are created through an exposed static
+factory.
+
+The interfaces are generic in the element type. For
+example~\texttt{IVector<double>} and \texttt{IMatrix<double>} are used
+to work with double-precision floating point arithmetic. Due to
+language limitations, some classes must be implemented without
+genericity. In these cases, only \texttt{double} is currently
+supported, although re-implementation for single-precision floating
+point or other numeric types is trivial. The static factory handles
+selection of the appropriate non-generic type to instantiate if
+generic behavior is impossible.
+
+There also exist \emph{block} versions of these interfaces,
+IBlockVector and IBlockMatrix. A block object is conceptually a
+container of objects with scalar elements. For example, if
+$\vec{v} \in \RR^{n_0 + n_1 + \cdots + n_{k - 1}}$ is a block vectors
+with $k$ blocks, $\vec{v}[i] \in \RR^{n_i}$ ($0 \le i < k$) is a
+vector of real numbers with $n_i$ elements, while $v[i][j]$ is the
+$j$th element of the $i$th block of $\vec{v}$. Hovewer, block
+interfaces do not extend from \texttt{IVector<IVector<T>>} and
+\texttt{IMatrix<IMatrix<T>>}, but a facility separate from ordinary
+indexing is provided for block access. This allows passing
+\texttt{IBlockVector<double>} and \texttt{IBlockMatrix<double>}
+objects to procedures consuming ordinary \texttt{IVector<double>} and
+\texttt{IMatrix<double>}.
+
+\subsection{Partials}
+
+Manipulations of subsequences of vector and mactrix elements, as well
+as conversion between flat and block object is performed by partial
+object wrappers.
+
+\begin{dfn}
+  A \emph{partial vector} $\partialVec{v}{s}{t}{m}$ of a vector
+  $\vec{v} \in \RR^n$ is
+  \begin{equation}
+    \partialVec{v}{s}{t}{m} \in \RR^m : \partialElement{v}{s}{t}{m}[i] =
+    v[s + t \cdot i] \text{ for $i = 0, 1, \ldots, m$,}
+  \end{equation}
+  where $0 \le s \le n, 1 \le t, s + t (m - 1) \le n$.
+\end{dfn}
+The index $s$ is the start of partial, $t$ is the stride and $m$ is
+the partial length. Matrix partials
+$\partialMat{A}{s_1}{t_1}{m_1}{s_2}{t_2}{m_2} \in \RR^{m_1 \times
+  m_2}$ are defined analogously.
+
+The method \texttt{GetPartial} forms partial matrices and vectors. The
+returned object is always a wrapper which passes through and read and
+write indices to the original object after index
+manipulation. However, partial manipulation of large vectors, which
+was found to be a performance bottleneck upon profiling, is
+implemented with pointer arithmetic instead.
+
+The \texttt{GetPartial} method itself is also passed through. This
+means forming a partial of partial
+($\partialElement{\partialVec{v}{s_1}{t_1}{m_1}}{s_2}{t_2}{m_2}$) does not
+result in a chain of wrappers being created, but only a single wrapper
+object is places around the original after the neccassary index
+manipulations.
+
+Block vectors and matrices may be be formed by splitting flat objects
+into blocks with partials, or by composition from unrelated objects.
+
+\subsection{Splitting and composition}
+
+\begin{dfn}
+  A \emph{split} of a vector $\vec{v} \in \RR^n$ at $(n_0, n_1,
+  \ldots, n_{k - 1})$ is a block vector
+  \begin{equation}
+    \label{eq:operations:ds:vector-split}
+    \vec{v}_S \in \RR^{n_0 + n_1 + \cdots n_{k - 1}} : \vec{v}_S[i]
+    = \partialVec{v}{N_i}{1}{n_i}, \quad N_i = \sum_{j = 0}^{i - 1} n_i \text,
+  \end{equation}
+  where $N_0 = 0$ and $n = N_{k + 1} = n_0 + n_1 + \cdots n_{k - 1}$.
+\end{dfn}
+Split matrices are defined analogously.
+
+\begin{dfn}
+  \label{dfn:operations:ds:vector-compose}
+  If $\vec{v}_0, \vec{v}_1, \ldots, \vec{v}_{k - 1}$ are real vectors
+  of length $n_0, n_1, \ldots, n_{k - 1}$, respectively, their
+  \emph{composition}
+  $\vec{v}_C \in \RR^{n_0 + n_1 + \cdots + n_{k - 1}}$ is block
+  vector $\vec{v}_C[i] = \vec{v}_i$.
+\end{dfn}
+
+\begin{dfn}
+  \label{dfn:operations:ds:matrix-compose}
+  If
+  $A_{0, 0}, A_{0, 1}, \ldots, A_{0, l - 1}, A_{1, 0}, \ldots A{k - 1,
+    l - 1}$
+  are matrices such that $A_{i, j} \in \RR^{n_i, m_j}$, their
+  \emph{composition}
+  $A_C \in \RR^{(n_0 + n_1 + \cdots + n_{k - 1}) \times (m_0 +
+    m_1 + \cdots m_{l - 1})}$ is block
+  matrix $A_C[i, j] = A_{i, j}$.
+\end{dfn}
+
+The \texttt{Split} method builds block vectors and matrices from flat
+objects for blockwise access. Objects formed by \texttt{Split} can be
+split again arbitrarily, where the split command is forwarded to the
+original flat object.
+
+In contrast, \texttt{Split} can only be applied to a composite object
+if it does not result in the creation of new partials. That is, a
+composite vector $\vec{v} \in \RR^{n_0 + n_1 + \cdots + n_{k - 1}}$
+may only be split at $(m_0, m_1, \ldots, m_{l - 1})$ if $k = l$ and
+$n_i = m_i$ for all $0, 1, \ldots, k - 1$. Because composite objects
+are usually very large and are used in performance critical parts of
+algorithms, we decided to throw an exception instead of splitting even
+though arbitrary splitting of composite vectors and matrices would
+have been implemented easily.
+
+\subsection{Vectors}
+
+\begin{figure}
+  \centering
+  \begin{tikzpicture}[
+    edge from parent/.style={uml inheritance},
+    level 1/.style={
+      edge from parent fork down,sibling distance=18em},
+    level 2/.style={
+      grow via three points={one child at (2em,-3em) and
+      two children at (2em,-3em) and (2em,-6em)},
+      edge from parent path={(\tikzparentnode.south) |-
+        (\tikzchildnode.west)},
+      anchor=west
+    }
+    ]
+    \node [uml class] (Abstract) {\emph{AbstractVector}}
+    child { coordinate [edge from parent/.style={draw}]
+      child { node [uml class] {ArrayVector} }
+      child { node [uml class] (Native) {NativeVector} }
+      child { node [uml class] {ConstantVector} }
+      child { node [uml class] {IdentityVector} }
+      child { node [uml class] (Partial) {PartialVectorWrapper}
+        child { [edge from parent/.style={uml inheritance}]
+          node [uml class] {NativePartialVectorWrapper} }
+      }
+      child { node [uml class,yshift=-4em] (FlexiblePartial) {FlexiblePartialVectorWrapper}
+        child { [edge from parent/.style={uml inheritance}]
+          node [uml class] {FlexibleNativePartialVectorWrapper} }
+      }
+      child { node [uml class,yshift=-7em] {MatrixRowVector} }
+      child { node [uml class,yshift=-7em] {MatrixColumnVector} }
+      child { node [uml class,yshift=-7em] {MatrixDiagonalVector} }
+    }
+    child {
+      node (AbstractBlock) [uml class] {\emph{AbstractBlockVector}}
+      child { node [uml class] {VectorSplitWrapper} }
+      child { node [uml class] {BlockVector} }
+    };
+    \umlLollipop{Abstract}{IVector}
+    \umlLollipop{AbstractBlock}{IBlockVector}
+    \umlLollipop{Native}{IDisposeable}
+    \umlLollipop[5em,2em]{FlexiblePartial}{IFlexiblePartialVector}
+  \end{tikzpicture}
+  \caption{Inheritance hierarchy of vectors.}
+  \label{fig:operations:ds:vectors-uml}
+\end{figure}
+
+Vector data structures are used to store probability distributions of
+Markovian modells, as well as intermediate results of numerical
+algorithms.
+
+The class hiearchy of vectors in our library is shown in
+\cref{fig:operations:ds:vectors-uml}.
+
+The abstract base classes \texttt{AbstractVector},
+\texttt{AbstractBlockVector} are at the root of the inheritance
+hierarchies. The data structure may be extended by inheriting from
+these classes, or by implementing the publicly exposed interfaces
+directly.
+
+Vector datatypes are available for the storage of general vectors, as
+well as for some special cases.
+
+\paragraph{ArrayVector}
+
+The basic vector datatype provided is \texttt{ArrayVector}, which
+stores vector elements in a Common Language Runtime (\textls{CLR})
+array. This class is completely generic, i.e.~any \textls{CLR} value or
+reference type may be used as an element.
+
+The Microsoft \textls{.NET} implementation of the \textls{CLR} allows
+arrays of size up to 2~GiB even on 60-bit platforms. While on
+\textls{.NET}~4.5, this limitation may be lifted with the
+\texttt{gcAllowVeryLargeObjects} configuration directive%
+\footnote{\url{https://msdn.microsoft.com/en-us/library/hh285054(v=vs.110).aspx}},
+this setting is cumbersome to use. Therefore, no vectors larger than
+2~GiB should be stored as array vectors.
+
+\paragraph{NativeVector}
+
+To work around the 2~GiB memory limitation on \textls{CLR} arrays, we
+implemented \texttt{NativeVector} which stores vector elements on the
+unmanaged heap. We also found unmanaged allocation reduce the pressure
+on the garbage collector, therefore provide the benefit of faster
+allocations.
+
+Native vectors utilize the \texttt{unsafe} facilities%
+\footnote{\url{https://msdn.microsoft.com/en-us/library/chfa2zb8.aspx}}
+provided by the C\# language, including the access to memory through
+pointers and direct memory management through \texttt{AllocHGlobal}
+and \texttt{FreeHGlobal}. Therefore, the linear algebra library must
+be compiled with unsafe language features enabled. As an alternative,
+\texttt{NativeVector} may be disabled with conditional compilation
+directive and replaced by a wrapper around \texttt{ArrayVector},
+forgoing the benefits of unmanaged allocation.
+
+Due to language limitations, \texttt{NativeVector} must be implemented
+for any primitive type desired to be used as vector
+elements. Currently, only \texttt{double} is supported.
+
+The use of unmanaged memory requires manual deallocation to avoid
+memory leaks. Because the C\# language does not provide deterministic
+destructors, the \texttt{IDisposeable} pattern%
+\footnote{\url{https://msdn.microsoft.com/en-us/library/system.idisposable(v=vs.110).aspx}}
+must be used.
+
+\begin{lstlisting}[float,caption={Manual memory management for
+    \texttt{NativeVector}.},label=lst:operations:ds:dispose-vector]
+// Create and dispose a NativeVector of length 100.
+using (var vector = Vectors.NewDisposeableVector<double>(100))
+{
+	vector[0] = 1.0;
+}
+
+// Dispose using IBufferProvider.
+var factory = new DisposingBufferProviderFactory();
+using (var bufferProvider = factory.Make())
+{
+	var v1 = bufferProvider.GetVector<double>(100);
+	var v2 = bufferProvider.GetVector<double>(100);
+}
+// Both v1 and v2 are disposed here.
+\end{lstlisting}
+
+As an alternative means of memory management, an interface
+\texttt{IBufferProvider} may be used to allocate and track multiple
+vectors. A \texttt{IBufferProvider} itself implements
+\texttt{IDisposeable}, a single C\# \texttt{using} block may free
+several vectors in the same scope, easing the burden of manual
+disposal. This approach is illustrated in
+\cref{lst:operations:ds:dispose-vector}.
+
+\paragraph{ConstantVector}
+
+A constant vector is a vector with equal elements.
+
+Two important special vector may be realized as
+\texttt{ConstantVector} instances in stochastic analysis, the vector
+of all zeroes $\vec{0}$, and the vector of all ones $\vec{1}$,
+\begin{align}
+  \texttt{Vectors.Constant<\textbf{double}>($n$, 0)}
+  &= \vec{0} \in \RR^n \text, \\
+  \texttt{Vectors.Constant<\textbf{double}>($n$, 1)}
+  &= \vec{1} \in \RR^n \text.
+\end{align}
+
+Because constant vectors require only $O(1)$ storage space instead of
+$O(n)$, this is an important optimization in equations involving
+$\vec{0}$, $\vec{1}$ and its scalar multiples.
+
+\paragraph{IdentityVector}
+
+An identity vector is vector with all but one zero elements and a
+single $1$ element. Formally,
+\begin{equation}
+  \texttt{Vectors.Identity<\textbf{double}>($n$, $i$)} = \vec{e}_i \in
+  \RR^n, \quad e_i[j] = \delta_{i, j} = \begin{cases}
+    1 & \text{if $i = j$,} \\
+    0 & \text{if $i \ne j$.}
+  \end{cases}
+\end{equation}
+
+\texttt{IdentityVector} is an $O(1)$ space optimization for storing
+special vectors, similar to \texttt{ConstantVector}.
+
+\paragraph{PartialVectorWrapper and FlexiblePartialVectorWrapper}
+
+Taking a partial vector of a vector results in the creation of
+\texttt{PartialVectorWrapper} object, which passes through read and
+write actions to the underlying vector after the neccessary index
+manipulations. Hence a new object is allocated at every call to
+\texttt{GetPartial}.
+
+Long delegation chains are eliminated by \emph{collapsing} partial
+vectors. When the method \texttt{GetPartial} is invoked on
+\texttt{PartialVectorWrapper}, it performs index manipulations and
+passes delegates to the \texttt{GetPartial} method of the original
+vector. Thus, further partials do not have reference to the partial
+vector they were created from, but only to the underlying vector.
+
+\begin{lstlisting}[float,caption={Ambigous use of
+    \texttt{FlexiblePartialVectorWrapper}.},label=lst:operations:ds:flexible-vector]
+var vector = Vectors.NewArray<double>(100);
+
+var part = vector.GetPartial(5, 2, 20);
+var subPart = part.GetPartial(2, 1, 5);
+// Unambigous, subPart = vector[5:2:20][2:1:5].
+
+var flexible = vector.GetFlexiblepartial(5, 2, 20);
+var subFlexible = vector.GetPartial(2, 1, 5);
+flexible.SetPartial(6, 2, 20);
+// Ambigous, is subFlexible = vector[5:2:20][2:1:5] or vector[6:2:20][2:1:5]?
+\end{lstlisting}
+
+\texttt{FlexiblePartialVectorWrapper} alleviate allocation costs by
+providing a partial vector whose indices can be changed after
+construction. For example, if a flexible partial vector
+$\partialVec{v}{s}{t}{m}$ is available, it can be changed to
+$\partialVec{v}{s'}{t'}{m'}$ without allocating a new instance
+whenever the need arises. The functionality is exposed to consumers
+through an interface.
+
+Flexible partials cannot have their partials taken, because the
+collapse of the delegation chain makes the propagation of index
+changes impossible. This problem is illustrated in
+\cref{lst:operations:ds:flexible-vector}.
+
+Another set of partial wrappers handle partials of
+\texttt{NativeVector} instances. In these cases, a
+$(\textit{base pointer}, \textit{stride}, \textit{length})$ triple amy
+be queried for use in low-level operations. Hence indexing logic may
+be skipped in favor of direct access.
+
+To create a unified interface, the same triple may be queried from
+\texttt{NativeVector} instances themselves, where $\textit{base
+  pointer}$ is the pointer to the allocated buffer, $\textit{stride} =
+1$ and $\textit{length}$ is the length of the vector itself.
+
+\paragraph{Matrix vector wrappers}
+
+To facilitate common manipulations of matrices, our library provides
+wrappers to for read and write access of parts of matrices as
+vectors.
+
+\texttt{MatrixRowVector} and \texttt{MatrixColumnVector} accesses a
+row or a column of matrix, respectively. If $A \in \RR^{n \times m}$,
+\begin{align}
+  \texttt{$A$.GetRow($i$)} = \mathrlap{\vec{r}}\phantom{\vec{c}} \in \RR^m, \quad
+  &r[j] = a[i, j] \text,\\
+  \texttt{$A$.GetColumn($j$)} = \vec{c} \in \RR^{\mathrlap{n}\phantom{m}}, \quad
+  &\phantom{r[j]}\mathllap{c[i]} = a[i, j]
+\end{align}
+for $0 \le i < n$, $0 \le j < m$.
+
+If $n = m$, i.e.~$A$ is square, \texttt{MatrixDiagonalVector} may
+provide access to the diagonal of the matrix,
+\begin{equation}
+  \texttt{$A$.GetDiagonal())} = \vec{d} \in \RR^n = \RR^m, \quad
+  d[i] = a[i, j] \text.
+\end{equation}
+
+\paragraph{Block vectors}
+
+\texttt{VectorSplitWrapper} reifies vector splitting accoring to
+\vref{eq:operations:ds:vector-split}. The split vector is backed by a
+composition of partial vectors, thus it acts as a composite
+vector. However, when the split wrapper is used as an instance of
+\texttt{IVector}, commands, including re-splitting, are delegated to
+the underlying vector instead.
+
+Composition of vectors according to
+\vref{dfn:operations:ds:vector-compose} is represented by
+\texttt{BlockVector}. The constructor of \texttt{BlockVector} is
+passed a sequence of vectors which will constitute the block
+vector. Because \texttt{BlockVector} implements \texttt{IVector}, the
+composite vector may be used as a normal vector, however, splitting is
+limited to avoid performance penalties associated 
+
+\subsection{Matrices}
+
+\begin{figure}
+  \centering
+  \begin{tikzpicture}[
+    edge from parent/.style={draw,{Triangle[open,fill=white,angle=90:8pt]}-{}},
+    level 1/.style={
+      edge from parent fork down,sibling distance=18em},
+    level 2/.style={
+      grow via three points={one child at (2em,-3em) and
+      two children at (2em,-3em) and (2em,-6em)},
+      edge from parent path={(\tikzparentnode.south) |-
+        (\tikzchildnode.west)},
+      anchor=west
+    }
+    ]
+    \node [uml class] (Abstract) {\emph{AbstractMatrix}}
+    child { coordinate [edge from parent/.style={draw}]
+      child { node [uml class] {ArrayMatrix} }
+      child { node [uml class] (Sparse) {SparseMatrix} }
+      child { node [uml class] (Native) {NativeSparseMatrix} }
+      child { node [uml class] (Diagonal) {DiagonalMatrix} }
+      child { node [uml class] {NullMatrix} }
+      child { node [uml class] {IdentityMatrix} }
+      child { node [uml class] {PartialMatrixWrapper} }
+      child { node [uml class] {PartialMaskWrapper} }
+      child { node [uml class] {NormalizedLinearSystemWrapper} }
+      child { node [uml class,yshift=-1em] (Linear) {LinearCombinationMatrix} }
+      child { node [uml class,yshift=-2em] (Kronecker) {KroneckerMatrix} }
+    }
+    child {
+      node (AbstractBlock) [uml class] {\emph{AbstractBlockMatrix}}
+      child { node [uml class] {MatrixSplitWrapper} }
+      child { node [uml class] (Block) {BlockVector} }
+    };
+    \umlLollipop{Abstract}{IMatrix}
+    \umlLollipop{AbstractBlock}{IBlockMatrix}
+    \umlLollipop{Sparse}{ISparseMatrix}
+    \umlLollipop{Native}{ISparseMatrix}
+    \umlLollipop[7em,0.5em]{Native}{IDisposeable}
+    \umlLollipop{Linear}{ILinearCombinationMatrix}
+    \umlLollipop{Kronecker}{IKroneckerMatrix}
+
+    \path let \p1 = (Linear) in let \p2 = (Block.west) in
+    node [anchor=west,uml class] (Weighted) at (\x2,\y1)
+    {\texttt{WeightedMatrix}};
+    \draw [{Diamond[length=10pt]}-] (Linear) edge node [at
+    end,anchor=south east] {*} (Weighted);
+  \end{tikzpicture}
+  \caption{Inheritance hierarchy of matrices.}
+  \label{fig:operations:ds:matrices-uml}
+\end{figure}
+
+The class hiearchy of vectors in our library is shown in
+\cref{fig:operations:ds:matrices-uml}. The abstract base classes
+\texttt{AbstractVector}, \texttt{AbstractBlockVector} are at the root
+of the inheritance hierarchies.
+
+\paragraph{ArrayMatrix}
 
 \begin{figure}
   \centering
@@ -39,13 +504,13 @@ algorithms as a basis of our stochastic analysis framework.
   \label{fig:genstor:matrix:ccs}
 \end{figure}
 
+\paragraph{SparseMatrix and NativeSparseMatrix}
+
 Sparse matrices are stored in Compressed Column Storage (\textls{CCS})
 format, i.e.~an array or values and row indices are stored for each
 column of the matrix, as illustrated in
 \cref{fig:genstor:matrix:ccs}. This facilitates multiplication from
-left with row vectors. To reduce pressure on the garbage collector
-(\textls{GC}), matrices are vectors are stored in manually allocated
-and managed memory.
+left with row vectors.
 
 While other sparse matrix formats, such as sliced \textls{LAPACK} are
 more amenable to parallel and \textls{SIMD} processing
@@ -53,6 +518,22 @@ more amenable to parallel and \textls{SIMD} processing
 due to implementation simplicity and the small number of nonzero
 entries in each column of the matrix, which reduces the potential
 benefits of \textls{SIMD} implementations.
+
+\paragraph{DiagonalMatrix}
+
+\paragraph{NullMatrix and IdentityMatrix}
+
+\paragraph{PartialMatrixWrapper}
+
+\paragraph{PartialMaskWrapper}
+
+\paragraph{NormalizedLinearSystemWrapper}
+
+\paragraph{LinearCombinationMatrix}
+
+\paragraph{KroneckerMatrix}
+
+\section{Expression trees}
 
 \begin{figure}
   \centering
@@ -81,9 +562,10 @@ benefits of \textls{SIMD} implementations.
 
 Decomposed Kronecker and block Kronecker matrices are stored as
 algebraic expression trees as shown in
-\cref{fig:genstor:kronecker:datastructure}. Matrix multiplication
-and manipulation algorithms for expression trees are detailed in
-\vref{sec:algorithms:vector-matrix}.
+\cref{fig:genstor:kronecker:datastructure}. Expression may contain
+Kronecker products (\texttt{KroneckerMatrix}), linear combinations
+(\texttt{LinearCombinationMatrix}) and block compositions
+(\texttt{BlockMatrix}).
 
 The expression tree approach allows the use of arbitrary matrix
 decompositions that can be expressed with block matrices, linear
@@ -92,7 +574,7 @@ opeartional primitives is also straightforward. The data structure
 forms a flexible basis for the development of stochastic analysis
 algorithms with decomposed matrix representations.
 
-\section{Efficient vector-matrix products}
+\subsection{Efficient vector-matrix products}
 \label{sec:algorithms:vector-matrix}
 
 \begin{algorithm}

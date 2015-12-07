@@ -51,7 +51,7 @@
 \setsubparaheadstyle{\normalsize\sffamily\bfseries}
 
 % Captions
-\captionnamefont{\normalfont\sffamily}
+\captionnamefont{\normalfont\sffamily\bfseries}
 \captiondelim{\quad}
 \captiontitlefont{\normalfont}
 
@@ -269,7 +269,7 @@
 \RequirePackage{graphicx}
 
 \RequirePackage{tikz}
-\usetikzlibrary{arrows.meta,calc,chains,decorations.pathreplacing,shadows,shapes.multipart,matrix,positioning}
+\usetikzlibrary{arrows.meta,calc,chains,decorations.pathreplacing,shadows,shapes.multipart,matrix,positioning,trees}
 
 % Create a bg layer for drawings
 \pgfdeclarelayer{bg}
@@ -336,6 +336,29 @@
 \let\endalgorithmhere\endalgorithm
 \renewenvironment{algorithm}{\algorithmhere[tp]}{\endalgorithmhere}
 \newenvironment{algorithmpage}{\algorithmhere[p]}{\endalgorithmhere}
+
+%
+% Listings
+%
+
+\RequirePackage{listings}
+\lstset{
+  basicstyle=\ttfamily,columns=fullflexible,
+  captionpos=t,belowcaptionskip=0.7\baselineskip,
+  frame=lines,framerule=\heavyrulewidth,
+  numberbychapter=true,
+  showspaces=false,showtabs=false,tabsize=4,
+  breaklines=true,breakatwhitespace=true,
+  numbers=left,numberstyle=\scriptsize,numberblanklines=false,
+  xleftmargin=2em,framexleftmargin=2em,
+  commentstyle=\color{black!75}\clearthin,
+  stringstyle=\color{black!75},
+  language=[Sharp]C,morekeywords={var,yield}
+}
+
+% http://tex.stackexchange.com/a/47694
+\crefname{lstlisting}{Listing}{Listings}
+\Crefname{lstlisting}{Listing}{Listings}
 
 %
 % Bibliography
