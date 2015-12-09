@@ -61,18 +61,10 @@ triangular matrix $U$ such that
 \begin{equation}
   A = LU \text.
 \end{equation}
-To solve the equation
-\begin{equation}
-  \vec{x} A = \vec{x} LU = \vec{b}
-\end{equation}
-forward substitution is applied first to find $\vec{z}$ in
-\begin{equation}
-  \vec{z} U = \vec{b}\text,
-\end{equation}
-then $\vec{x}$ is computed by back substitution from
-\begin{equation}
-  \vec{x} L = \vec{b}\text.
-\end{equation}
+To solve the equation $\vec{x} A = \vec{x} LU = \vec{b}$ forward
+substitution is applied first to find $\vec{z}$ in
+$\vec{z} U = \vec{b}$, then $\vec{x}$ is computed by back substitution
+from \vec{x} L = \vec{b}\text.
 
 \begin{algorithm}
   \KwIn{the matrix $A \in \RR^{n \times n}$ operated on in-place}
@@ -98,7 +90,7 @@ then $\vec{x}$ is computed by back substitution from
 
 We used Crout's \textls{LU} decomposition%
 ~\citep[Section~2.3.1]{press2007numerical}, presented in
-\vref{alg:algorithms:lu:crout}), which ensures
+\vref{alg:algorithms:lu:crout}, which ensures
 \begin{equation}
   u[i, i] = 1 \text{ for all $i = 0, 1, \ldots, n - 1$,}
 \end{equation}
@@ -434,11 +426,7 @@ the matrix $X$, which makes the algorithm suitable for very large
 vectors and memory-constrained situations. In addition, convergence is
 often significantly faster.
 
-The sum of elements $\vec{x} \vec{1}^\T$ does not stay constant during
-Jacobi or Gauss--Seidel iteration. Thus, when solving equations of the
-form $\vec{x} Q = \vec{0}, \vec{x} \vec{1}^\T = 1$, normalization
-cannot be entierly handled by the initial guess. We instead transform
-the equation into the form
+\begin{figure}
 \begin{equation}
   \label{eq:algorithms:iterative:normalized-linear-system}
   \vec{x} \begin{pmatrix}
@@ -451,10 +439,19 @@ the equation into the form
     0 \\ 0 \\ \vdots \\ 0 \\ 1
   \end{pmatrix} \text,
 \end{equation}
-where we take advantage of the fact that the infinitesimal generator
-matrix is not of full rank, therefore one of the columns is redundant
-and can be replaced with the condition $\vec{x} \vec{1}^\T = 1$. While
-this transformation may affect the convergence behavior of the
+\end{figure}
+
+The sum of elements $\vec{x} \vec{1}^\T$ does not stay constant during
+Jacobi or Gauss--Seidel iteration. Thus, when solving equations of the
+form $\vec{x} Q = \vec{0}, \vec{x} \vec{1}^\T = 1$, normalization
+cannot be entierly handled by the initial guess. We instead transform
+the equation into the form in
+\cref{eq:algorithms:iterative:normalized-linear-system}, where we take
+advantage of the fact that the infinitesimal generator matrix is not
+of full rank, therefore one of the columns is redundant and can be
+replaced with the condition $\vec{x} \vec{1}^\T = 1$.
+
+While this transformation may affect the convergence behavior of the
 algorithm, it allows uniform handling of homogenous and non-homogenous
 linear equations.
 
@@ -510,7 +507,7 @@ while group Gauss--Seidel considers
   \Repeat{$\epsilon \le \tau$}{
     $\vec{x}' \gets \vec{x}, \vec{c} \gets \vec{b}$\;
     $\vec{c} \gets \vec{c} + (-1) \cdot \vec{x}' A_{OB}$
-    \Operation*{AccumulateVectorMatrixMultiplyFromLeft}
+    \Operation*{VectorMatrixAccumulateMultiplyFromLeft}
     \ParFor(\tcp*[f]{Loop over all blocks}){$i \gets 0$ \KwTo $N - 1$}{
       Solve $\vec{x}[i] A[i,i] = \vec{c}[i]$ for $\vec{x}[i]$\;
     }
@@ -538,7 +535,7 @@ while group Gauss--Seidel considers
     \For(\tcp*[f]{Loop over all blocks}){$i \gets 0$ \KwTo $N - 1$}{
       $\vec{x}' \gets \vec{x}[i], \vec{c} \gets \vec{b}[i]$\;
       \For{$j \gets 0$ \KwTo $N - 1$}{
-        \If(\Operation*[f]{AccumulateVectorMatrixMultiplyFromLeft}){$i \ne j$}{
+        \If(\Operation*[f]{VectorMatrixAccumulateMultiplyFromLeft}){$i \ne j$}{
           $\vec{c} \gets \vec{c} + (-1) \cdot \vec{x}[j] A[i, j]$\;
         }
       }
@@ -583,14 +580,15 @@ only after finding any nonzero solution of $\vec{x} Q = \vec{0}$.
 
 For a detailed analysis of the convergence behaviour of group
 iterative methods, we refer to
-\citet[Chapter~14]{greenbaum1997iterative} and \citet{} \textbf{TODO!!!}
+\citet[Chapter~14]{greenbaum1997iterative} and
+\citet{courtois1986block}.
 
 \subsection{Krylov subspace methods}
 
 Projectional iterative methods are iterative linear equation solvers
 that produce a sequence of approximate solutions $\vec{x}_k$ of the
 linear equation $\vec{x} A = \vec{b}$ that satisfy the
-Petrov--Galerkin conditions \textbf{TODO Cite}
+Petrov--Galerkin conditions~\citep[Section~5.1.1]{saad2003iterative}
 \begin{equation}
   \label{eq:algorithms:krylov:galerkin}
   \vec{x}_k \in \mathcal{K}_k, \quad \vec{r}_k = \vec{b} - \vec{x}_k A
@@ -780,7 +778,7 @@ spaces with large state vectors.
     $\vec{v} \gets \vec{p} Q$
     \Operation*{VectorMatrixMultiplyFromLeft}
     $\alpha \gets \rho / (\tilde{\vec{r}}_0 \cdot \vec{v})$
-    \Operation*{ScalarProduct}
+    \Operation*{VectorScalarProduct}
     $\vec{r} \gets \vec{s} + (-\alpha) \cdot \vec{s}$
     \Operation*{VectorAdd}
     \If{$\| \vec{s} \| < \tau$}{
@@ -793,12 +791,12 @@ spaces with large state vectors.
     $\vec{t} \gets \vec{s} A$\label{nl:algorithms:bicgstab:gm-start}
     \Operation*{VectorMatrixMultiplyFromLeft}
     $\textit{tLengthSquared} \gets \vec{t} \cdot \vec{t}$
-    \Operation*{ScalarProduct}
+    \Operation*{VectorScalarProduct}
     \lIf{$\textit{tLengthSquared} \approx 0$}{%
       \KwError{breakdown: $\vec{t} \approx \vec{0}$}
     }
     $\omega \gets (\vec{t} \cdot \vec{s}) / \textit{tLengthSquared}$
-    \Operation*{ScalarProduct}
+    \Operation*{VectorScalarProduct}
     \lIf{$\omega \approx 0$}{%
       \KwError{breakdown: $\omega \approx 0$}
     }
@@ -955,9 +953,10 @@ algorithms to the modelers' disposal.
   \For{$j = 0$ \KwTo $s - 1$}{
     Sample $\tilde{\vec{r}}_0[j]$ from an $n$-dimensional standard
     normal distribution\;
-    \HlNl[*]{
+    \HlNl{
       $\tilde{\vec{r}}_0[j] \gets \tilde{\vec{r}}_0[j] + \mleft( - \sum_{k
         = 0}^{n - 1} \tilde{r}_0[j][k] / n \mright) \, \vec{1}$
+      \label{nl:algorithms:idrstab:init-normalize}
     }
     \Operation*{\InPlace VectorAdd}
     \For{$q = 0$ \KwTo $s - 1$}{%
@@ -973,7 +972,7 @@ algorithms to the modelers' disposal.
   \AlgSection{Initialize residuals and intermediate vectors}
   $\vec{r}[0] \gets \vec{b}$,
   $\vec{r}[0] \gets \vec{r}[0] + (-1) \, \vec{x} A$
-  \Operation*{MatrixVectorAccumulateMultiplyFromLeft}
+  \Operation*{VectorMatrixAccumulateMultiplyFromLeft}
   \For{$q \gets 0$ \KwTo $s - 1$}{%
     \HlNl{
       \lIf(\Operation*[f]{VectorSet}){$q = 0$}{%
@@ -1028,7 +1027,7 @@ algorithms to the modelers' disposal.
       \Operation*{VectorScalarProduct}
     }
     Solve $\vecarrow{\alpha} \largesigma = \vecarrow{m}$ for
-    $\vecarrow{\alpha}$\;
+    $\vecarrow{\alpha}$\label{nl:algorithms:idrstab:solve-sigma}\;
     \For{$q \gets 0$ \KwTo $s - 1$}{
       $\vec{x} \gets \vec{x} + \alpha[q] \, \vec{u}[0, q]$
       \Operation*{\InPlace VectorAdd}
@@ -1159,7 +1158,10 @@ algorithms to the modelers' disposal.
 The pseudocode of our implementation of
 \textls{IDR}($s$)\textls{STAB}($\ell$), which is based on the
 pseudocode of \citet{sleijpen2010exploiting}, is show in
-\textbf{TODO}.
+\cref{alg:algorithms:idrstab:idrstab,alg:algorithms:idrstab:idr,%
+alg:algorithms:idrstab:gmres}. Modification to the algorithm to obtain
+better convergence properties with \textls{CTMC} steady-state analysis
+are highlighed with \HlNode{shaded} line numbers.
 
 For convenient representation of memory requirements, we employ two
 different typographical styles for vectors. Vectors in bold,
@@ -1176,30 +1178,39 @@ i.e.~$\vec{r}[j'], \vec{u}[j, q], \vec{v}[j, q] \in \RR^n$ for all
 $j' = 0, 1, \ldots, \ell$; $j = 0, 1, \ldots, \ell + 1$;
 $q = 0, 1, \ldots, s - 1$.
 
+\newbox\IdrStabProjectionsBox
+\savebox\IdrStabProjectionsBox{\parbox{\linewidth}%
+  {\small\begin{equation}
+      \newcommand*{\rightproj}[1]{\overset{\smash{\clap{%
+              \raisebox{3pt}{$\mathsurround=0pt\Pi_{#1}$}}}}\rightarrow}%
+      \newcommand*{\neproj}[1]{{\nearrow}\mathrlap{\,\Pi_{#1}}}%
+      \newcommand*{\mulA}{{\downarrow}\mathrlap{\,A}}%
+      \newcommand*{\noMulA}{{\color{black!50}\mulA}}%
+      \newcommand*{\noEquation}{{\color{black!50}\downarrow}}%
+      \begin{array}{*{7}{c}@{\,\,}c@{\,\,}c}
+        \vec{x}_{-} & \rightarrow & \vec{x} & & \vec{v}[0,0] & & \vec{v}[0,1] & \cdots & \vec{v}[0, s - 1] \text, \\
+                    & & \noEquation & \neproj{0} & \noMulA & \neproj{0} & \noMulA & & \noMulA \\
+        \vec{r}_{-}[0] & \rightproj{1} & \vec{r}[0] & & \vec{v}[1,0] & & \vec{v}[1,1] & \cdots & \vec{v}[1, s - 1] \mathrlap{\text,} \\
+                    & & \noMulA & \neproj{1} & \noMulA & \neproj{1} & \noMulA & & \noMulA \\
+        \vec{r}_{-}[1] & \rightproj{2} & \vec{r}[1] & & \vec{v}[2,0] & & \vec{v}[2,1] & \cdots & \vec{v}[2, s - 1] \mathrlap{\text,}, \\
+        \vdots & & \vdots & & \vdots & & \vdots & & \vdots \\
+        \vec{r}_{-}[j - 2] & \rightproj{j - 1} & \vec{r}[j - 2] & & \vec{v}[j - 1,0] & & \vec{v}[j - 1,1] & \cdots & \vec{v}[j - 1, s - 1] \mathrlap{\text,} \\
+                    & & \noMulA & \neproj{j - 1} & \noMulA & \neproj{j - 1} & \noMulA & & \noMulA \\
+        \vec{r}_{-}[j - 1] & \rightproj{j} & \vec{r}[j - 1] & & \vec{v}[j,0] & & \vec{v}[j,1] & \cdots & \vec{v}[j, s - 1] \mathrlap{\text,} \\
+                    & & \mulA & \neproj{j} & \mulA & \neproj{j} & \mulA & & \mulA \\
+                    & & \boxed{\vec{r}[j]} & & \boxed{\vec{v}[j + 1,0]} & & \boxed{\vec{v}[j + 1,1]} & \cdots & \boxed{\vec{v}[j + 1, s - 1]}
+      \end{array}\label{eq:algorithms:idrstab:projections}
+    \end{equation}}}%
+
+\begin{figure}
+  \centering\usebox\IdrStabProjectionsBox
+  \caption{Repetition step of the \textls{IDR}($s$) part of \textls{IDR}($s$)\textls{STAB}($\ell$).}
+  \label{fig:algorithms:idrstab:projections}
+\end{figure}
+
 The \textls{IDR} part performs the projections, called a ``repetition
-step'',
-{\small\begin{equation}
-    \newcommand*{\rightproj}[1]{\overset{\smash{\clap{%
-            \raisebox{3pt}{$\mathsurround=0pt\Pi_{#1}$}}}}\rightarrow}%
-    \newcommand*{\neproj}[1]{{\nearrow}\mathrlap{\,\Pi_{#1}}}%
-    \newcommand*{\mulA}{{\downarrow}\mathrlap{\,A}}%
-    \newcommand*{\noMulA}{{\color{black!50}\mulA}}%
-    \newcommand*{\noEquation}{{\color{black!50}\downarrow}}%
-  \begin{array}{*{7}{c}@{\,\,}c@{\,\,}c}
-     \vec{x}_{-} & \rightarrow & \vec{x} & & \vec{v}[0,0] & & \vec{v}[0,1] & \cdots & \vec{v}[0, s - 1] \text, \\
-    & & \noEquation & \neproj{0} & \noMulA & \neproj{0} & \noMulA & & \noMulA \\
-    \vec{r}_{-}[0] & \rightproj{1} & \vec{r}[0] & & \vec{v}[1,0] & & \vec{v}[1,1] & \cdots & \vec{v}[1, s - 1] \mathrlap{\text,} \\
-    & & \noMulA & \neproj{1} & \noMulA & \neproj{1} & \noMulA & & \noMulA \\
-    \vec{r}_{-}[1] & \rightproj{2} & \vec{r}[1] & & \vec{v}[2,0] & & \vec{v}[2,1] & \cdots & \vec{v}[2, s - 1] \mathrlap{\text,}, \\
-    \vdots & & \vdots & & \vdots & & \vdots & & \vdots \\
-    \vec{r}_{-}[j - 2] & \rightproj{j - 1} & \vec{r}[j - 2] & & \vec{v}[j - 1,0] & & \vec{v}[j - 1,1] & \cdots & \vec{v}[j - 1, s - 1] \mathrlap{\text,} \\
-    & & \noMulA & \neproj{j - 1} & \noMulA & \neproj{j - 1} & \noMulA & & \noMulA \\
-    \vec{r}_{-}[j - 1] & \rightproj{j} & \vec{r}[j - 1] & & \vec{v}[j,0] & & \vec{v}[j,1] & \cdots & \vec{v}[j, s - 1] \mathrlap{\text,} \\
-    & & \mulA & \neproj{j} & \mulA & \neproj{j} & \mulA & & \mulA \\
-    & & \boxed{\vec{r}[j]} & & \boxed{\vec{v}[j + 1,0]} & & \boxed{\vec{v}[j + 1,1]} & \cdots & \boxed{\vec{v}[j + 1, s - 1]}
-  \end{array}\label{eq:algorithms:idrstab:projections}
-\end{equation}}%
-for $j = 1, 2, \ldots, \ell$ every iteration.
+step'', shown in \cref{fig:algorithms:idrstab:projections}, for
+$j = 1, 2, \ldots, \ell$ every iteration.
 
 After a repetition step is complete, $\vec{U}$ and $\vec{V}$ are
 swapped and the process starts again with increased $j$ or the
@@ -1208,7 +1219,8 @@ swapped and the process starts again with increased $j$ or the
 
 The projections $\Pi_i$ ($i = 0, 1, \ldots, j$) are defined as
 \begin{equation}
-  \Pi_i = I - A^{j - i} \widetilde{R}_0 \largesigma^{-1} (U[i, \cdot])^\T,
+  \label{eq:algorithms:idrstab:projection}
+  \Pi_i = I - A^{j - i} \widetilde{R}_0^\T \largesigma^{-1} U[i, \cdot],
   \quad \largesigma = \widetilde{R}_0 (U[j, \cdot])^\T \text,
 \end{equation}
 where the matrix $U[k, \cdot]$ is the $s \times n$ matrix that has the
@@ -1260,7 +1272,233 @@ multiplications to improve accuracy.
 
 \paragraph{Numerical problems and breakdown}
 
-\textbf{TODO Leiras, diagram}
+Unfortunately, our initial experintments with
+\textls{IDR}($s$)\textls{STAB}($\ell$) in Markovian steady-state
+analysis did not lead to success when one of the parameters $s$ or
+$\ell$ were set to values strictly larger than $1$. The only case that
+managed to decrease the norm of the residual reliably, $s = \ell = 1$
+is equivalent to \textls{BiCGSTAB}, but due to properties of the
+\textls{IDR} formulation,
+
+In steady-state analysis, equations of the form
+\begin{equation}
+  \label{eq:algorithms:idrstab:equation}
+  \vec{x} Q = \vec{0}, \quad \vec{x} \vec{1}^\T = 1
+\end{equation}
+are solved, where the infinitesimal generator matrix
+$Q \in \RR^{n \times n}$ is matrix of rank $n - 1$ (nullity $1$) which
+satisfies $Q \vec{1} = \vec{0}^\T$. To obtain the solution, the matrix
+$A = Q$ is passed to \textls{IDR}($s$)\textls{STAB}($\ell$) along with
+the right vector $\vec{b} = 0$ and the initial guess $\vec{x}$. The
+initial guess is chosen to satify $\vec{x} \vec{1}^\T = 1$.
+
+We have identified the following three numerical problems in the
+original version of the algorithm algorithm that lead to eventual
+breakdown:
+\begin{enumerate}
+\item The quantity $\vec{x} \vec{1}^\T$ may increse indefinitely
+  instead of staying constant. Thus, the normalization condition in
+  \cref{eq:algorithms:idrstab:equation} is violated. Unconstrained
+  increase results in the loss of precision and overflow of the
+  elements of $\vec{x}$ such that the normalization cannot be restored
+  by the division $\hat{\vec{x}} = \vec{x} / \vec{x} \vec{1}^\T$.
+\item The vectors $\vec{V}[j, \cdot]$ that shall form the basis of the
+  Krylov subspace $\mathcal{K}_s(A \Pi_j, \vec{r}[j] \Pi_j)$ may
+  become linearly dependent, such that the Gram--Schmidt process in
+  lines~\ref{nl:algorithms:idrstab:idr:gs-start}%
+  --\ref{nl:algorithms:idrstab:idr:gs-end} of
+  \cref{alg:algorithms:idrstab:idr} fail due to some $\vec{v}[j, q]$
+  becoming the zero vector.
+\item The matrix $\largesigma$ may become singular such that the
+  linear equation $\vecarrow{\alpha} \largesigma = \vecarrow{m}$ has
+  no solution in line~\ref{nl:algorithms:idrstab:solve-sigma} of
+  \cref{alg:algorithms:idrstab:idr}. Since
+  $\largesigma = U[j, \cdot] \widetilde{R}_0^\T$, this corresponds the
+  projection of the vectors $\vec{U}[j, \cdot]$ into
+  $\Span \widetilde{\vec{R}}_0$ becoming linearly dependent.
+
+  In addition, a nearly singular $\largesigma$ results in the
+  accumulation of errors that cause the norm of the residual to
+  increase exponentially instead of converging to zero.
+\end{enumerate}
+
+\paragraph{Handling numerical problems}
+
+Is this section, we present the modification made to
+\textls{IDR}($s$)\textls{STAB}($\ell$) in
+\cref{alg:algorithms:idrstab:idrstab,alg:algorithms:idrstab:idr,%
+  alg:algorithms:idrstab:gmres} to improve its behavior with
+\textls{CTMC} generator matrices. We restrict our attention to the
+solution of equations of the form
+\eqref{eq:algorithms:idrstab:equation}, that is, steady-state
+normalized solution of Markovian models with zero right vector. Thus,
+we will write $Q$ instead of $A$ for the linear equation matrix and
+assume a right hand side $\vec{b} = \vec{0}$.
+
+\begin{obs}
+  \label{obs:algorithms:idrstab:normalized-update}
+  \textls{IDR}($s$)\textls{STAB}($\ell$) only performs updates
+  of the approximate solution of the form $\vec{x} \gets \vec{x} +
+  \lambda \vec{t}$, where
+  \begin{asparaenum}
+  \item $\vec{t}$ is either an initial shadow
+    residual $\tilde{\vec{r}}_0[j]$ for some $j$
+  \item or there exists a vector $\vec{w}$ such that
+    $\vec{t} = \vec{w} Q$.
+  \end{asparaenum}
+\end{obs}
+
+In the second case of \cref{obs:algorithms:idrstab:normalized-update},
+one may notice that
+\begin{equation}
+  \vec{t} \vec{1}^\T = \vec{w} Q \vec{1}^\T = \vec{w} \vec{0}^\T = 0
+  \text,
+\end{equation}
+therefore $\vec{x} \vec{1}^\T$ can be forced to stay constant by
+selecting initial shadow residual vectors
+$\widetilde{R}_0 \vec{1}^\T =
+\vec{0}^\T$.
+Line~\ref{nl:algorithms:idrstab:init-normalize} of
+\cref{alg:algorithms:idrstab:idrstab} contains this modification. The
+initialization of the shadow residuals is otherwise identical to the
+recommendation of \citet{sonneveld2010convergence}, which selects a
+random orthonormalized set of $s$ vectors.
+
+The handling of the second problem of the Gram--Schmidt process
+failure is more compilcated.
+
+\begin{obs}
+  \label{obs:algorithms:idrstab:normalized-v}
+  If $Q \in \RR^n$ is a rank $n - 1$ matrix such that
+  $Q \vec{1}^\T = \vec{0}^\T$ and $\vec{b} = \vec{0}$, then
+  $\vec{v}[i, q] \, \vec{1}^\T = 0$ for all $i, q$.
+\end{obs}
+
+\begin{proof}
+  Because $\vec{v}[i, q] = \vec{v}[i - 1, q] \, Q$ for all $i > 0$, it
+  suffices to show that $\vec{v}[0, q] \, \vec{1}^\T = 0$. The chain
+  of projections in \vref{eq:algorithms:idrstab:projections} shows
+  that
+  \begin{equation}
+    \vec{v}[0, q] = \vec{w} \Pi_0 = \vec{w} ( I - Q^{j}
+    \widetilde{R}_0^\T \largesigma^{-1} U[0, \cdot] ) \text,
+  \end{equation} where $\vec{w}$ is either $\vec{r}[0]$ or
+  $\vec{v}[1, q - 1]$.
+
+  Notice that $\vec{v}[1, q - 1] \, \vec{1}^\T = 0$ as we have shown
+  before and $\vec{r}[0] \, \vec{1}^\T = -\vec{x} Q \vec{1}^\T =
+  0$. Hence if $\vec{u}[0, k] \, \vec{1}^\T = \vec{0}$ for all $k$,
+  \begin{align}
+    \vec{v}[0, q] = \vec{w} \Pi_0 \vec{1}^\T &= \vec{w} \vec{1}^\T - \vec{w} Q^{j}
+    \widetilde{R}_0^\T \largesigma^{-1} U[0, \cdot] \, \vec{1}^\T \\
+    & =\vec{w} \vec{1}^\T - \vec{w} Q^{j}
+    \widetilde{R}_0^\T \largesigma^{-1} \vec{0}^\T = 0 \text.
+  \end{align}
+
+  Now it all remains to be shown that
+  $\vec{u}[0, k] \, \vec{1}^\T = 0$. We will use induction over the
+  number of repetitions performed. If $\vec{v}[0, k] \, \vec{1}^\T$
+  holds in the current repetition step,
+  $\vec{u}[0, k] \, \vec{1}^\T = 0$ holds in the next, because the
+  references to $\vec{U}$ and $\vec{V}$ are swapped every repetition
+  step. This property is not distrurbed by the performed Gram--Schmidt
+  orthonormalizations and the \textls{GMRES}($\ell$) steps.
+
+  We also notice that \vref{alg:algorithms:idrstab:idrstab}
+  initializes $\vec{u}[0, 0] = \vec{r}[0] = -\vec{x} Q$ and
+  $\vec{u}[0, q] = \vec{u}[0, q - 1] \, Q$ for $q > 0$. This completes
+  the induction.
+\end{proof}
+
+\begin{obs}
+  \label{obs:algorithms:idrstab:vanishing-v}
+  If the conditions from \cref{obs:algorithms:idrstab:normalized-v}
+  and $\vec{v}[j, q] = \vec{0}$ hold, then $\vec{v}[i, q] = \vec{0}$
+  for all $i < j$.
+\end{obs}
+
+\begin{proof}
+  Suppose that there is some $\vec{v}[i, q] \ne \vec{0}$ such that $i
+  < j$. Without loss of generality, we may assume that $i$ is the
+  largest index with this property, i.e.~$\vec{v}[i', q] = \vec{0}$
+  for all $i' > i$. Then $\vec{0} = \vec{v}[i + 1, q] = \vec{v}[i, q]
+  \, Q$, therefore $\vec{v}[i, q]$ is the solution of the linear
+  equation $\vec{x} Q = \vec{0}$.
+
+  However, we know that the nullspace
+  $\ker Q = \Span \{ \vec{\uppi} \}$, where $\vec{\uppi}$ is the
+  stationary distribution of the \textls{CTMC} of which $Q$ is the
+  infinitesimal generator, i.e~$\vec{\uppi} Q = \vec{0}$,
+  $\vec{\uppi} \vec{1}^\T = 1$. Therefore,
+  $\vec{v}[i, q] \in \Span \{ \vec{\uppi} \}$ such that
+  $\vec{v}[i, q] \, \vec{1}^\T = 0$
+  (\cref{obs:algorithms:idrstab:normalized-v}). This means
+  $\vec{v}[i, q] = \frac{0}{1} \cdot \vec{\uppi} = \vec{0}$.
+\end{proof}
+
+\cref{obs:algorithms:idrstab:vanishing-v} means that if the
+Gram--Schmidt process breaks down with $\vec{v}[j, q] = \vec{0}$, we
+are unable to recover a solution vector by looking at some $\vec{v}[i,
+q]$, $i < j$, because those vector are also zero.
+
+\savebox\IdrStabProjectionsBox{\parbox{\linewidth}%
+  {\small\begin{equation}
+      \newcommand*{\rightproj}[1]{\overset{\smash{\clap{%
+              \raisebox{3pt}{$\mathsurround=0pt\Pi_{#1}$}}}}\rightarrow}%
+      \newcommand*{\neproj}[1]{{\nearrow}\mathrlap{\,\Pi_{#1}}}%
+      \newcommand*{\mulA}{{\downarrow}\mathrlap{\,Q}}%
+      \newcommand*{\noMulA}{{\color{black!50}\mulA}}%
+      \newcommand*{\noMulMinA}{{\color{black!50}{\downarrow}\mathrlap{\,-Q}}}%
+      \begin{array}{*{7}{c}@{\,\,}c@{\,\,}c}
+        & & & & \vec{d}[0] & & \vec{d}[1] & \cdots & \vec{d}[s - 1] \text, \\
+        & &  & \neproj{-1} & \noMulA & \neproj{-1} & \noMulA & & \noMulA \\    
+        \vec{x}_{-} & \rightarrow & \vec{x} & & \vec{v}[0,0] & & \vec{v}[0,1] & \cdots & \vec{v}[0, s - 1] \text, \\
+        & & \noMulMinA & \neproj{0} & \noMulA & \neproj{0} & \noMulA & & \noMulA \\
+        \vec{r}_{-}[0] & \rightproj{1} & \vec{r}[0] & & \vec{v}[1,0] & & \vec{v}[1,1] & \cdots & \vec{v}[1, s - 1] \mathrlap{\text,} \\
+        & & \noMulA & \neproj{1} & \noMulA & \neproj{1} & \noMulA & & \noMulA \\
+        \vec{r}_{-}[1] & \rightproj{2} & \vec{r}[1] & & \vec{v}[2,0] & & \vec{v}[2,1] & \cdots & \vec{v}[2, s - 1] \mathrlap{\text,}, \\
+        \vdots & & \vdots & & \vdots & & \vdots & & \vdots \\
+        \vec{r}_{-}[j - 2] & \rightproj{j - 1} & \vec{r}[j - 2] & & \vec{v}[j - 1,0] & & \vec{v}[j - 1,1] & \cdots & \vec{v}[j - 1, s - 1] \mathrlap{\text,} \\
+        & & \noMulA & \neproj{j - 1} & \noMulA & \neproj{j - 1} & \noMulA & & \noMulA \\
+        \vec{r}_{-}[j - 1] & \rightproj{j} & \vec{r}[j - 1] & & \vec{v}[j,0] & & \vec{v}[j,1] & \cdots & \vec{v}[j, s - 1] \mathrlap{\text,} \\
+        & & \mulA & \neproj{j} & \mulA & \neproj{j} & \mulA & & \mulA \\
+        & & \boxed{\vec{r}[j]} & & \boxed{\vec{v}[j + 1,0]} & & \boxed{\vec{v}[j + 1,1]} & \cdots & \boxed{\vec{v}[j + 1, s - 1]}
+      \end{array}\label{eq:algorithms:idrstab:extended-projections}
+    \end{equation}}}%
+
+\begin{figure}
+  \centering\usebox\IdrStabProjectionsBox
+  \caption{Extended repetition step of the \textls{IDR}($s$) part of \textls{IDR}($s$)\textls{STAB}($\ell$).}
+  \label{fig:algorithms:idrstab:extended-projections}
+\end{figure}
+
+The projection scheme in \vref{eq:algorithms:idrstab:projections} is
+extended with two additional arrays
+$\vec{C}, \vec{D} \in \RR^{s \times n}$, which serve as the
+``(-1)$th$'' rows of $\vec{U}$ and $\vec{V}$. This results in the
+extended projections shown in
+\cref{fig:algorithms:idrstab:extended-projections}, where
+$\Pi_{-1} = I - A^{j - i} \widetilde{R}_0^\T \largesigma^{-1} D$.  In
+order to avoid $\vec{d}[q] = \vec{0}$, $\vec{c}[0]$ is initialized to
+$-\vec{x}$ so that $\vec{v}[0, 0] = \vec{r} = \vec{c}[0] Q$.
+
+After a Gram--Schmidt breakdown, the solution vector $\vec{x}$ is
+obtained as
+\begin{equation}
+  \vec{x} = \frac{1}{\vec{d}[q] \, \vec{1}^\T} \vec{d}[q] \text.
+\end{equation}
+
+Despite our attempts, we did not handle the third divergence problem
+of singular or nearly singular $\largesigma$. A possible remedy is the
+more careful choice of the stabilizing polynomial $\Omega_k$. Chosing
+$\vecarrow{\gamma}$ through means other than the minimization of the
+residual norm $\| \vec{r}[0] \|_2$ may result in better converge
+behavior~\citep{rendel2011tuning,sleijpen1995maintaining}.
+
+Empirical results on the convergence of
+\textls{IDR}($s$)\textls{STAB}($\ell$) in the steady-state analysis of
+Markovian models of various size are presented in%
+~\vref{sec:evaulations:idrstab}.
 
 \section{Transient analysis}
 
@@ -1298,7 +1536,7 @@ yields~\citep{reibman1989markov}
     \label{eq:algorithms:transient:aggregate-uniformization}
 \end{align}
 
-Both \vref{eq:algorithms:transient:uniformization,%
+Both \cref{eq:algorithms:transient:uniformization,%
 eq:algorithms:transient:aggregate-uniformization} can be realized
 as
 \begin{equation}

@@ -301,9 +301,10 @@
 
 \newcommand*{\HlNode}[1]{%
   \tikz [baseline] \node [anchor=base,inner sep=2pt,fill=black!20]
-  {#1};\hspace{-2pt}}
+  {#1};}
+\newcommand*{\HlNlNode}[1]{\HlNode{#1}\hspace{-2pt}}
 \newcommand*{\HlNl}[2][]{%
-  \SetNlSty{HlNode}{}{#1}#2\SetNlSty{textnormal}{}{}}
+  \SetNlSty{HlNlNode}{}{#1}#2\SetNlSty{textnormal}{}{}}
 
 % Custom comments
 \def\tdk@comment#1#2{\@ifnextchar*{\tdk@comment@star#1#2}{\tdk@comment@nostar#1#2}}
@@ -437,13 +438,35 @@
    \usebibmacro{postnote}}
 
 %
+% Landscape figures
+%
+
+\RequirePackage{pdflscape}
+
+% FIXME use http://stackoverflow.com/a/5320962
+% but it has to play nicely with \c@angetext
+
+\newcommand*{\LargerPage}{%
+  \setlrmarginsandblock{71.1319pt}{*}{1}%
+  \setulmarginsandblock{93.89409pt}{*}{1}%
+  \checkandfixthelayout[nearest]%
+  \ch@ngetext
+}
+
+\newenvironment{figurepage}{%
+  \clearpage\LargerPage\begin{landscape}\centering
+}{%
+  \end{landscape}
+}
+
+%
 % Miscellaneous
 %
 
 \RequirePackage{xspace,needspace}
 \RequirePackage{blindtext}
 
-\RequirePackage{soul}
+\RequirePackage{capt-of}
 
 % Include thesis topic as a literal
 \RequirePackage{pdfpages}
