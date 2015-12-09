@@ -56,7 +56,19 @@
 \newcommand*{\partialElement}[4]{#1[#2{:}#3{:}#4]}
 \newcommand*{\partialMat}[7]{#1[#2{:}#3{:}#4, #5{:}#6{:}#7]}
 
-\newcommand*{\operationname}{}
+\newcounter{operation}
+\newcommand*{\TheOperationPrefix}{}
+\newcommand*{\OperationPrefix}[1]{%
+  \global\def\TheOperationPrefix{#1}%
+  #1 & & & & & \\}
+\newcommand*{\OperationDesc}[1]{\OperationDescNamed{#1}{#1}}
+\newcommand*{\OperationSugarDesc}[1]{\OperationDescNamed{#1}{#1*}}
+\newcommand*{\OperationDescNamed}[7]{%
+  \refstepcounter{operation}%
+  \label{operation:\TheOperationPrefix#1}%
+  \hspace{1em}#2 & #3 & #4 & #5 & #6 & #7\\}
+
+\newcommand*{\operationname}[2][]{\hyperref[operation:#1#2]{#2}}
 
 \newcommand*{\InPlace}{In-place}
 \SetKwComment{OperationComment}{$\triangleright$~}{}

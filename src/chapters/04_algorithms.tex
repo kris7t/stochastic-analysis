@@ -986,7 +986,7 @@ algorithms to the modelers' disposal.
       }
     }
     $U[1, q] \gets U[0, q] \, A$
-    \Operation*{MatrixMultiplyFromLeft}
+    \Operation*{VectorMatrixMultiplyFromLeft}
     \For{$k \gets 0$ \KwTo $q - 1$}{
       $\textit{proj} \gets \vec{u}[0, k] \cdot \vec{u}[0, q]$
       \Operation*{VectorScalarProduct}
@@ -1554,7 +1554,7 @@ only an approximation of the true error.
       \vec{\uppi}_{k + \gamma} Q$
       \Operation*{VectorMatrixAccumulateMultiplyFromLeft}
       $\vec{d}_{k + 1} \gets \vec{\uppi}_{k + 1} Q$
-      \Operation*{VectorMatrixMultipleFromLeft}
+      \Operation*{VectorMatrixMultiplyFromLeft}
       $\vec{y} \gets \vec{y} + \mleft(-\frac{1}{1 - \gamma}\mright)
       \vec{d}_{k + 1}$
       \Operation*{\InPlace VectorAdd}

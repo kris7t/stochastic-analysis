@@ -152,12 +152,12 @@ Technology and Economics.'' \citep{Petridotnet}
 The implementation of the general stochastic analysis workflow in
 \textsc{PetriDotNet} is illustrated in
 \cref{fig:overview:our:workflow}. The models are specified using the
-stochastic Petri net (\textls{SPN}) formalism \textbf{TODO
-  Cite}, while engineering measures to be calculated are expressed as
-\textls{SPN} performance measures. Both explicit and symbolic state
-space exploration and storage is supported, including symbolic hierarchical
-state space decomposition for block Kronecker generator
-matrices.
+stochastic Petri net (\textls{SPN}) formalism%
+~\citep{murata1989petri,DBLP:conf/apn/Marsan88}, while engineering
+measures to be calculated are expressed as \textls{SPN} performance
+measures. Both explicit and symbolic state space exploration and
+storage is supported, including symbolic hierarchical state space
+decomposition for block Kronecker generator matrices.
 
 The workflow is fully \emph{configurable}, which means that the
 modeler may combine the available algorithms for the analysis steps
@@ -278,15 +278,18 @@ by the ``frontend'' part of the analysis module:
   derivatives.
 
   Symbolic state space exploration is performed by the
-  \emph{saturation} algorithm, which is provided by the symbolic
-  analysis component of \textsc{PetriDotNet}. Petri nets with inhibitor
-  arcs are supported, but transitions with prioirity (including
-  non-timed transitions) cannot be used. \textbf{TODO Cite}
+  \emph{saturation} algorithm~\citep{ciardo2001saturation}, which is
+  provided by the symbolic analysis component of
+  \textsc{PetriDotNet}~\citep{TDK2010_Darvas}. Petri nets with
+  inhibitor arcs are supported, but transitions with prioirity
+  (including non-timed transitions) cannot be used/
 
   Rewar expressions that refer to subsets of the reachable state space
-  defined by Computation Tree Logic (\textls{CTL}) are also evaluated
-  by the symbolic analysis component. Therefore, \textls{CTL} rewards
-  cannot be used with explicit state space representation algorithms.
+  defined by Computation Tree Logic
+  (\textls{CTL})~\citep{DBLP:journals/fac/HanssonJ94} are also
+  evaluated by the symbolic analysis component. Therefore,
+  \textls{CTL} rewards cannot be used with explicit state space
+  representation algorithms.
 
 \item The \emph{stochastic automata network analysis} module
   implements explicit and symbolic procedures for infinitesimal
@@ -403,7 +406,7 @@ development effort.
                                                                        $\checkmark$ & -- & $\checkmark$ \\
     \textls{IDR($s$)STAB($l$)} &
                                           p.~\pageref{ssec:algorithms:idrstab}
-      & \multicolumn{4}{c@{}}{Ongoing research} \\
+      & \multicolumn{4}{c@{}}{Work in progress} \\
     \bottomrule
   \end{tabular}
   \label{tab:overview:our:linear}
@@ -438,11 +441,11 @@ problems. Nonsingular problems are solved in steady-state sensitivity
 analysis and mean-time-to-failure analysis.
 
 The current research and development effort focuses on the integration
-of a solver based on \textls{IDR($s$)STAB($l$)} \textbf{TODO Cite}, a
-Krylov subspace algorithm which generalizes \textls{BiCGSTAB}. As the
-algorithm needs adaptation for singular matrices, it is currently not
-suitable for production use in Markovian analysis due to numerical
-breakdowns and instability.
+of a solver based on \textls{IDR($s$)STAB($l$)}%
+~\citep{sleijpen2010exploiting}, a Krylov subspace algorithm which
+generalizes \textls{BiCGSTAB}. As the algorithm needs adaptation for
+singular matrices, it is currently not suitable for production use in
+Markovian analysis due to numerical breakdowns and instability.
 
 Two solution algorithms, uniformization and \textls{TR-BDF2}
 are available for transient analysis. Accumulated rewards can be

@@ -50,14 +50,15 @@ respectively. The instances are created through an exposed static
 factory.
 
 The interfaces are generic in the element type. For
-example~\texttt{IVector<double>} and \texttt{IMatrix<double>} are used
-to work with double-precision floating point arithmetic. Due to
-language limitations, some classes must be implemented without
-genericity. In these cases, only \texttt{double} is currently
-supported, although re-implementation for single-precision floating
-point or other numeric types is trivial. The static factory handles
-selection of the appropriate non-generic type to instantiate if
-generic behavior is impossible.
+example~\texttt{IVector<\textbf{double}>} and
+\texttt{IMatrix<\textbf{double}>} are used to work with
+double-precision floating point arithmetic. Due to language
+limitations, some classes must be implemented without genericity. In
+these cases, only \texttt{\textbf{double}} is currently supported,
+although re-implementation for single-precision floating point or
+other numeric types is trivial. The static factory handles selection
+of the appropriate non-generic type to instantiate if generic behavior
+is impossible.
 
 There also exist \emph{block} versions of these interfaces,
 IBlockVector and IBlockMatrix. A block object is conceptually a
@@ -69,14 +70,15 @@ $j$th element of the $i$th block of $\vec{v}$. Hovewer, block
 interfaces do not extend from \texttt{IVector<IVector<T>>} and
 \texttt{IMatrix<IMatrix<T>>}, but a facility separate from ordinary
 indexing is provided for block access. This allows passing
-\texttt{IBlockVector<double>} and \texttt{IBlockMatrix<double>}
-objects to procedures consuming ordinary \texttt{IVector<double>} and
-\texttt{IMatrix<double>}.
+\texttt{IBlockVector<\textbf{double}>} and
+\texttt{IBlockMatrix<\textbf{double}>} objects to procedures consuming
+ordinary \texttt{IVector<\textbf{double}>} and
+\texttt{IMatrix<\textbf{double}>}.
 
-\subsection{Partials}
+\subsection{Partials, splitting and composition}
 
 Manipulations of subsequences of vector and mactrix elements, as well
-as conversion between flat and block object is performed by partial
+as conversion between flat and block object are performed by partial
 object wrappers.
 
 \begin{dfn}
@@ -110,15 +112,13 @@ manipulations.
 Block vectors and matrices may be be formed by splitting flat objects
 into blocks with partials, or by composition from unrelated objects.
 
-\subsection{Splitting and composition}
-
 \begin{dfn}
   A \emph{split} of a vector $\vec{v} \in \RR^n$ at $(n_0, n_1,
   \ldots, n_{k - 1})$ is a block vector
   \begin{equation}
     \label{eq:operations:ds:vector-split}
     \vec{v}_S \in \RR^{n_0 + n_1 + \cdots n_{k - 1}} : \vec{v}_S[i]
-    = \partialVec{v}{N_i}{1}{n_i}, \quad N_i = \sum_{j = 0}^{i - 1} n_i \text,
+    = \partialVec{v}{N_i}{1}{n_i}, \quad N_i = \sum_{j = 0}^{i - 1} n_j \text,
   \end{equation}
   where $N_0 = 0$ and $n = N_{k + 1} = n_0 + n_1 + \cdots n_{k - 1}$.
 \end{dfn}
@@ -136,7 +136,7 @@ Split matrices are defined analogously.
 \begin{dfn}
   \label{dfn:operations:ds:matrix-compose}
   If
-  $A_{0, 0}, A_{0, 1}, \ldots, A_{0, l - 1}, A_{1, 0}, \ldots A{k - 1,
+  $A_{0, 0}, A_{0, 1}, \ldots, A_{0, l - 1}, A_{1, 0}, \ldots A_{k - 1,
     l - 1}$
   are matrices such that $A_{i, j} \in \RR^{n_i, m_j}$, their
   \emph{composition}
@@ -259,7 +259,7 @@ forgoing the benefits of unmanaged allocation.
 
 Due to language limitations, \texttt{NativeVector} must be implemented
 for any primitive type desired to be used as vector
-elements. Currently, only \texttt{double} is supported.
+elements. Currently, only \texttt{\textbf{double}} is supported.
 
 The use of unmanaged memory requires manual deallocation to avoid
 memory leaks. Because the C\# language does not provide deterministic
@@ -355,9 +355,9 @@ flexible.SetPartial(6, 2, 20);
 // Ambigous, is subFlexible = vector[5:2:20][2:1:5] or vector[6:2:20][2:1:5]?
 \end{lstlisting}
 
-\texttt{FlexiblePartialVectorWrapper} alleviate allocation costs by
-providing a partial vector whose indices can be changed after
-construction. For example, if a flexible partial vector
+\texttt{FlexiblePartialVectorWrapper} alleviates allocation costs in
+inner loops by providing a partial vector whose indices can be changed
+after construction. For example, if a flexible partial vector
 $\partialVec{v}{s}{t}{m}$ is available, it can be changed to
 $\partialVec{v}{s'}{t'}{m'}$ without allocating a new instance
 whenever the need arises. The functionality is exposed to consumers
@@ -398,7 +398,7 @@ for $0 \le i < n$, $0 \le j < m$.
 If $n = m$, i.e.~$A$ is square, \texttt{MatrixDiagonalVector} may
 provide access to the diagonal of the matrix,
 \begin{equation}
-  \texttt{$A$.GetDiagonal())} = \vec{d} \in \RR^n = \RR^m, \quad
+  \texttt{$A$.GetDiagonal()} = \vec{d} \in \RR^n = \RR^m, \quad
   d[i] = a[i, j] \text.
 \end{equation}
 
@@ -479,6 +479,16 @@ of the inheritance hierarchies.
 
 \paragraph{ArrayMatrix}
 
+For smaller dense arrays with items of any value or reference type,
+\texttt{ArrayMatrix} allows storage in two-dimensional \textls{CLR}
+array.
+
+The matrix may not be larger than 2~GiB, however, this is not a
+serious limitation in practice, because processing large dense arrays
+could take extreme amounts of time.
+
+\paragraph{SparseMatrix and NativeSparseMatrix}
+
 \begin{figure}
   \centering
   \begin{minipage}{0.5\linewidth}
@@ -504,13 +514,10 @@ of the inheritance hierarchies.
   \label{fig:genstor:matrix:ccs}
 \end{figure}
 
-\paragraph{SparseMatrix and NativeSparseMatrix}
-
 Sparse matrices are stored in Compressed Column Storage (\textls{CCS})
 format, i.e.~an array or values and row indices are stored for each
-column of the matrix, as illustrated in
-\cref{fig:genstor:matrix:ccs}. This facilitates multiplication from
-left with row vectors.
+column of the matrix (\cref{fig:genstor:matrix:ccs}), in order to
+effectively perform multiplications by vectors from left.
 
 While other sparse matrix formats, such as sliced \textls{LAPACK} are
 more amenable to parallel and \textls{SIMD} processing
@@ -519,21 +526,160 @@ due to implementation simplicity and the small number of nonzero
 entries in each column of the matrix, which reduces the potential
 benefits of \textls{SIMD} implementations.
 
+The class \texttt{SparseMatrix} implements \textls{CCS} sparse
+matrices backed by \textls{CLR} arrays.
+
+Due to state space explosition, extremely large sparse matrices may be
+needed when block Kronecker decomposition is not use use. In our
+experiments in \cref{chap:evaluation}, sparse matrices up to 20~GiB
+were tested. Therefore, sparse matrices backed by unmanaged
+allocations were also implemented in the class
+\texttt{NativeSparseMatrix}.
+
+\texttt{NativeSparseMatrix} is used for all sparse matrices, including
+Kronecker factor matrices in block Kronecker decompositions. Memory
+may be freed by the \texttt{IDisposeable} pattern or
+\texttt{IBufferProvider} (see
+\vref{lst:operations:ds:dispose-vector}).
+
 \paragraph{DiagonalMatrix}
+
+For $O(n)$ storage of matrices that that have nonzero elements only
+along their diagonal, \texttt{DiagonalMatrix} provides a wrapper
+around any \texttt{IVector} containing the diagonal
+elements.
+
+Let $\vec{v} \in \RR^n$. Then we have
+\begin{equation}
+  \texttt{Matrices.Diagonal($\vec{v}$)} = \diag \{ \vec{v} \} = D \in
+  \RR^{n \times n}, \quad d[i, j] = \begin{cases}
+    v[i] & \text{if $i = j$,} \\
+    0 & \text{if $i \ne j$.}
+  \end{cases}
+\end{equation}
 
 \paragraph{NullMatrix and IdentityMatrix}
 
+Two special cases were implemented with $O(1)$ storage, zero matrices
+and identity matrices, i.e.
+\begin{gather}
+  \texttt{Matrices.Null<\textbf{double}>($n$, $m$)} = A \in \RR^{n
+    \times m}, \quad a[i, j] = 0, \\
+  \texttt{Matrices.Identity<\textbf{double}>($n$)}
+  = B \in \RR^{n \times n}, \quad b[i, j] = \delta_{i, j} =
+  \begin{cases}
+    1 & \text{if $i = j$,} \\
+    0 & \text{if $i \ne j$.}
+  \end{cases}  
+\end{gather}
+
 \paragraph{PartialMatrixWrapper}
+
+Partials of matrices written as
+$\partialMat{A}{s_1}{t_1}{m_1}{s_2}{t_2}{m_2}$ are represented as
+instances of \texttt{PartialMatrixWrapper}. The wrapper passes through
+any access after the neccessary index manipulations to the underlying
+matrix.
+
+There is no support for flexible partial matrices, that is, unlike
+vectors, the partial indexing of a matrix cannot be updated without
+creating a new instance of \texttt{IPartialMatrixWrapper}.
 
 \paragraph{PartialMaskWrapper}
 
+The \texttt{PartialMaskWrapper} class may be used to access the
+strictly upper and strictly lower triangular and diagonal parts of a
+matrix. In addition, the mask flags may be combined arbitrarily to
+yield upper and lower triangular parts of matrices including the
+diagonal and also the off-diagonal part.
+
 \paragraph{NormalizedLinearSystemWrapper}
+
+The normalized linear system wrapper replaces the last column of a
+matrix with the vector of all ones $\vec{1}$. If $A \in \RR^{n \times
+  m}$,
+\begin{equation}
+  \texttt{$A$.ToNormalizedLinearSystem()} = \widehat{A} \in \RR^{n \times
+    m}, \quad \hat{a}[i, j] =
+  \begin{cases}
+    1 & \text{if $j = m - 1$,} \\
+    a[i, j] & \text{if $j \ne m - 1$.}
+  \end{cases}
+\end{equation}
+
+If $A$ is an $n \times n$ matrix of rank $n  - 1$ (i.e.~its nullity is
+$1$) the system of linear equations
+\begin{equation}
+  \vec{x} A = \vec{1}, \quad \vec{x} \vec{1}^\T = 1
+\end{equation}
+may be replaced with
+\begin{equation}
+  \vec{x} \widehat{A} = \vec{e}_{n - 1},
+\end{equation}
+because $A$ contains a redundant column due to its rank
+deficiency. The vector $\vec{e}_{n - 1}$ may be realized as an
+\texttt{IdentityVector}.
 
 \paragraph{LinearCombinationMatrix}
 
+Linear combinations of matrices may be stored as an instance of
+\texttt{LinearCombinationsMatrix} that contains a sequence of
+\texttt{WeightedMatrix} instances, which are pairs of \texttt{IMatrix}
+objects a double-precision floating point scaling factors. In our
+current implementation, only linear combinations of
+\texttt{IMatrix<\textbf{double}>} are supported.
+
+If $A_0, A_1, \ldots, A_{k - 1} \in \RR^{n \times m}$ and $w_0, w_1,
+\ldots, w_{k - 1} \in \RR$,
+\begin{equation}
+  \begin{multlined}[12cm]
+    \texttt{Matrices.LinearCombination($A_0$.WithWeight($w_0$),} \\[1ex]
+    \texttt{$A_1$.WithWeight($w_1$), $\ldots$, $A_{k - 1}$.WithWeight($w_{k -
+      1}$))} = \\
+  w_0 A_0 + w_1 A_1 + \cdots + w_{k - 1} A_{k - 1} \in \RR^{n \times
+    m} \text.
+  \end{multlined}
+\end{equation}
+
+As an optimization, a term of type \texttt{DiagonalMatrix} in the
+linear combination may be designated as the \emph{diagonal} if no
+other term contains diagonal elements. In this case, methods to access
+the diagonal of the linear combination matrix will return the
+designated term instead of \texttt{MatrixDiagonalVector} and
+\texttt{PartialMaskWrapper} wrapper objects.
+
 \paragraph{KroneckerMatrix}
 
-\section{Expression trees}
+\texttt{KroneckerMatrix} allows the representations of Kronecker
+products of matrices as expressions similar to
+\texttt{LinearCombinationMatrix} for linear combinations.
+More concretely,
+\begin{equation}
+  \texttt{Matrices.KroneckerProduct($A_0$, $A_1$, $\ldots$, $A_{J -
+      1}$)} = A_0 \krtimes A_1 \krtimes \cdots \krtimes A_{J - 1}
+  \text,
+\end{equation}
+where $A_0, A_1, \ldots, A_{J - 1}$ are matrices of possibly different
+sizes.
+
+As the Kronecker product is not explicitly computed, very large
+matrices may be expressed with this method in relatively little space.
+
+\paragraph{Block matrices}
+
+The classes \texttt{MatrixSplitWrapper} and \texttt{BlockMatrix} may
+be used for blockwise storage and access of matrices in ways similar
+to \texttt{VectorSplitWrapper} and \texttt{BlockVector}.
+
+Diagonals and triangular parts of block matrices in $\RR^{(n_0 + n_1 +
+  \cdots + n_{k - 1}) \times (m_0 + m_1 + \cdots + m_{l - 1})}$ may
+only be requested if $k = l$ and $n_i = m_i$ for all $i = 0, 1,
+\ldots, k - 1$, i.e.~when the rows and columns of the matrix have the
+same blocking partition. This always occurs if the matrices describe
+transitions between states of a Markov chain, therefore, it poses no
+practical limitation.
+
+\subsection{Expression trees}
 
 \begin{figure}
   \centering
@@ -574,6 +720,249 @@ opeartional primitives is also straightforward. The data structure
 forms a flexible basis for the development of stochastic analysis
 algorithms with decomposed matrix representations.
 
+\section{Operations}
+
+The operation framework achieves decoupling between the data structure
+and operations by reifying low-level linear algebra manipulations as
+\emph{operation} objects.
+
+In contrast to numerical solution algorithms, these operations are
+specific to their argument types. For example, the multiplication of a
+\texttt{NativeVector} with a matrix stored as a Kronecker product
+might be served by a different operation object that the
+multiplication by a \texttt{SparseMatrix}. In addition, dispatch logic
+may take other runtime properties into account, such as selecting a
+parallel implementation for multiplication only if the vector is long
+enough.
+
+\subsection{Operation declarations}
+
+Operations have a \emph{base} (B) argument, and optionally one or
+both of \emph{operand} (O) and \emph{target} (T)
+arguments. Syntactically, operation calls are represented as methods
+of the base object.
+
+The target of the operation is the vector or matrix that gets modified
+by the operation. \emph{In-place} execution of operations refers to
+the usage when the base and the target are equal. It is also possible
+that the operations has no other argument that its base, for example,
+the clearing of a vector by filling it with zeroes uses only a
+base. Then the base of the operation will be modified, similar to
+in-place use.
+
+Extra (E) operation arguments may include a \texttt{\textbf{double}}
+scaling factor $\lambda$ and various indices for operations
+manipulating parts of vectors and matrices. Operations that return a
+value are also possible.
+
+\begin{lstlisting}[float,caption={\textls{DSL} for operation
+    declarations (excerpt).},label=lst:operations:op:operationname]
+public enum OperationName
+{
+    // Operation with base, operand, target and scale factor.
+    [OperationAlias("Add")]
+    [OperationArguments(typeof(IVector<>), typeof(IVector<>), typeof(IVector<>), ExtraOperationArguments.ScaleFactor)]
+    VectorAdd,
+
+    // Operation with only base and extra argument.
+    [OperationAlias("Clear")]
+    [OperationArguments(typeof(IVector<>), Extra = ExtraOperationArguments.Length)]
+    VectorClearFirstN,
+
+    // Operation that returns a value of the vector element type.
+    [OperationAlias("Sum")]
+    [OperationArguments(typeof(IVector<>), Return = typeof(TheGenericArgument))]
+    VectorSumElements,
+}
+\end{lstlisting}
+
+Operations are specified using an Domain Specific Language
+(\textls{DSL}) embededd into the C\# programming language. An excerpt
+of the operation declarations is shown in
+\cref{lst:operations:op:operationname}.
+
+\begin{lstlisting}[float,caption={An example interface generated by
+    the \texttt{T4} template.},label=lst:operations:op:interface]
+public interface IVectorAddOperation<T>
+{
+    void Invoke(PDN.Analysis.Common.Math.Vector.IVector<T> @base, PDN.Analysis.Common.Math.Vector.IVector<T> operand, PDN.Analysis.Common.Math.Vector.IVector<T> target, double scaleFactor);
+}
+\end{lstlisting}
+
+The operation declarations are processed with a Microsoft Text
+Template Transformation Toolkit (\textls{T4}) template~\citep{T4}. The
+template genrates interfaces to be implemented by the operation
+classes (\cref{lst:operations:op:interface}). In addition, a dispatch
+logic stub is created in the \texttt{OperationContext}, which is the
+class that dispatches operation invocations.
+
+\begin{table}
+  \caption{Linear algebra operations supported by our framework with
+    their base (B), operand (O), target (T) and extra (E)
+    arguments. Operations marked with a star (*) are syntactic sugars
+    implemented in terms of other operations.}
+  \centering
+  \begin{tabular}{@{}lc@{\,}c@{\,}c@{\,}cl@{}}
+    \toprule
+    Category and operation & B & O & T & E & Description \\
+    \midrule
+    \OperationPrefix{Vector}
+    \OperationDesc{Add}{$\vec{b}$}{$\vec{o}$}{$\vec{t}$}{$\lambda$}{%
+    $\vec{t} \gets \vec{b} + \lambda \vec{o}$}
+    \OperationDesc{Scale}{$\vec{b}$}{$-$}{$\vec{t}$}{$\lambda$}{%
+    $\vec{t} \gets \lambda \vec{b}$}
+    \OperationDesc{Accumulate}{$\vec{b}$}{$-$}{$\vec{t}$}{$\lambda$}{%
+    $\vec{t} \gets \vec{t} + \lambda \vec{b}$}
+    \OperationSugarDesc{Set}{$\vec{b}$}{$\vec{o}$}{$-$}{$-$}{%
+    $\vec{b} \gets \vec{o}$}
+    \OperationDesc{ElementwiseMultiply}{$\vec{b}$}{$\vec{o}$}{$\vec{t}$}{$-$}{%
+    $t[i] \gets b[i] \cdot o[i]$}
+    \OperationDesc{AccumulateElementwiseMultiply}{$\vec{b}$}{$\vec{o}$}{$\vec{t}$}{$\lambda$}{%
+    $t[i] \gets t[i] + \lambda \cdot b[i] \cdot o[i]$}
+    \OperationDesc{Clear}{$\vec{b}$}{$-$}{$-$}{$-$}{%
+    $\vec{b} \gets \vec{0}$}
+    \OperationDesc{ClearFirstN}{$\vec{b}$}{$-$}{$-$}{$n$}{%
+    $\partialVec{b}{0}{1}{n} \gets \vec{0}$}
+    \OperationDesc{ScalarProduct}{$\vec{b}$}{$\vec{o}$}{$-$}{$-$}{%
+    return $\vec{b} \cdot \vec{o}$}
+    \OperationDesc{Sum}{$\vec{b}$}{$-$}{$-$}{$-$}{%
+    return $\sum_{i = 0}^{n} b[i] = \vec{b} \cdot \vec{1}$}
+    \OperationDesc{L1Norm}{$\vec{b}$}{$-$}{$-$}{$-$}{%
+    return $\sum_{i = 0}^{n} \lvert b[i] \rvert = \| \vec{b} \|_1$}
+    \OperationSugarDesc{L2Norm}{$\vec{b}$}{$-$}{$-$}{$-$}{%
+    return $\sqrt{\vec{b} \cdot \vec{b}} = \| \vec{b} \|_2$}
+    \OperationPrefix{Matrix}
+    \OperationDesc{Add}{$B$}{$O$}{$T$}{$\lambda$}{%
+    $T \gets B + \lambda O$}
+    \OperationDesc{Scale}{$B$}{$-$}{$T$}{$\lambda$}{%
+    $T \gets \lambda B$}
+    \OperationDesc{Accumulate}{$B$}{$-$}{$T$}{$\lambda$}{%
+    $T \gets T + \lambda B$}
+    \OperationSugarDesc{Set}{$B$}{$O$}{$-$}{$-$}{%
+    $B \gets O$}
+    \OperationDesc{Clear}{$B$}{$-$}{$-$}{$-$}{%
+    $B \gets \text{the zero matrix}$}
+    \OperationPrefix{VectorMatrix}
+    \OperationDesc{MultiplyFromLeft}{$B$}{$\vec{o}$}{$\vec{t}$}{$-$}{%
+    $\vec{t} \gets \vec{o} B$}
+    \OperationDesc{AccumulateMultiplyFromLeft}{$B$}{$\vec{o}$}{$\vec{t}$}{$\lambda$}{%
+    $\vec{t} \gets \vec{t} + \lambda \vec{o} B$}
+    \OperationDesc{MultiplyFromRight}{$B$}{$\vec{o}$}{$\vec{t}$}{$-$}{%
+    $\vec{t} \gets B \vec{o}$}
+    \OperationDesc{AccumulateMultiplyFromRight}{$B$}{$\vec{o}$}{$\vec{t}$}{$\lambda$}{%
+    $\vec{t} \gets \vec{t} + \lambda B \vec{o}$}
+    \OperationDesc{ScalarProductWithColumn}{$B$}{$\vec{o}$}{$-$}{$j$}{%
+    return $\vec{b}[\cdot, j] \cdot \vec{o}$}
+    \bottomrule
+  \end{tabular}
+  \label{tab:operations:operations}
+\end{table}
+
+The declared operations are summarised in
+\cref{tab:operations:operations}.
+
+Some operations are special cases of others, for example,
+\operationname[Vector]{ElementwiseMultiply} may be implemented in terms of
+\operationname[Vector]{Clear} and
+\operationname[Vector]{AccumulateElementwiseMultiply}. However, a
+non-orthogonal set operations was defined to handle special cases such
+as in-place execution. In addition, the non-orthogonality allows
+more easier overloading in specific bottleneck scenarios identified by
+profiling.
+
+\subsection{Binding of operations to the data structure}
+
+Operations are declared on the interface of the base object as
+methods. Therefore, the call to an operation is syntactically
+equivalent to a method call. This gives the opportunity to use a
+friendlier naming and parameter order on the interfaces than the
+scrict base-operand-target conventions used by the operation
+declrations.
+
+The interface is augmented with a \emph{contract class} which
+describes the pre- and postconditions of the operation. The Microsoft
+Code Contracts~\citep{CodeContracts} runtime verification engine
+inserts assertions into the output of the compiler if the library is
+compiled in Debug mode. However, no assertions are inserted in Release
+mode, thus performance penalties are averted in production.
+
+The base classes \texttt{AbstractVector} and \texttt{AbstractMatrix}
+contain a reference to their \texttt{OperationContext}. Operations are
+executed by delegation to the context, which contains the dispatch
+logic, partly generated by the T4 template from the operation
+declaration \textls{DSL}, partly configured at runtime.
+
+\begin{lstlisting}[float,caption={Delegation of operations to the
+    context (excerpt).},label=lst:operations:op:delegation]
+[ContractClass(typeof(VectorContract<>))]
+public interface IVector<T> : IEnumerable<T>
+{
+    // Method declaration on the interface with friendlier naming.
+    IVector<T> Add(IVector<T> toAdd, IVector<T> resultTarget, double scaleFactor = 1);
+}
+
+[ContractClassFor(typeof(IVector<>))]
+abstract class VectorContract<T> : IVector<T>
+{
+    // Declaration of preconditions.
+    IVector<T> IVector<T>.Add(IVector<T> toAdd, IVector<T> resultTarget, double scaleFactor)
+    {
+        Contract.Requires(toAdd != null);
+        Contract.Requires(resultTarget != null);
+        Contract.Requires(toAdd.Length == ((IVector<T>)this).Length);
+        Contract.Requires(resultTarget.Length >= ((IVector<T>)this).Length);
+        throw new NotImplementedException();
+    }
+}
+
+abstract class AbstractVector<T> : IVector<T>
+{
+    OperationContext OperationContext { get; set; }
+
+    // Delegation to the OperationContext.
+    public virtual IVector<T> Add(IVector<T> toAdd, IVector<T> resultTarget, double scaleFactor = 1)
+    {
+        OperationContext.Add(this, toAdd, resultTarget, scaleFactor);
+        return resultTarget;
+    }
+}
+\end{lstlisting}
+
+The contract and delegation process is illustrated in
+\cref{lst:operations:op:delegation}.
+
+Another domain specific language describe the dispatch logic of
+operations, which is referred to as the \emph{operation
+  configuration}. The calls are dispateched to objects implementing
+the interfaces generated from the operations declarations, such as the
+one shown in \cref{lst:operations:op:interface}.
+
+The dispatch logic is compiled into .\textls{NET} \textls{IL} bytecode
+for fast execution. The dispatch logic may be changed at runtime
+between executions of higher level algorithms.
+
+Current, two operation configurations are exposed readily on the
+public interface of the library.
+\begin{itemize}
+\item The \emph{Parallel} operation configuration uses the thread pool
+  to utilize multiple \textls{CPU} cores.
+\item The \emph{Sequential} operation configuration does not use
+  multiple thread, therefore it is suitable for use with algorithms
+  that handle multithreaded execution via other means.
+\end{itemize}
+
+Additional operations configurations may be developed with the public
+\textls{API} of the library. Thus, the characteristics of the model
+and the executing harware may be considered on the linear algebra
+operation level in addition to the numerical algorithm level in
+advanced stochastic analysis scenarios.
+
+The flexible dispatch logic allows the identification of calculation
+hotspots via profiling, such that a specific operation implementation
+may be created and used to improve performance. If the specific
+implementation degrades performance of some algorithms, it can be
+switched off by replacing the operation configuration.
+
 \subsection{Efficient vector-matrix products}
 \label{sec:algorithms:vector-matrix}
 
@@ -585,10 +974,11 @@ algorithms with decomposed matrix representations.
         1}}$}
   \KwAllocate{$\vec{c}\in \RR^{m_0 + m_1 + \cdots + m_{l - 1}}$}\;
   \ParFor{$j \gets 0$ \KwTo $l - 1$}{
-    $\vec{c}[j] \gets \vec{0}$\;
+    $\vec{c}[j] \gets \vec{0}$
+    \Operation*{VectorClear}
     \For{$i \gets 0$ \KwTo $k - 1$}{
       $\vec{c}[j] \gets \vec{c}[j] + \vec{b}[i] A[i, j]$
-      \tcp*{Scaled addition of vector-matrix product}
+      \Operation*{VectorMatrixAccumulateMultiplyFromLeft}
     }
   }
   \caption{Parallel block vector-matrix product.}
@@ -599,11 +989,11 @@ algorithms with decomposed matrix representations.
   \KwIn{$\vec{b} \in \RR^n$, $A = \nu_0 A_0 + \nu_1 A_1 + \cdots +
     \nu_{k - 1} A_{k - 1}$, where $A_h \in \RR^{n \times m}$}
   \KwOut{$\vec{c} = \vec{b} A \in \RR^m$}
-  \KwAllocate{$\vec{c} \in \RR^m$ if no target buffer is provided}\;
-  $\vec{c} \gets \vec{0}$\;
+  $\vec{c} \gets \vec{0}$
+  \Operation*{VectorClear}
   \For{$h \gets 0$ \KwTo $k - 1$}{
     $\vec{c} \gets \nu_h \cdot \vec{b} A_h$
-    \tcp*{In-place scaled addition of vector-matrix product}
+    \Operation*{VectorMatrixAccumulateMultiplyFromLeft}
   }
   \KwRet{$\vec{c}$}\;
   \caption{Product of a vector with a linear combination matrix.}
@@ -620,19 +1010,21 @@ algorithms with decomposed matrix representations.
     0}^h m_f \prod_{f = h + 1}^{k - 1} n_f$\;
   \KwAllocate{$\vec{x}, \vec{x}'$ with at least $\textit{tempLength}$
     elements}\;
-  $\vec{x}[0{:}1{:}n] \gets \vec{b},\quad
-  i_{\text{left}} \gets 1,\quad
-  i_{\text{right}} \gets \prod_{h = 1}^{k - 1} n_h$\;
+  $\vec{x}[0{:}1{:}n] \gets \vec{b},
+  i_{\text{left}} \gets 1,
+  i_{\text{right}} \gets \prod_{h = 1}^{k - 1} n_h$
+  \Operation*{VectorSet}
   \For{$h \gets 0$ \KwTo $k - 1$}{
     \If{$\loc{A}{h}$ is not an identity matrix}{
       $i_{\text{base}} \gets 0, j_{\text{base}} \gets 0$\;
       \For{$\textit{il} \gets 0$ \KwTo $i_{\text{left}} - 1$}{
         \label{ln:algorithms:matmul:shuffle:innerloop}
         \For{$\textit{ir} \gets 0$ \KwTo $i_{\text{right}} - 1$}{
+          \Operation{VectorMatrixMultiplyFromLeft}
           $\vec{x}'[j_{\text{base}}{:}m_h{:}i_{\text{right}}] \gets
-          \vec{x}[i_{\text{base}}{:}n_h{:}i_{\text{right}}] \loc{A}{h}$\;
+          \vec{x}[i_{\text{base}}{:}n_h{:}i_{\text{right}}] \, \loc{A}{h}$\;
           $i_{\text{base}} \gets i_{\text{base}} + n_h
-          i_{\text{right}},\quad
+          i_{\text{right}},
           j_{\text{base}} \gets j_{\text{base}} + m_h
           i_{\text{right}}$\;
         }
@@ -655,45 +1047,37 @@ vector-matrix multiplication algorithms are required for the various
 matrix storage methods (i.e.~dense, sparse and block Kronecker
 matrices) to support configurable stochastic analysis.
 
-Our data structure supports run-time reconfiguration of operations,
-for example, to switch between parallel and sequential matrix
-multiplication implementations for different parts of an
-algorithm, depending on the characteristics of the model and the
-hardware which runs the analysis.
+In this section, we present the operations developed in our framework
+for vector-matrix multiplication. In addition, an example of the
+complex dispatch logic made possible by the operation context
+mechanism is described.
 
-Implemented matrix multiplication for the data structure
-(see~\vref{fig:genstor:kronecker:datastructure}) routines are
+Implemented matrix multiplication routines for the data structure
+(see~\vref{fig:genstor:kronecker:datastructure}) with a base and a
+target vector include
 \begin{itemize}
-\item Multiplication of vectors with dense and sparse matrices. Sparse
-  matrix multiplication may be parallelized by splitting the columns
-  of the matrix into chunck and submitting each chunk to the executor
-  thread pool.
+\item Multiplication of vectors with dense and sparse matrices with
+  and without paralellization.
 
-  Operations with vectors and sparse matrices are implemented in an
-  \texttt{unsafe}%
-  \footnote{\url{https://msdn.microsoft.com/en-us/library/chfa2zb8.aspx}}
-  context. The elements of the data structures are not under the
-  influence of the Garbage Collector runtime, but stored in natively
-  allocated memory. This allows the handling of large matrices without
-  adversely impacting the performance of other parts of the program,
-  albeit the cost of allocations in increased.
+  If parallel execution is desired, vectors are partitioned into
+  chunks of length equal to a \emph{blocking factor}. Multiplications
+  involving each chunk are executed on the thread pool provided by the
+  .\textls{NET} Common Language Runtime.
+\item If one of the vectors is a \texttt{VectorSplitWrapper} but the
+  matrix is not a block matrix, the vector must be \emph{unwrapped}
+  first and the dispatch should be repeated.
 \item Multiplication with block matrices by delegation to the
   constituent blocks of the matrix%
   ~(\vref{alg:algorithms:matmul:block}). The input and output vectors
   are converted to block vectors before multiplication. If parallel
   execution is required, each block of the output vector can be
   computed in a different task, since it is independent from the
-  others.
+  others. If the operand and target vectors are not block vectors, a
+  \texttt{VectorSplitWrapper} must be created first.
 \item Multiplication by a linear combination of matrices is delegated
-  to the constituent matrices
-  (\vref{alg:algorithms:matmul:lincomb}). An in-place scaled addition
-  of vector-matrix product to a vector operation is required for this
-  delegation. To facilitate this, each vector-matrix multiplication
-  algorithm is implemented also as an in-place addition and in-place
-  scaled addition of vector-matrix product, and the appropriate
-  implementation is selected based on the function call aruments.
+  to the constituent matrices (\vref{alg:algorithms:matmul:lincomb}).
 \item Multiplications $\vec{b} \cdot \diag\{\vec{a}\}$ by diagonal
-  matrices are executed as elementwise product
+  matrices are executed as elementwise theproduct
   $\vec{b} \eltimes \vec{a}$. The special case of multiplication by an
   identity matrix is equivalent to a vector copy.
 \item Multiplications by Kronecker products is performed by the
@@ -701,12 +1085,16 @@ Implemented matrix multiplication for the data structure
   \citep{DBLP:journals/informs/BuchholzCDK00,benoit2001memory} as
   shown in \vref{alg:algorithms:matmul:shuffle}.
 
-  The algorithm requires access to slices of a vector, denoted as
-  $\vec{x}[i_0{:}s{:}l]$, which refers to the elements
-  $x[i], x[i + s], x[i + 2s], \ldots, x[i + (l - 1)s]$. Thus, slices
-  were integrated into the operations framework as first-class
-  elements, and multiplication algorithms are implemented with support
-  for vector slice indexing.
+  The algorithm requires access to partial slices of a vector
+  $\partialVec{x}{s}{t}{m}$. As a sliding window of partial vectors is
+  used, the multiplication uses flexible partial vectors to avoid
+  repeated object construction in the inner loop. If both vectors are
+  \texttt{NativeVector} and the Kronecker product only contains
+  identity matrices and \texttt{NativeSparseMatrix} instances, a
+  specialized subroutine is used which performs pointer arithmetic
+  directly without the use of partial vectors. This is an example of
+  an optimization that was added after profiling the computation of
+  vector-matrix products.
 
   \textsc{Shuffle} rewrites the Kronecker products as
   \begin{equation}
@@ -732,3 +1120,5 @@ Implemented matrix multiplication for the data structure
   more amenable to parallel execution than \textsc{Shuffle}. Their
   implementation is in the scope of our future work.
 \end{itemize}
+Multiplication of a matrix with a vector from the right is implemented
+similarly.
