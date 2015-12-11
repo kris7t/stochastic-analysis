@@ -1,11 +1,9 @@
 \begin{otherlanguage}{magyar}
 
-  \paragraph*{Összefoglaló}
+  \paragraph*{Kivonat}
   \phantomsection
-  \addcontentsline{toc}{chapter}{Összefoglaló}
+  \addcontentsline{toc}{chapter}{Kivonat}
   \thispagestyle{plain}
-
-  \textbf{TODO}
 
   A kritikus rendszerek --~biztonságkritikus,
   elosztott és felhőalkalmazások~-- helyességének
@@ -20,7 +18,8 @@
   komplexitásuk gyakran megakadályozza a sikeres sztochasztikus
   analízist, melynek számításigénye nagyban függ a lehetséges
   viselkedések számától. A modellek komponenseinek jellegzetes időbeli
-  viselkedése a számításigény további jelentős növekedését okozhatja.
+  viselkedése és leginkább eltérő karakterisztikája a számításigény
+  további jelentős növekedését okozhatja.
 
   A szolgáltatásbiztonsági és teljesítményjellemzők kiszámítása
   markovi modellek állandósult állapotbeli és tranziens megoldását
@@ -29,33 +28,24 @@
   a modellek változatos tulajdonságai miatt nem választható ki olyan
   eljárás, mely minden esetben hatékony lenne.
 
-  A markovi analízishez szükséges a modell lehetséges viselkedéseinek,
-  azaz állapotterének felderítése, illetve tárolása, mely szimbolikus
-  módszerekkel hatékonyan végezhető el. Ezzel szemben a sztochasztikus
-  algoritmusokban használt vektor- és indexműveletek szimbolikus
-  megvalósítása nehézkes. Munkánk célja egy olyan, integrált
-  keretrendszer fejlesztése, mely lehetővé teszi a komplex
-  sztochasztikus rendszerek kezelését a szimbolikus módszerek,
-  hatékony mátrix reprezentációk és numerikus algoritmusok előnyeinek
-  ötvözésével.
+  A dolgozatban bemutatjuk az irodalomban ismert, markovi
+  sztochasztikus rendszerek állandósult állapotbeli és tranziens
+  viselkedésének vizsgálatára alkalmas numerikus algoritmusokat. Az
+  algoritmusokat konfigurálható adatstruktúrával és lineáris algebrai
+  műveletekkel valósítottuk meg.
 
-  Egy teljesen szimbolikus algoritmust javasolunk a sztochasztikus
-  viselkedéseket leíró mátrix-dekompozíciók előállítására a
-  szimbolikus formában adott állapottérből kiindulva. Ez az eljárás
-  lehetővé teszi a temporális logikai kifejezéseken alapuló
-  szimbolikus technikák használatát.
+  A bevezetett konfigurálható sztochasztikus analízis keretrendszer
+  lehetővé teszi a sztochasztikus viselkedéseket leíró különböző
+  mátrix-dekompozíciók és az analízis algoritmusok használatát
+  állandósult állapotbeli, tranziens, első hiba várható idő és
+  érzékenységvizsgálatok elvégzésére. Az elkészített eszközt
+  integráltuk a \textsc{PetriDotNet} modellező szoftverrel.
 
-  A keretrendszerben megvalósítottuk a konfigurálható sztochasztikus
-  analízist: megközelítésünk lehetővé teszi a különböző
-  mátrix reprezentációk és numerikus algoritmusok kombinált
-  használatát. Az implementált algoritmusokkal állandósult állapotbeli
-  költség- és érzékenység analízis, tranziens költséganalízis és első
-  hiba várható bekövetkezési idő analízis végezhető el sztochasztikus
-  Petri-háló~\paren{\textls{SPN}} alapú markovi költségmodelleken. Az
-  elkészített eszközt integráltuk a \textsc{PetriDotNet} modellező
-  szoftverrel. Módszerünk gyakorlati alkalmazhatóságát szintetikus és
-  ipari modelleken végzett mérésekkel igazoljuk.
+  Módszerünk gyakorlati alkalmazhatóságát szintetikus és ipari
+  modelleken végzett mérésekkel igazoljuk.
 
+  \paragraph{Kulcsszavak} aszinkron rendszerek, teljesítményvizsgálat,
+  sztochasztikus modell, numerikus módszerek, érzékenységvizsgálat
 \end{otherlanguage}
 
 \cleardoublepage
@@ -87,29 +77,24 @@ the models or in the applied numerical algorithms. The efficiency of
 these approaches are influenced by various characteristics of the
 models, therefore no single best approach is known.
 
-The prerequisite of Markovian analysis is the exploration of the state
-space, i.e.~the possible behaviors of the system. Symbolic approaches
-provide an efficient state space exploration and storage technique,
-however their application to support the vector operations and index
-manipulations extensively used by stochastic algorithms is cumbersome.
+In this thesis we present numerical solution algorithms for the steady
+state and transient analysis of Markovian models. Various algorithms
+were implemented with configurable data structure and linear algebra
+operations.
+
+Our framework provides configurable stochastic analysis: an approach
+is introduced to combine different matrix representations of stochastic
+behaviors with numerical solution algorithms for steady-state,
+transient, mean-time-to-first-failure and sensitivity problems. 
+
 The goal of our work is to introduce a framework that facilitates the
-analysis of complex, stochastic systems by combining the
-advantages of symbolic algorithms, compact matrix representations and
-various numerical algorithms.
+analysis of complex, stochastic systems by combining the advantages of
+compact matrix representations and various numerical algorithms. The
+analysis tool is integrated into the \textsc{PetriDotNet} modeling
+application.
 
-We propose a fully symbolic method to explore and describe the
-stochastic behaviors. A new algorithm is introduced to transform the
-symbolic state space representation into a decomposed linear algebraic
-representation. This approach allows leveraging existing symbolic
-techniques, such as the specification of properties with
-\emph{Computational Tree Logic}~\paren{\textls{CTL}} expressions.
+Benchmarks and industrial case studies are used to evaluate the
+applicability of our approach.
 
-The framework provides configurable stochastic analysis: an approach
-is introduced to combine the different matrix representations with
-numerical solution algorithms. Various algorithms are implemented for
-steady-state reward and sensitivity analysis, transient reward
-analysis and mean-time-to-first-failure analysis of stochastic models
-in the \emph{Stochastic Petri Net}~\paren{\textls{SPN}} based Markov reward
-model formalism. The analysis tool is integrated into the \textsc{PetriDotNet}
-modeling application.  Benchmarks and industrial case studies are used
-to evaluate the applicability of our approach.
+\paragraph{Keywords} asynchronous systems, performance analysis,
+stochastic model, numeric methods, sensitivity analysis

@@ -1,2 +1,96 @@
 \chapter{Introduction}
-\label{chap:intro}
+\label{chap:introduction}
+
+The growing need for ensuring the correctness of critical systems
+--~such as safety-critical, distributed and cloud applications~--
+requires the rigorous analysis of the functional and extra-functional
+properties.  A large class of typical quantitative questions regarding
+dependability and performability are usually addressed by stochastic
+analysis.
+
+Recent critical systems are often distributed/asynchronous, leading to
+the well-known phenomenon of \emph{state space explosion}. The size
+and complexity of such systems often prevents the success of the
+analysis due to the high sensitivity to the number of possible
+behaviors. In addition, temporal characteristics of the components can
+easily lead to huge computational overhead or prevent algorithms from
+convergence.
+
+Calculation of dependability and performability measures can be
+reduced to steady-state and transient solutions of Markovian
+models. Various approaches are known in the literature for these
+problems differing in the representation of the stochastic behavior of
+the models or in the applied numerical algorithms. The efficiency of
+these approaches are influenced by various characteristics of the
+models, therefore no single best approach is known.
+
+In this paper our goal is to propose a numerical backed for the
+solution of the various problems occurring in stochastic analysis of
+complex systems.
+
+In \cite{TDK2015_Klenik_Marussy} we introduced the concept of
+configurable stochastic analysis. We developed a framework to support
+the combination of
+\begin{itemize}
+\item various state space exploration techniques with
+\item decomposition algorithms and representation
+  techniques for the stochastic behavior of the systems 
+\item various numerical algorithms to solve the steady-state and
+  transient analysis problem,
+\item computation of high level measures such as various reward,
+  sensitivity and mean time to failure values.
+\end{itemize}
+
+Various problems were solved during our work: an approach is
+introduced to combine the different matrix representations with
+numerical solution algorithms. The approach consists of a flexible
+data structure, which is complemented by a set of linear algebra
+operations configurable at runtime.
+
+A diverse set of algorithms are implemented for steady-state reward
+and sensitivity analysis, transient reward analysis and
+mean-time-to-first-failure analysis of stochastic models. Several
+optimizations and improvements were applied to provide efficient
+algorithms. Most of the developed algorithms are parallelized to
+exploit the modern multicore architectures. Benchmarks and industrial
+case studies are used to evaluate the applicability of our approach.
+
+The algorithm development and optimization includes preliminary work
+on integrating the \textls{IDR}($s$)\textls{STAB}($\ell$) numerical
+linear equations solver into our stochastic analysis framework,
+including modifications and tuning for matrices arising in
+steady-state Markovian analysis problems. To our best knowledge, ours
+is the first preliminary result in this area.
+
+The analysis framework is integrated into the \textsc{PetriDotNet}
+modeling application for stochastic models in the \emph{Stochastic
+  Petri Net}~\paren{\textls{SPN}} formalism.
+
+More than $78\,000$ unit tests are generated with a combinatorial
+interface testing approach to ensure the correctness of the data
+structure. To validate the stochastic analysis pipeline and the
+implemented algorithms through software redundancy, $588$
+mathematically consistent configurations of the pipeline are executed
+and evaluated for several models. More than $150$ benchmark runs were
+performed with large models and industrial case studies to gather
+information about the performance and memory utilization
+characteristics of the analysis tool. In addition, $10\,000$ shorter
+benchmark runs were used to study the convergence behavior of our
+modification of the \textls{IDR}($s$)\textls{STAB}($\ell$) algorithm.
+
+The remainder of this work is structured as follows:
+\Cref{chap:background} reviews some preliminaries of the stochastic
+analysis of stochastic Petri nets. \Cref{chap:overview} presents the
+configurable stochastic analysis pipeline and its numerical
+backend. \Cref{chap:operations} describes the developed data structure
+and configurable linear algebra operations. \Cref{chap:algorithms}
+presents numerical steady-state and transient analysis algorithms and
+their implementations in our framework, with special attention to the
+homogeneous linear equation systems arising from steady-state
+analysis. In \vref{ssec:algorithms:krylov}, we present the Krylov
+subspace solvers utilized, including our preliminary work integrating
+\textls{IDR}($s$)\textls{STAB}($\ell$) on
+page~\pageref{ssec:algorithms:idrstab}. After describing the testing
+and validation methodologies applied to our framework in
+\cref{chap:evaluation} as well as the benchmark results, we conclude
+our thesis in \cref{chap:conclusion}.

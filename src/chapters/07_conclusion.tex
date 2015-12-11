@@ -1,49 +1,42 @@
 \chapter{Conclusion and future work}
 \label{chap:conclusion}
 
-\textbf{TODO}
+We have developed and presented our numeric backend to the
+\emph{configurable stochastic analysis framework} for the
+dependability, reliability and performability analysis of complex
+asynchronous systems.  Our presented approach is able to combine the
+strength and advantages of the different algorithms and data
+structures into one framework. Various optimization techniques were
+used during the development and many of the algorithms are
+parallelized to exploit the advantages of modern mulitcore processor
+architectures.
 
-We have developed and presented our \emph{configurable stochastic
-  analysis framework} for the dependability, reliability and
-performability analysis of complex asynchronous systems.  Our
-presented approach is able to combine the strength and advantages of
-the different algorithms into one framework.  We have not only
-implemented a stochastic analysis library, but we integrated the
-various state space traversal, generator matrix representation and
-numerical analysis algorithms together. Various optimization
-techniques were used during the development and many of the algorithms
-are paralellized to exploit the advantages of modern mulitcore
-processor architectures.
+From the theoretical side, we have obtain preliminary results in the
+adaptation of the state-of-the-art
+\textls{IDR}($s$)\textls{STAB}($\ell$) algorithm to steady-state
+stochastic analysis tasks for integration into the framework.
 
-From the theoretical side, we have developed an algorithm which can
-efficiently compile the symbolic state space representation into the
-complex data structure representation of the stochastic process. We
-have formalised our algorithm and proved its correctness. 
-This new algorithm helps us to exploit the efficient state space
-representation of symbolic algorithms in stochastic analysis.
-
-In addition
-we have investigated the composability of the various data storage,
-numerical solution and state space representation techniques and
-combined them together to provide configurable stochastic analysis
-in our framework.
+In addition we have investigated the composability of the various data
+storage, numerical solution and infinitesimal generator matrix
+representation techniques and combined them together to provide
+configurable stochastic analysis in our framework.
 
 Extensive investigation was executed in the field to be able to
-develop more than 2 state space exploration algorithms, 3 state space
-representation algorithms, 3 generator matrix decomposition and
-representation algorithms, 7 steady-state solvers, 2 transient
-analysis algorithms and 4 different computation algorithms for
-engineering measures.  Our long term goal is to provide these analysis
-techniques also for a wider community, we have integrated our library
-into the \textsc{PetriDotNet} framework. Our algorithms are used also
-in the education for illustration purposes of the various stochastic
-analysis techniques. In addition, our tool was also used in an
-industrial project: one of our case-studies is based on that project.
-The stochastic analysis library is built from more than $50\,000$
-lines of code. More than $70\,000$ generated test cases serve to
-ensure correctness as much as possible. In addition, software
-redundancy based testing was applied to further improve the quality of
-our library.
+develop 3 generator matrix decomposition and representation
+techniques, 7 steady-state solvers, 2 transient analysis algorithms
+for the computation of engineering measures.
+
+Our long term goal is to provide these analysis techniques also for a
+wider community, we have integrated our library into the
+\textsc{PetriDotNet} framework. Our algorithms are used also in the
+education for illustration purposes of the various stochastic analysis
+techniques. In addition, our tool was also used in an industrial
+project: one of our case-studies is based on that project. More than
+$70\,000$ generated test cases serve to ensure correctness as much as
+possible. In addition, software redundancy based testing was applied
+to further improve the quality of our library.
+
+\needspace{5ex}
 
 Despite our attempts to be as comprehensive as possible, many
 promising directions for future research and development are
@@ -52,12 +45,12 @@ promising directions for future research and development are
   knowledge base about the effectiveness and behavior of stochastic
   analysis approaches toward and adaptive framework for stochastic
   analysis;
-\item support for extended formalisms for stochastic models, such as
-  Generalized Stochastic Petri Nets (\textls{GSPN})~%
-  \citep{DBLP:journals/tse/TeruelFP03} and Stochastic Automata Networks
-  (\textls{SAN})~\citep{DBLP:conf/pnpm/1985}, as well as models with
-  more general stochastic transition behaviors~%
-  \citep{Longo:2015:TSR:2767455.2767457};
+\item completion of the work started on
+  \textls{IDR}($s$)\textls{STAB}($\ell$) by improving the
+  stabilization part
+  \citep{sleijpen1995maintaining,sonneveld2010convergence} of the
+  algorithm to attain convergence on a wide range of stochastic models
+  and parameter settings;
 \item the implementation and development of further numerical
   algorithms, including those that can take advantage of the various
   decompositions of stochastic models~%
@@ -65,7 +58,7 @@ promising directions for future research and development are
     dayar2012analyzing};
 \item reduction of the size of Markov chains through the exploitation
   of model symmetries~\citep{buchholz1994exact,haddad1995evaluation};
-\item the development of preconditioners for the available interative
+\item the development of preconditioners for the available iterative
   numerical solution methods~%
   \citep{DBLP:journals/informs/LangvilleS04};
 \item distributed implementations of the existing algorithms~%
@@ -80,5 +73,9 @@ promising directions for future research and development are
   dolgov2013tt}.
 \end{itemize}
 
-\paragraph{Acknowledgement} We would like to thank IncQueryLabs
-Ltd. for their support during the summer internship.
+\paragraph{Acknowledgment} We would like to thank Prof.~Peter
+Buchholz for his helpful comments on Krylov subspace solution
+algorithms.
+
+We would like to thank IncQueryLabs Ltd.~for their support during the
+summer internship.

@@ -14,11 +14,11 @@ matrix decompositions can be handled in a general way.
 While direct read write access to elements is supported for most
 matrices and vectors, the majority of manipulations, such as
 vector--matrix products or vector additions, structure are performed
-as \emph{operations}. Instead of being impelemented as methods of the
-data structure classes, operations are decoupled into separata
+as \emph{operations}. Instead of being implemented as methods of the
+data structure classes, operations are decoupled into separate
 entities. This allows operation execution with multiple dispatch,
-selecting optimized implementations accoringd to dynamic types of all
-operation arguments and other runtime properties, e.g.~the numer of
+selecting optimized implementations according to dynamic types of all
+operation arguments and other runtime properties, e.g.~the number of
 elements in the vector.
 
 Another advantage of the decoupled operations framework is runtime
@@ -26,7 +26,7 @@ configurability. The dispatch logic may be replaced between the
 execution of algorithms in the stochastic analysis workflow, therefore
 low level linear algebra operations may customized to suit the
 algorithm and the matrix decomposition in use, as well as the
-hardware. For example, paralell and sequential execution may be
+hardware. For example, parallel and sequential execution may be
 switched as neccessary.
 
 Existing linear algebra and matrix libraries, such as%
@@ -43,7 +43,7 @@ algorithms as a basis of our stochastic analysis framework.
 The data structure library contains matrix and vector classes for
 stochastic analysis.
 
-Client code interacts with the data strucutre through interfaces only,
+Client code interacts with the data structure through interfaces only,
 no classes are exposed on the public API. The main interfaces are
 \texttt{IVector} and \texttt{IMatrix} for vectors and matrices,
 respectively. The instances are created through an exposed static
@@ -66,7 +66,7 @@ container of objects with scalar elements. For example, if
 $\vec{v} \in \RR^{n_0 + n_1 + \cdots + n_{k - 1}}$ is a block vectors
 with $k$ blocks, $\vec{v}[i] \in \RR^{n_i}$ ($0 \le i < k$) is a
 vector of real numbers with $n_i$ elements, while $v[i][j]$ is the
-$j$th element of the $i$th block of $\vec{v}$. Hovewer, block
+$j$th element of the $i$th block of $\vec{v}$. However, block
 interfaces do not extend from \texttt{IVector<IVector<T>>} and
 \texttt{IMatrix<IMatrix<T>>}, but a facility separate from ordinary
 indexing is provided for block access. This allows passing
@@ -77,7 +77,7 @@ ordinary \texttt{IVector<\textbf{double}>} and
 
 \subsection{Partials, splitting and composition}
 
-Manipulations of subsequences of vector and mactrix elements, as well
+Manipulations of subsequences of vector and matrix elements, as well
 as conversion between flat and block object are performed by partial
 object wrappers.
 
@@ -106,7 +106,7 @@ The \texttt{GetPartial} method itself is also passed through. This
 means forming a partial of partial
 ($\partialElement{\partialVec{v}{s_1}{t_1}{m_1}}{s_2}{t_2}{m_2}$) does not
 result in a chain of wrappers being created, but only a single wrapper
-object is places around the original after the neccassary index
+object is places around the original after the necessary index
 manipulations.
 
 Block vectors and matrices may be be formed by splitting flat objects
@@ -209,7 +209,7 @@ have been implemented easily.
 \end{figure}
 
 Vector data structures are used to store probability distributions of
-Markovian modells, as well as intermediate results of numerical
+Markovian models, as well as intermediate results of numerical
 algorithms.
 
 The class hiearchy of vectors in our library is shown in
@@ -221,7 +221,7 @@ hierarchies. The data structure may be extended by inheriting from
 these classes, or by implementing the publicly exposed interfaces
 directly.
 
-Vector datatypes are available for the storage of general vectors, as
+Vector data types are available for the storage of general vectors, as
 well as for some special cases.
 
 \paragraph{ArrayVector}
@@ -330,7 +330,7 @@ special vectors, similar to \texttt{ConstantVector}.
 
 Taking a partial vector of a vector results in the creation of
 \texttt{PartialVectorWrapper} object, which passes through read and
-write actions to the underlying vector after the neccessary index
+write actions to the underlying vector after the necessary index
 manipulations. Hence a new object is allocated at every call to
 \texttt{GetPartial}.
 
@@ -404,7 +404,7 @@ provide access to the diagonal of the matrix,
 
 \paragraph{Block vectors}
 
-\texttt{VectorSplitWrapper} reifies vector splitting accoring to
+\texttt{VectorSplitWrapper} reifies vector splitting according to
 \vref{eq:operations:ds:vector-split}. The split vector is backed by a
 composition of partial vectors, thus it acts as a composite
 vector. However, when the split wrapper is used as an instance of
@@ -529,7 +529,7 @@ benefits of \textls{SIMD} implementations.
 The class \texttt{SparseMatrix} implements \textls{CCS} sparse
 matrices backed by \textls{CLR} arrays.
 
-Due to state space explosition, extremely large sparse matrices may be
+Due to state space explosion, extremely large sparse matrices may be
 needed when block Kronecker decomposition is not use use. In our
 experiments in \cref{chap:evaluation}, sparse matrices up to 20~GiB
 were tested. Therefore, sparse matrices backed by unmanaged
@@ -578,7 +578,7 @@ and identity matrices, i.e.
 Partials of matrices written as
 $\partialMat{A}{s_1}{t_1}{m_1}{s_2}{t_2}{m_2}$ are represented as
 instances of \texttt{PartialMatrixWrapper}. The wrapper passes through
-any access after the neccessary index manipulations to the underlying
+any access after the necessary index manipulations to the underlying
 matrix.
 
 There is no support for flexible partial matrices, that is, unlike
@@ -716,7 +716,7 @@ Kronecker products (\texttt{KroneckerMatrix}), linear combinations
 The expression tree approach allows the use of arbitrary matrix
 decompositions that can be expressed with block matrices, linear
 combinations and Kronecker products. The implementation of additional
-opeartional primitives is also straightforward. The data structure
+operational primitives is also straightforward. The data structure
 forms a flexible basis for the development of stochastic analysis
 algorithms with decomposed matrix representations.
 
@@ -777,7 +777,7 @@ public enum OperationName
 \end{lstlisting}
 
 Operations are specified using an Domain Specific Language
-(\textls{DSL}) embededd into the C\# programming language. An excerpt
+(\textls{DSL}) embedded into the C\# programming language. An excerpt
 of the operation declarations is shown in
 \cref{lst:operations:op:operationname}.
 
@@ -791,7 +791,7 @@ public interface IVectorAddOperation<T>
 
 The operation declarations are processed with a Microsoft Text
 Template Transformation Toolkit (\textls{T4}) template~\citep{T4}. The
-template genrates interfaces to be implemented by the operation
+template generates interfaces to be implemented by the operation
 classes (\cref{lst:operations:op:interface}). In addition, a dispatch
 logic stub is created in the \texttt{OperationContext}, which is the
 class that dispatches operation invocations.
@@ -876,8 +876,8 @@ Operations are declared on the interface of the base object as
 methods. Therefore, the call to an operation is syntactically
 equivalent to a method call. This gives the opportunity to use a
 friendlier naming and parameter order on the interfaces than the
-scrict base-operand-target conventions used by the operation
-declrations.
+strict base-operand-target conventions used by the operation
+declarations.
 
 The interface is augmented with a \emph{contract class} which
 describes the pre- and postconditions of the operation. The Microsoft
@@ -933,7 +933,7 @@ The contract and delegation process is illustrated in
 
 Another domain specific language describe the dispatch logic of
 operations, which is referred to as the \emph{operation
-  configuration}. The calls are dispateched to objects implementing
+  configuration}. The calls are dispatched to objects implementing
 the interfaces generated from the operations declarations, such as the
 one shown in \cref{lst:operations:op:interface}.
 
@@ -953,7 +953,7 @@ public interface of the library.
 
 Additional operations configurations may be developed with the public
 \textls{API} of the library. Thus, the characteristics of the model
-and the executing harware may be considered on the linear algebra
+and the executing hardware may be considered on the linear algebra
 operation level in addition to the numerical algorithm level in
 advanced stochastic analysis scenarios.
 
@@ -1057,7 +1057,7 @@ Implemented matrix multiplication routines for the data structure
 target vector include
 \begin{itemize}
 \item Multiplication of vectors with dense and sparse matrices with
-  and without paralellization.
+  and without parallelization.
 
   If parallel execution is desired, vectors are partitioned into
   chunks of length equal to a \emph{blocking factor}. Multiplications
@@ -1077,7 +1077,7 @@ target vector include
 \item Multiplication by a linear combination of matrices is delegated
   to the constituent matrices (\vref{alg:algorithms:matmul:lincomb}).
 \item Multiplications $\vec{b} \cdot \diag\{\vec{a}\}$ by diagonal
-  matrices are executed as elementwise theproduct
+  matrices are executed as elementwise products
   $\vec{b} \eltimes \vec{a}$. The special case of multiplication by an
   identity matrix is equivalent to a vector copy.
 \item Multiplications by Kronecker products is performed by the

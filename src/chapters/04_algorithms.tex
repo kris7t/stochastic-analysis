@@ -2,13 +2,13 @@
 \label{chap:algorithms}
 
 Steady state, transient, accumulated and sensitivity analysis problems
-pose several numerical challanges, especially when the state space of
+pose several numerical challenges, especially when the state space of
 the \CTMC\ and the vectors and matrices involved in the computation are
-extemely large.
+extremely large.
 
-In steady-state and sensitivty analysis, linear equations of the form
+In steady-state and sensitivity analysis, linear equations of the form
 $\vec{x} A = \vec{b}$ are solved, such as%
-~\vref{eq:background:ctmc:steadystate,eq:background:ctmc:sensitvity:s}. The
+~\vref{eq:background:ctmc:steadystate}. The
 steady-state probability vector is the solution of the linear system
 \begin{equation}
   \frac{\dd \vec{\uppi}}{\dd t} = \vec{\uppi} \, Q = \vec{0},
@@ -24,12 +24,10 @@ matrices, thus different solvers may be preferred for different
 models.
 
 In transient analysis, initial value problems with first-order linear
-differetial equations such as%
-~\vref{eq:background:ctmc:diffeq,eq:background:ctmc:L-ivp} are
-considered. The decomposed generator matrix $Q$ must be also handled
-efficiently. Another difficulty is caused by the \emph{stiffness} of
-differential equations arising from some models, which may
-significantly increase computation times.
+differential equations are considered. The decomposed generator matrix
+$Q$ must be also handled efficiently. Another difficulty is caused by
+the \emph{stiffness} of differential equations arising from some
+models, which may significantly increase computation times.
 
 To facilitate configurable stochastic analysis, we developed several
 linear equation solvers and transient analysis methods. Where it is
@@ -98,7 +96,7 @@ i.e.~the diagonal of the $U$ matrix is uniformly $1$. The matrix is
 filled in during the decomposition even if it was initially sparse,
 therefore it should first be copied to a dense array storage for
 efficiency reasons. This considerably limits the size of Markov chains that
-can be analysed by direct solution due to memory requirements. Our
+can be analyzed by direct solution due to memory requirements. Our
 data structure allows access to upper and lower diagonal parts to
 matrices and linear combinations, therefore no additional storage is
 needed other than $A$ itself.
@@ -150,7 +148,7 @@ condition in line~\ref{ln:algorithms:lu:substitution:not-in-image} is
 triggered. A matrix of rank less than $n - 1$ triggers the error
 condition in line~\ref{ln:algorithms:lu:substitution:rank-too-low}.
 
-In practice, the algorithm can be used to solve homogenous equations
+In practice, the algorithm can be used to solve homogeneous equations
 in Markovian analysis, because the infinitesimal generator matrix $Q$
 of an irreducible \CTMC\ is always of rank $n - 1$. The solution
 vector $\vec{x}$ is not a probability vector in general, so it must be
@@ -219,8 +217,8 @@ is performed only after detecting convergence by
 residual norm may not be representative of the error norm if the
 problem is ill-conditioned.
 
-For a detailed discussion stopping criterions and iterate
-normalization in steady-state \CTMC\ analysis, we refer
+For a detailed discussion stopping criteria and iterate normalization
+in steady-state \CTMC\ analysis, we refer
 to~\citep[Section~10.3.5]{stewart2009probability}.
 
 \subsubsection{Power iteration}
@@ -237,7 +235,7 @@ iteration function has the form
 The iteration converges if the diagonal elements $a[i,i]$ of $A$ are
 strictly negative, the off-diagonal elements $a[i,j]$ are nonnegative
 and $\alpha \ge \max_{i} \lvert a[i,i] \rvert$. The matrix $A$
-satisfies these properties if it is an inifinitesimal generator matrix
+satisfies these properties if it is an infinitesimal generator matrix
 of an irreducible \CTMC. The fastest convergence is achieved when
 $\alpha = \min_{i} \lvert a[i,i] \rvert$.
 
@@ -269,7 +267,7 @@ guess $\vec{x}$.
 
 \begin{obs}
   \label{obs:algorithms:iterative:power-keepnorm}
-  If $\vec{b} = 0$ and $A$ is an inifitesimal generator matrix, then
+  If $\vec{b} = 0$ and $A$ is an infinitesimal generator matrix, then
   \begin{align}
     \vec{x}_k \vec{1}^\T &= \mleft[ \vec{x}_{k - 1} + \frac{1}{\alpha}
                            \mleft( \vec{x}_{k - 1} A - \vec{b}
@@ -372,9 +370,9 @@ elements of $\vec{x}_k$ from top to bottom.
   \label{alg:algorithms:iterative:jacobi}
 \end{algorithm}
 
-Jacobi over-relaxation, a generalized form of Jacobi iteraion, is
+Jacobi over-relaxation, a generalized form of Jacobi iteration, is
 realized in \vref{alg:algorithms:iterative:jacobi}. The value $1$ of
-the over-relaxation paramter $\omega$ corresponds to ordinary Jacobi
+the over-relaxation parameter $\omega$ corresponds to ordinary Jacobi
 iteration. Values $\omega > 1$ may accelerate convergence, while
 $0 < \omega < 1$ may help diverging Jacobi iteration converge.
 
@@ -385,7 +383,7 @@ parallelized, as well as the for loop in
 line~\ref{ln:algorithms:jacobi:innerloop}. Our implementation takes
 advantage of the configurable linear algebra operations framework to
 execute lines~\ref{ln:algorithms:jacobi:product} and
-\ref{ln:algorithms:jacobi:addition} with possible paralellization
+\ref{ln:algorithms:jacobi:addition} with possible parallelization
 considering the structures of both the vectors $\vec{x}, \vec{x}'$ and
 the matrix $A$. However, the inner loop is left sequential to reduce
 implementation complexity, as it represents only a small fraction of
@@ -444,7 +442,7 @@ often significantly faster.
 The sum of elements $\vec{x} \vec{1}^\T$ does not stay constant during
 Jacobi or Gauss--Seidel iteration. Thus, when solving equations of the
 form $\vec{x} Q = \vec{0}, \vec{x} \vec{1}^\T = 1$, normalization
-cannot be entierly handled by the initial guess. We instead transform
+cannot be entirely handled by the initial guess. We instead transform
 the equation into the form in
 \cref{eq:algorithms:iterative:normalized-linear-system}, where we take
 advantage of the fact that the infinitesimal generator matrix is not
@@ -467,9 +465,9 @@ structure for the vectors $\vec{x}$, $\vec{b}$ and the matrix $A$
     N - 1\}$,}
 \end{equation}
 Infinitesimal generator matrices in the block Kronecker decomposition
-along with appropriately partitioned vectors match this structure (see
-\vref{eq:genstor:explicit:block:block}). Each block of $\vec{x}$
-corresponds to a group a variables that are simultaneously solved for.
+along with appropriately partitioned vectors match this structure.
+Each block of $\vec{x}$ corresponds to a group a variables that are
+simultaneously solved for.
 
 Group Jacobi iteration solves the linear system
 {\small\begin{equation}
@@ -561,7 +559,7 @@ two-level block structure. The choice of the inner algorithm may
 significantly affect performance and care must be taken to avoid
 diverging inner solutions in an iterative solver is used.
 
-In Jacobi over-relaxation, paralellization of both the matrix
+In Jacobi over-relaxation, parallelization of both the matrix
 multiplication and the inner loop is possible. However, two vectors of
 the same size as $\vec{x}$ are required for temporary storage.
 
@@ -572,18 +570,19 @@ over-relaxation. Moreover, it often requires fewer steps to converge,
 making it preferable over Jacobi iteration.
 
 Because the inner solver may be selected by the user and thus its
-convergence behaviour varies widely, we do not perform the
-transformation for homogenous equations
+convergence behavior varies widely, we do not perform the
+transformation for homogeneous equations
 \eqref{eq:algorithms:iterative:normalized-linear-system}. Instead, the
 normalization $\vec{\uppi} = \vec{x} / \vec{x}\vec{1}^\T$ is performed
 only after finding any nonzero solution of $\vec{x} Q = \vec{0}$.
 
-For a detailed analysis of the convergence behaviour of group
+For a detailed analysis of the convergence behavior of group
 iterative methods, we refer to
 \citet[Chapter~14]{greenbaum1997iterative} and
 \citet{courtois1986block}.
 
 \subsection{Krylov subspace methods}
+\label{ssec:algorithms:krylov}
 
 Projectional iterative methods are iterative linear equation solvers
 that produce a sequence of approximate solutions $\vec{x}_k$ of the
@@ -613,7 +612,7 @@ is called the \emph{grade} of $A$ with respect to $\vec{r}_0$. Hence
 $k \le m$ implies $\dim \mathcal{K}_k(A, \vec{r}_0) = k$. Krylov
 subspace solvers usually suppose that the algorithm terminates at some
 iteration $k^*$ such that $k^* \le m$, therefore the dimension of
-$\mathcal{K}_k$ increases with each iteration. The contary situation
+$\mathcal{K}_k$ increases with each iteration. The contrary situation
 leads to stagnation, because
 $\mathcal{K}_k \subseteq \mathcal{K}_{k + 1}$ together with
 $\dim \mathcal{K}_k = \dim \mathcal{K}_{k + 1}$ ($k \ge m$) implies
@@ -635,7 +634,7 @@ convergence often happens with suitable accuracy after a small number
 of iterations.
 
 Note that problems may arise when $A$ is singular, which may worsen
-the convergence behaviour. This is the case in \textls{CTMC} analysis,
+the convergence behavior. This is the case in \textls{CTMC} analysis,
 where the infinitesimal generator matrix $Q$ is of rank $n - 1$.
 
 Some Krylov subspace methods for nonsymmetric matrices in wide use are
@@ -681,9 +680,9 @@ of $\mathcal{K}_k$ and restarting the iteration from another initial
 guess $\vec{x}_0$ if no solution is obtained after $\ell$
 iterations. The resulting algorithm is called \textls{GMRES}($\ell$).
 
-The convergence behaviour of full \textls{GMRES} is often
+The convergence behavior of full \textls{GMRES} is often
 excellent. However, due to impractical memory requirements, we did not
-implement \textls{GMRES} as a numerical solver in our framefork.  We
+implement \textls{GMRES} as a numerical solver in our framework.  We
 instead use \textls{BiCGSTAB} and
 \textls{IDR}($s$)\textls{STAB($\ell$}), Krylov subspace solvers
 incorporating \textls{GMRES}($\ell$)-like steps.
@@ -743,7 +742,7 @@ variables in equation system.
 
 We selected \textls{BiCGSTAB} as the first Krylov subspace solver
 integrated into our framework because of its good convergence
-behaviour and low memory requirements. \textls{BiCGSTAB} only requires
+behavior and low memory requirements. \textls{BiCGSTAB} only requires
 the storage of 7 vectors, which makes it suitable even for large state
 spaces with large state vectors.
 
@@ -823,7 +822,7 @@ code\footnote{\url{http://www.netlib.org/templates/matlab/bicgstab.m}}
 by \citet{barrett1994templates}.
 
 The inner loop of \textls{BiCGSTAB} is the composed of two
-procedures. The bi-conjucate gradient (\textls{Bi-CG}) part in lines~%
+procedures. The bi-conjugate gradient (\textls{Bi-CG}) part in lines~%
 \ref{nl:algorithms:bicgstab:bicg-start}--\ref{nl:algorithms:bicgstab:bicg-end}
 calculates a residual $\vec{t} \in \mathcal{G}_{k - 1} A$ and its
 associated approximate solution $\vec{x} \in \mathcal{K}_k$. The
@@ -832,7 +831,7 @@ associated approximate solution $\vec{x} \in \mathcal{K}_k$. The
 selects $\omega_k \in \RR$ and calculates a new residual
 $\vec{r} \in \mathcal{G}_{k}$ such that the Euclidean norm
 $\| \vec{r} \|_2$ is minimized. This part improves convergence over
-the original Bi-Conjucate Gradient algorithm.
+the original Bi-Conjugate Gradient algorithm.
 
 Solving preconditioned equations in the form
 $\vec{x} A M^{-1} = \vec{b} M^{-1}$ could improve convergence, but was
@@ -871,7 +870,7 @@ results solving differential equations arising from finite element
 problems. Therefore, we are currently focusing research and
 development effort into integrating
 \textls{IDR}($s$)\textls{STAB}($\ell$) into our stochastic analysis.
-Special attention is paid to its behaviour on steady-state equations
+Special attention is paid to its behavior on steady-state equations
 with infinitesimal generator matrices and other linear systems arising
 from \textls{CTMC} analysis.
 
@@ -916,7 +915,7 @@ from \textls{CTMC} analysis.
   vector $\vecarrow{\gamma} \in \RR^\ell$.
 
   The higher-order stabilization, also called a \textls{GMRES}($\ell$)
-  step, improves convergence behavior with unsymmetrix matrices that
+  step, improves convergence behavior with unsymmetric matrices that
   have complex spectrum. However, the number of intermediate vectors,
   thus the amount of required memory, also grows.
 \end{itemize}
@@ -1018,7 +1017,7 @@ algorithms to the modelers' disposal.
 
 \begin{algorithm}
   \For(\tcp*[f]{For every repetition step}){$j \gets 1$ \KwTo $\ell$}{
-    %\AlgSection{Caclulate the new residuals}
+    %\AlgSection{Calculate the new residuals}
     \For{$k \gets 0$ \KwTo $s - 1$}{
       \lFor(\Operation*[f]{VectorScalarProduct}){$q \gets 0$ \KwTo $s - 1$}{%
         $\sigma[q, k] \gets \vec{u}[j, q] \cdot \tilde{\vec{r}}_0[k]$%
@@ -1161,7 +1160,7 @@ pseudocode of \citet{sleijpen2010exploiting}, is show in
 \cref{alg:algorithms:idrstab:idrstab,alg:algorithms:idrstab:idr,%
 alg:algorithms:idrstab:gmres}. Modification to the algorithm to obtain
 better convergence properties with \textls{CTMC} steady-state analysis
-are highlighed with \HlNode{shaded} line numbers.
+are highlighted with \HlNode{shaded} line numbers.
 
 For convenient representation of memory requirements, we employ two
 different typographical styles for vectors. Vectors in bold,
@@ -1243,7 +1242,7 @@ arrows. Vectors generated by matrix multiplication are shown in
 borders.
 
 For improving numerical properties, \citet{sleijpen2010exploiting}
-recommend performing Gram--Schmidt ortonormalization on $U[j, \cdot]$.
+recommend performing Gram--Schmidt orthonormalization on $U[j, \cdot]$.
 The same subtractions and normalization operations must be performed
 on the rows of $U[i, \cdot]$, $i \ne j$ that are performed in
 $U[j, \cdot]$ in order to maintain their relationships. We realized
@@ -1258,7 +1257,7 @@ the initial shadow residual matrix $\widetilde{R}_0$ requires space
 equal to $s$ vectors of length $n$. Thus, $1 + \ell + 3s + 2\ell s$
 intermediate vectors are needed in addition to the initial guess
 $\vec{x}_0$ and the right vectors $\vec{b}$. Although the memory
-requiremens of \textls{IDR}($s$)\textls{STAB}($\ell$) are quite high,
+requirements of \textls{IDR}($s$)\textls{STAB}($\ell$) are quite high,
 $s$ and $\ell$ can be selected to ensure that the solution fits in the
 available memory.
 
@@ -1272,7 +1271,7 @@ multiplications to improve accuracy.
 
 \paragraph{Numerical problems and breakdown}
 
-Unfortunately, our initial experintments with
+Unfortunately, our initial experiments with
 \textls{IDR}($s$)\textls{STAB}($\ell$) in Markovian steady-state
 analysis did not lead to success when one of the parameters $s$ or
 $\ell$ were set to values strictly larger than $1$. The only case that
@@ -1290,13 +1289,13 @@ $Q \in \RR^{n \times n}$ is matrix of rank $n - 1$ (nullity $1$) which
 satisfies $Q \vec{1} = \vec{0}^\T$. To obtain the solution, the matrix
 $A = Q$ is passed to \textls{IDR}($s$)\textls{STAB}($\ell$) along with
 the right vector $\vec{b} = 0$ and the initial guess $\vec{x}$. The
-initial guess is chosen to satify $\vec{x} \vec{1}^\T = 1$.
+initial guess is chosen to satisfy $\vec{x} \vec{1}^\T = 1$.
 
 We have identified the following three numerical problems in the
 original version of the algorithm algorithm that lead to eventual
 breakdown:
 \begin{enumerate}
-\item The quantity $\vec{x} \vec{1}^\T$ may increse indefinitely
+\item The quantity $\vec{x} \vec{1}^\T$ may increase indefinitely
   instead of staying constant. Thus, the normalization condition in
   \cref{eq:algorithms:idrstab:equation} is violated. Unconstrained
   increase results in the loss of precision and overflow of the
@@ -1365,7 +1364,7 @@ recommendation of \citet{sonneveld2010convergence}, which selects a
 random orthonormalized set of $s$ vectors.
 
 The handling of the second problem of the Gram--Schmidt process
-failure is more compilcated.
+failure is more complicated.
 
 \begin{obs}
   \label{obs:algorithms:idrstab:normalized-v}
@@ -1401,7 +1400,7 @@ failure is more compilcated.
   holds in the current repetition step,
   $\vec{u}[0, k] \, \vec{1}^\T = 0$ holds in the next, because the
   references to $\vec{U}$ and $\vec{V}$ are swapped every repetition
-  step. This property is not distrurbed by the performed Gram--Schmidt
+  step. This property is not disturbed by the performed Gram--Schmidt
   orthonormalizations and the \textls{GMRES}($\ell$) steps.
 
   We also notice that \vref{alg:algorithms:idrstab:idrstab}
@@ -1490,7 +1489,7 @@ obtained as
 
 Despite our attempts, we did not handle the third divergence problem
 of singular or nearly singular $\largesigma$. A possible remedy is the
-more careful choice of the stabilizing polynomial $\Omega_k$. Chosing
+more careful choice of the stabilizing polynomial $\Omega_k$. Choosing
 $\vecarrow{\gamma}$ through means other than the minimization of the
 residual norm $\| \vec{r}[0] \|_2$ may result in better converge
 behavior~\citep{rendel2011tuning,sleijpen1995maintaining}.
@@ -1509,8 +1508,7 @@ The \emph{uniformization} or \emph{randomization} method solves the
 initial value problem
 \begin{gather}
   \frac{\dd \vec{\uppi}(t)}{\dd t} = \vec{\uppi}(t) \, Q, \quad
-  \vec{\uppi}(t) = \vec{\uppi}{0}
-  \tag{\ref{eq:background:ctmc:diffeq}~revisited}\\
+  \vec{\uppi}(t) = \vec{\uppi}{0} \label{eq:algorithms:transient:diffeq}\\
   \shortintertext{by computing}
   \vec{\uppi}(t) = \sum_{k = 0}^{\infty} \vec{\uppi}_0 P^k e^{-\alpha
     t} \frac{(\alpha t)^k}{k!}\text,
@@ -1519,7 +1517,7 @@ initial value problem
 where $P = \alpha^{-1} Q + I$,
 $\alpha \ge \max_{i} \lvert a[i, i] \rvert$ and
 $e^{-\alpha t} \frac{(\alpha t)^k}{k!}$ is the value of the Poisson
-probabilty function with rate $\alpha t$ at $k$.
+probability function with rate $\alpha t$ at $k$.
 
 Integrating both sides of
 \vref{eq:algorithms:transient:uniformization} to compute $\vec{L}(t)$
@@ -1560,7 +1558,7 @@ otherwise.
     $w_{\text{left}} \in \RR$,
     $\vec{w} \in \RR^{k_{\text{right}} - k_{\text{left}}}$, scaling
     constant $W \in \RR$, tolerance $\tau > 0$}
-  \KwOut{instantenous or accumulated probability vector $\vec{x} \in
+  \KwOut{instantaneous or accumulated probability vector $\vec{x} \in
     \RR^n$}
   \KwAllocate{$\vec{x}, \vec{p}, \vec{q} \in \RR^n$}\;
   $\alpha^{-1} \gets 1 / \max_{i} \lvert a[i,i] \rvert$
@@ -1604,7 +1602,7 @@ otherwise.
 \vref{alg:algorithms:transient:uniformization}. The algorithm performs
 \emph{steady-state} detection in line%
 ~\ref{ln:algorithms:transient:uniformization:steadystate-det} to avoid
-unneccessary work once the iteration vector $\vec{p}$ reaches the
+unnecessary work once the iteration vector $\vec{p}$ reaches the
 steady-state distribution $\vec{\uppi}(\infty)$,
 i.e.~$\vec{p} \approx \vec{p} P$. If the initial distribution
 $\vec{\uppi}_0$ is not further needed or can be generated efficiently
@@ -1706,7 +1704,7 @@ stochastic complementation~\citep{meyer1989stochastic}, which
 decouples the slow and fast behaviors of the system, and adaptive
 uniformization~\citep{van1994adaptive}, which varies the uniformization
 rate $\alpha$. Alternatively, an $L$-stable differential equation
-solver may be used to solve \vref{eq:background:ctmc:diffeq}, such as
+solver may be used to solve \cref{eq:algorithms:transient:diffeq}, such as
 \mbox{\textls{TR-BDF2}}~\citep{DBLP:journals/cor/ReibmanT88,%
 DBLP:journals/tcad/BankCFGRS85}.
 
@@ -1723,7 +1721,7 @@ and second order backward difference steps
     \gamma)^2}{\gamma} \vec{\uppi}_k \text,
 \end{equation}
 which advance the time together by a step of size $h_k$. The constant
-$0 < \gamma < 1$ sets the breakpoint between the two steps. We set it
+$0 < \gamma < 1$ sets the break point between the two steps. We set it
 to $\gamma = 2 - \sqrt{2} \approx 0.59$ following the recommendation
 of \citet{DBLP:journals/tcad/BankCFGRS85}.
 

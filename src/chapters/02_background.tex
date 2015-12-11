@@ -2,12 +2,17 @@
 \label{chap:background}
 
 In this section we overview the basic formalisms and scope of our
-work. \textbf{TODO}
+work. First, continuous-time Markov chains and Markovian reward
+analysis tasks are introduces. We also recall some foundations of
+Kronecker algebra. Lastly, stochastic automata networks are
+introduced, which are commonly used hierarchical formalism for
+Markovian models that are especially amenable to decomposition by
+Kronecker products.
 
 \section{Continuous-time Markov chains}
 
 Continuous-time Markov chains are mathematical tools for describing the
-behavior of systems in countinous time where the stochastic behavior of
+behavior of systems in continuous time where the stochastic behavior of
 the system only depends on its current state.
 
 \begin{dfn}
@@ -21,7 +26,7 @@ the system only depends on its current state.
     = \Pr(X(t_k) = x_k \mid X(t_{k - 1}) = x_{k - 1}) \text,
   \end{multline}
   where $t_0 \le t_1 \le \cdots \le t_k$ and $X(t_k)$ is a random variable denoting the current state of the \CTMC\ at time $t_k$. A \CTMC\ is said to be
-  \emph{time-homogenous} if it also satisfies
+  \emph{time-homogeneous} if it also satisfies
   \begin{equation}
     \Pr(X(t_k) = x_k \mid X(t_{k - 1}) = x_{k - 1}) = \Pr(X(t_k - t_{k -
       1}) = x_k \mid X(0) = x_{k - 1}) \text,
@@ -29,7 +34,7 @@ the system only depends on its current state.
   i.e.~it is invariant to time shifting.
 \end{dfn}
 
-In this report we will restrict our attention to time-homogenous \CTMC
+In this report we will restrict our attention to time-homogeneous \CTMC
 s over finite state spaces. The state probabilities of these
 stochastic processes at time $t$ form a finite-dimensional vector
 $\vec{\uppi}(t) \in \RR^n$,
@@ -54,7 +59,7 @@ interpreted as follows:
 \item The off-diagonal elements $q[x, y] \ge 0$ describe the state
   transitions. In state~$x$ the \CTMC\ will jump to state~$y$ at the
   next state transition with probability $-q[x, y] / q[x, x]$.
-  Equivalently, there is expontentially distributed countdown in the
+  Equivalently, there is exponentially distributed countdown in the
   state $x$ for each $y : q[x, y] > 0$ with \emph{transition rate}
   $\lambda_{xy} = q[x, y]$. The first countdown to finish will trigger
   a state change to the corresponding state $y$. Thus, the \CTMC\ is a
@@ -233,13 +238,14 @@ problem~\citep{reibman1989markov}
 
 \subsection{Sensitivity}
 
-Sensitivity analysis is widely used to assess the robustnes of information systems.
-Consider a reward process $(X(t), \vec{r})$ where both the
-infinitesimal generator matrix $Q(\vec{\uptheta})$ and the reward rate
-vector $\vec{r}(\vec{\uptheta})$ may depend on some \emph{parameters}
-$\vec{\uptheta} \in \RR^m$. The \emph{sensitivity} analysis of the
-rewards $R(t)$ may reveal performance or reliability bottlenecks of
-the modeled system and help designers in achieving desired performance measures and robustnes values.
+Sensitivity analysis is widely used to assess the robustnes of
+information systems.  Consider a reward process $(X(t), \vec{r})$
+where both the infinitesimal generator matrix $Q(\vec{\uptheta})$ and
+the reward rate vector $\vec{r}(\vec{\uptheta})$ may depend on some
+\emph{parameters} $\vec{\uptheta} \in \RR^m$. The \emph{sensitivity}
+analysis of the rewards $R(t)$ may reveal performance or reliability
+bottlenecks of the modeled system and help designers in achieving
+desired performance measures and robustnes values.
 
 \begin{dfn}
   The \emph{sensitivity} of the expected reward rate~$\Ex R(t)$ to the
@@ -251,7 +257,7 @@ the modeled system and help designers in achieving desired performance measures 
 
 Considering parameters with high absolute sensitivity the model reacts to the changes of those parameters more prominently, therefore they can be promising directions of system optimization.
 
-To calculate the sensivity of $\Ex R(t)$, the partial derivative of
+To calculate the sensitivity of $\Ex R(t)$, the partial derivative of
 both sides of \cref{eq:background:ctmc:reward} is taken, yielding
 \begin{equation}
   \label{eq:background:ctmc:sensitivity:productrule}
@@ -287,7 +293,7 @@ is solved~\citep{DBLP:conf/sigmetrics/BlakeRT88}.
 
 Another type of sensitivity analysis considers \emph{unstructured}
 small perturbations of the infinitesimal generator matrix $Q$ instead
-of dependecies on parameters%
+of dependencies on parameters%
 ~\citep{funderlic1986sensitivity,ipsen1994uniform}. This latter,
 unstructured analysis may be used to study the numerical stability and
 conditioning of the solutions of the Markov chain.
@@ -295,7 +301,9 @@ conditioning of the solutions of the Markov chain.
 \subsection{Time to first failure}
 \label{ssec:background:mtff}
 
-Computing the first time of a system failure (provided it was fully operational when it was started) has many applications in reliability engineering.
+Computing the first time of a system failure (provided it was fully
+operational when it was started) has many applications in reliability
+engineering.
 
 Let $D \subsetneq S$ be a set of \emph{failure states} of the \CTMC\ 
 $X(t)$ and $U = S \setminus D$ be a set of operating states. We will
@@ -346,6 +354,8 @@ rates from operational states to failure states $D'$.
 
 \section{Kronecker algebra}
 
+In this section, we review the fundamentals of Kronecker algebra.
+
 \begin{dfn}
   The \emph{Kronecker product} of matrices
   $A \in \RR^{n_1 \times m_1}$ and $B \in \RR^{n_2 \times m_2}$ is the
@@ -355,7 +365,7 @@ rates from operational states to failure states $D'$.
   \end{equation}
 \end{dfn}
 
-Some properties of the Kroncker product are
+Some properties of the Kronecker product are
 \begin{enumerate}
 \item Associativity:
   \begin{equation}
@@ -452,6 +462,18 @@ $\loc{A}{0} \krtimes \loc{A}{1} \krtimes \cdots \krtimes \loc{A}{J -
 
 \section{Continuous-time stochastic automata networks}
 
+In this section, we present Continuous-time Stochastic Automata
+Networks (\textls{SAN}), which are a common theoretical foundation for
+the study of structure continuous-time Markovian processes%
+~\citep{DBLP:journals/questa/Buchholz94,gusak2003lumpable}, including
+Stochastic Petri Nets~(\textls{SPN})~\citep{DBLP:conf/apn/Marsan88},
+Generalized Stochastic Petri
+Nets~(\textls{GSPN})~\citep{DBLP:journals/tse/Buchholz99} and
+stochastic activity networks~\citep{DBLP:conf/pnpm/MeyerMS85}.
+
+For additional details on the study of decomposed Markov chains, we
+refer the reader to \citet{dayar2012analyzing}.
+
 \begin{dfn}
   A \emph{Continuous-time stochastic automata network} is a triple
   $\SAN = \bigl(E, \bigl( \loc{A}{j} \bigr)_{j = 0}^{J - 1},
@@ -484,7 +506,7 @@ $\loc{A}{0} \krtimes \loc{A}{1} \krtimes \cdots \krtimes \loc{A}{J -
   \end{asparaitem}
 \end{dfn}
 
-Parenthesised superscripts will be used to denote elements of
+Parenthesized superscripts will be used to denote elements of
 automatons of a \textls{SAN},
 e.g.~$\loc{A}{j} = (\loc{S}{j}, \loc{x_0}{j}, \loc{E}{j}, \loc{T}{j})$
 is the $j$th automaton of $\SAN$ with
@@ -602,7 +624,7 @@ preferable over dense arrays for larger models.
 
 Unfortunately, both of these storage methods may be prohibitively
 costly for large models due to state space explosion. In addition,
-explicit enumeration of large $\RS$ may take an extreme amout of time.
+explicit enumeration of large $\RS$ may take an extreme amount of time.
 
 \subsection{Kronecker generator matrices}
 
@@ -650,7 +672,7 @@ $\PS$ instead of the reachable state space $\RS$.
 the $\lvert \PS \rvert \times \lvert \PS \rvert$ $Q$ matrix and
 vectors of length $\lvert \PS \rvert$. In addition to increasing
 storage requirements, this may lead to problems in some numerical
-solution algorithms, because the \CTMC\ over $\PS$ is not neccessarily
+solution algorithms, because the \CTMC\ over $\PS$ is not necessarily
 irreducible even if it is irreducible over $\RS$.
 
 In contrast, \emph{actual Kronecker methods}~%
@@ -668,7 +690,7 @@ hierarchical structure on $\RS$~%
   DBLP:journals/sigmetrics/BuchholzK98,%
   DBLP:journals/tse/Buchholz99}.
 
-\subsection{Block kronecker matrix composition}
+\subsection{Block Kronecker matrix composition}
 
 A \emph{hierarchical decomposition} of the reachable state space expresses
 $\RS$ as
@@ -765,4 +787,6 @@ The full $Q$ matrix is written as
 \begin{equation}
   Q = Q_O + Q_D, \quad Q_D = -\diag\{ Q_O \vec{1}^\T \}
 \end{equation}
-as usual.
+as usual. To further reduce storage requirements, identity matrices
+adjacent in Kronecker products may be merged if there is an $O(1)$
+storage method for identity matrices.

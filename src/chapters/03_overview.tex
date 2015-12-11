@@ -58,7 +58,7 @@ higher level formalisms can be often structured as follows
 In stochastic model checking, where the desired system behaviors are
 expressed in stochastic temporal logics%
 ~\citep{bianco1995model,baier1999approximative}, these analytic steps
-are called as subrouties to evaluate propositions. In the sythesis and
+are called as subroutines to evaluate propositions. In the synthesis and
 optimization of stochastic models%
 ~\citep{DBLP:journals/jacm/ChatterjeeHJ015}, the workflow is executed
 as part of the fitness functions.
@@ -77,7 +77,7 @@ Methods such as the \emph{saturation} algorithm~\citep{Ciardo:2006}
 were developed to efficiently explore and represent large state
 spaces. However, in stochastic analysis, the generator matrix $Q$ and
 several vectors of real numbers with lengths equal to the state space
-size must be stored in addition to the state space. This neccessitates
+size must be stored in addition to the state space. This necessitates
 the use of further decomposition techniques for data storage.
 
 The convergence of the numerical methods depends on the structure of
@@ -270,7 +270,7 @@ The stochastic analysis problem is translated into numerical problems
 by the ``frontend'' part of the analysis module:
 \begin{itemize}
 \item The \emph{stochastic Petri net analysis} modules translate the
-  stochastic behaviour of Petri net into generic data structures. The
+  stochastic behavior of Petri net into generic data structures. The
   partition of the model defines the stochastic automata of the
   \textls{SAN} representation of the model. The algebraic expressions
   that specify transition rates and rewards are evaluated, thus lower
@@ -281,10 +281,10 @@ by the ``frontend'' part of the analysis module:
   \emph{saturation} algorithm~\citep{ciardo2001saturation}, which is
   provided by the symbolic analysis component of
   \textsc{PetriDotNet}~\citep{TDK2010_Darvas}. Petri nets with
-  inhibitor arcs are supported, but transitions with prioirity
+  inhibitor arcs are supported, but transitions with priority
   (including non-timed transitions) cannot be used/
 
-  Rewar expressions that refer to subsets of the reachable state space
+  Reward expressions that refer to subsets of the reachable state space
   defined by Computation Tree Logic
   (\textls{CTL})~\citep{DBLP:journals/fac/HanssonJ94} are also
   evaluated by the symbolic analysis component. Therefore,
@@ -306,9 +306,8 @@ by the ``frontend'' part of the analysis module:
   the data structure.
 
   Numerical solution algorithms, such as linear equation solvers and
-  transient distribution integrators are called to derive the steady
-  state and transient distributions of the Markov chain and its
-  sensitivities.
+  transient integrators are called to derive the steady state and
+  transient distributions of the Markov chain and its sensitivities.
 
   The final task performed by the frontend is the calculation of the
   reward values, which uses both linear algebra operations and
@@ -322,7 +321,7 @@ algorithms:
   equations and Markovian transient initial value problems. The
   algorithms are implemented generically whenever possible, so that no
   assumptions are made about the structure of matrices unless
-  neccessary due to mathematical or performance reasons. This is
+  necessary due to mathematical or performance reasons. This is
   achieved by the definition of a (non-orthogonal) set of operations
   on the matrix-vector data structure. The operations may be replaced
   at runtime for flexibility, for example, different implementations
@@ -375,9 +374,9 @@ its three components shaded in gray.
 
 Manipulations performed by the frontend components on the input Petri
 net models the generated descriptors are discussed in this thesis only
-briefly. We refer the interested reader to \textbf{TODO Cite TDK} for
-an overview of the whole \textsc{PetriDotNet} stochastic analysis
-component. 
+briefly. We refer the interested reader to
+\cite{TDK2015_Klenik_Marussy} for an overview of the whole
+\textsc{PetriDotNet} stochastic analysis component.
 
 \section{Current status}
 
@@ -385,6 +384,27 @@ In this section we briefly summarize the results of the backend
 development effort.
 
 \subsection{Data structures}
+
+The data structure can represent infinitesimal generator matrices of
+continuous-time Markov chains with possible stochastic automata
+network structure as dense or sparse arrays, sums of Kronecker
+products and block Kronecker matrices.
+
+Additional matrix decompositions may be created as algebraic
+expression trees using from the provided expression primitives of
+block matrices, linear combinations and Kronecker products. Moreover,
+the framework may be extended with further primitives simply by
+implementing some interfaces.
+
+The linear algebra operations framework provides the most commonly
+used vector and matrix operations, including addition and scaling,
+scalar products and vector-matrix products. Matrix-matrix products are
+not provided due to the impossibility of fast and compact evaluation
+of such products with matrices of general decomposed forms.
+
+All provided operations are listed in \vref{tab:operations:operations}
+in \cref{chap:operations}, where the data structure and operations are
+discussed.
 
 \subsection{Numerical algorithms}
 
@@ -443,9 +463,17 @@ analysis and mean-time-to-failure analysis.
 The current research and development effort focuses on the integration
 of a solver based on \textls{IDR($s$)STAB($l$)}%
 ~\citep{sleijpen2010exploiting}, a Krylov subspace algorithm which
-generalizes \textls{BiCGSTAB}. As the algorithm needs adaptation for
-singular matrices, it is currently not suitable for production use in
-Markovian analysis due to numerical breakdowns and instability.
+generalizes the \textls{BiCGSTAB} algorithm. As the algorithm needs
+adaptation for singular matrices, it is currently not suitable for
+production use in Markovian analysis due to numerical breakdowns and
+instability.
+
+Our modifications to \textls{IDR($s$)STAB($l$)} are shown in
+\vref{alg:algorithms:idrstab:idrstab,alg:algorithms:idrstab:idr,%
+  alg:algorithms:idrstab:gmres}, which were found to improve
+convergence behavior in steady-state analysis problems. However, the
+stability is still lacking, as we observed in
+\vref{sec:evaulations:idrstab}.
 
 Two solution algorithms, uniformization and \textls{TR-BDF2}
 are available for transient analysis. Accumulated rewards can be
@@ -463,4 +491,4 @@ excessive memory consumption.
 Numerical algorithms supported by our framework are further discussed
 in \cref{chap:algorithms}. Linear equations solvers for steady-state
 \CTMC\ analysis are shown in \cref{tab:overview:our:linear}, while
-linear solver are shown in \cref{tab:overview:our:transient}.
+transient solvers are shown in \cref{tab:overview:our:transient}.
