@@ -1,0 +1,2011 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<pnml>
+     <net id="MAPK-PT-008" type="http://www.pnml.org/version-2009/grammar/ptnet">
+          <name>
+               <text>MAPK-PT-008</text>
+          </name>
+          <declaration>
+               <structure>
+                    <declarations />
+               </structure>
+          </declaration>
+          <place id="ERK_MEKPP">
+               <name>
+                    <text>ERK_MEKPP</text>
+               </name>
+               <initialMarking>
+                    <text>0</text>
+               </initialMarking>
+               <graphics>
+                    <position x="1357" y="1088" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="ERKP_MEKPP">
+               <name>
+                    <text>ERKP_MEKPP</text>
+               </name>
+               <initialMarking>
+                    <text>0</text>
+               </initialMarking>
+               <graphics>
+                    <position x="1367" y="1243" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="Phase1">
+               <name>
+                    <text>Phase1</text>
+               </name>
+               <initialMarking>
+                    <text>6</text>
+               </initialMarking>
+               <graphics>
+                    <position x="673" y="1237" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="MEK">
+               <name>
+                    <text>MEK</text>
+               </name>
+               <initialMarking>
+                    <text>4</text>
+               </initialMarking>
+               <graphics>
+                    <position x="809" y="1088" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="ERKPP_Phase3">
+               <name>
+                    <text>ERKPP_Phase3</text>
+               </name>
+               <initialMarking>
+                    <text>0</text>
+               </initialMarking>
+               <graphics>
+                    <position x="1734" y="1088" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="ERKP_Phase3">
+               <name>
+                    <text>ERKP_Phase3</text>
+               </name>
+               <initialMarking>
+                    <text>0</text>
+               </initialMarking>
+               <graphics>
+                    <position x="1543" y="1088" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="ERKP">
+               <name>
+                    <text>ERKP</text>
+               </name>
+               <initialMarking>
+                    <text>0</text>
+               </initialMarking>
+               <graphics>
+                    <position x="1459" y="1054" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="MEKPP">
+               <name>
+                    <text>MEKPP</text>
+               </name>
+               <initialMarking>
+                    <text>0</text>
+               </initialMarking>
+               <graphics>
+                    <position x="1255" y="1054" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="Phase2">
+               <name>
+                    <text>Phase2</text>
+               </name>
+               <initialMarking>
+                    <text>4</text>
+               </initialMarking>
+               <graphics>
+                    <position x="1098" y="1008" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="Phase3">
+               <name>
+                    <text>Phase3</text>
+               </name>
+               <initialMarking>
+                    <text>6</text>
+               </initialMarking>
+               <graphics>
+                    <position x="1668" y="1008" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="MEKP">
+               <name>
+                    <text>MEKP</text>
+               </name>
+               <initialMarking>
+                    <text>0</text>
+               </initialMarking>
+               <graphics>
+                    <position x="908" y="1217" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="ERKPP">
+               <name>
+                    <text>ERKPP</text>
+               </name>
+               <initialMarking>
+                    <text>0</text>
+               </initialMarking>
+               <graphics>
+                    <position x="1777" y="1208" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="MEKP_RafP">
+               <name>
+                    <text>MEKP_RafP</text>
+               </name>
+               <initialMarking>
+                    <text>0</text>
+               </initialMarking>
+               <graphics>
+                    <position x="908" y="1336" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="MEKP_Phase2">
+               <name>
+                    <text>MEKP_Phase2</text>
+               </name>
+               <initialMarking>
+                    <text>0</text>
+               </initialMarking>
+               <graphics>
+                    <position x="1050" y="1088" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="MEKPP_Phase2">
+               <name>
+                    <text>MEKPP_Phase2</text>
+               </name>
+               <initialMarking>
+                    <text>0</text>
+               </initialMarking>
+               <graphics>
+                    <position x="1151" y="1088" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="ERK">
+               <name>
+                    <text>ERK</text>
+               </name>
+               <initialMarking>
+                    <text>6</text>
+               </initialMarking>
+               <graphics>
+                    <position x="1357" y="1008" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="RafP">
+               <name>
+                    <text>RafP</text>
+               </name>
+               <initialMarking>
+                    <text>0</text>
+               </initialMarking>
+               <graphics>
+                    <position x="809" y="1273" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="Raf_RasGTP">
+               <name>
+                    <text>Raf_RasGTP</text>
+               </name>
+               <initialMarking>
+                    <text>0</text>
+               </initialMarking>
+               <graphics>
+                    <position x="467" y="1316" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="MEK_RafP">
+               <name>
+                    <text>MEK_RafP</text>
+               </name>
+               <initialMarking>
+                    <text>0</text>
+               </initialMarking>
+               <graphics>
+                    <position x="809" y="1166" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="RafP_Phase1">
+               <name>
+                    <text>RafP_Phase1</text>
+               </name>
+               <initialMarking>
+                    <text>0</text>
+               </initialMarking>
+               <graphics>
+                    <position x="673" y="1309" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="RasGTP">
+               <name>
+                    <text>RasGTP</text>
+               </name>
+               <initialMarking>
+                    <text>2</text>
+               </initialMarking>
+               <graphics>
+                    <position x="467" y="1229" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="Raf">
+               <name>
+                    <text>Raf</text>
+               </name>
+               <initialMarking>
+                    <text>8</text>
+               </initialMarking>
+               <graphics>
+                    <position x="555" y="1309" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <transition id="k2">
+               <name>
+                    <text>k2</text>
+               </name>
+               <graphics>
+                    <position x="554" y="1372" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>192.865913954047</param1>
+                         <rate-function>192.865913954047</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="k1">
+               <name>
+                    <text>k1</text>
+               </name>
+               <graphics>
+                    <position x="466" y="1281" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>171.136375333752</param1>
+                         <rate-function>171.136375333752</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="k6">
+               <name>
+                    <text>k6</text>
+               </name>
+               <graphics>
+                    <position x="601" y="1315" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>159.828971711063</param1>
+                         <rate-function>159.828971711063</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="k3">
+               <name>
+                    <text>k3</text>
+               </name>
+               <graphics>
+                    <position x="381" y="1372" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>245.250828233775</param1>
+                         <rate-function>245.250828233775</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="k18">
+               <name>
+                    <text>k18</text>
+               </name>
+               <graphics>
+                    <position x="928" y="1094" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>155.614522832414</param1>
+                         <rate-function>155.614522832414</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="k21">
+               <name>
+                    <text>k21</text>
+               </name>
+               <graphics>
+                    <position x="1391" y="1132" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>225.995985171636</param1>
+                         <rate-function>225.995985171636</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="k12">
+               <name>
+                    <text>k12</text>
+               </name>
+               <graphics>
+                    <position x="941" y="1395" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>183.499412108904</param1>
+                         <rate-function>183.499412108904</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="k9">
+               <name>
+                    <text>k9</text>
+               </name>
+               <graphics>
+                    <position x="857" y="1223" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>91.4899805503129</param1>
+                         <rate-function>91.4899805503129</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="k24">
+               <name>
+                    <text>k24</text>
+               </name>
+               <graphics>
+                    <position x="1435" y="1214" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>172.54696075886</param1>
+                         <rate-function>172.54696075886</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="k15">
+               <name>
+                    <text>k15</text>
+               </name>
+               <graphics>
+                    <position x="1097" y="1132" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>191.075060216001</param1>
+                         <rate-function>191.075060216001</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="k25">
+               <name>
+                    <text>k25</text>
+               </name>
+               <graphics>
+                    <position x="1733" y="1060" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>179.876717872309</param1>
+                         <rate-function>179.876717872309</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="k26">
+               <name>
+                    <text>k26</text>
+               </name>
+               <graphics>
+                    <position x="1776" y="1132" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>29.9146119768562</param1>
+                         <rate-function>29.9146119768562</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="k8">
+               <name>
+                    <text>k8</text>
+               </name>
+               <graphics>
+                    <position x="756" y="1223" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>51.4827798159047</param1>
+                         <rate-function>51.4827798159047</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="k11">
+               <name>
+                    <text>k11</text>
+               </name>
+               <graphics>
+                    <position x="872" y="1395" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>154.213501586234</param1>
+                         <rate-function>154.213501586234</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="k20">
+               <name>
+                    <text>k20</text>
+               </name>
+               <graphics>
+                    <position x="1315" y="1132" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>239.364797992362</param1>
+                         <rate-function>239.364797992362</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="k23">
+               <name>
+                    <text>k23</text>
+               </name>
+               <graphics>
+                    <position x="1366" y="1297" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>91.5502969499581</param1>
+                         <rate-function>91.5502969499581</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="k10">
+               <name>
+                    <text>k10</text>
+               </name>
+               <graphics>
+                    <position x="907" y="1279" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>226.066235250962</param1>
+                         <rate-function>226.066235250962</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="k7">
+               <name>
+                    <text>k7</text>
+               </name>
+               <graphics>
+                    <position x="808" y="1132" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>183.009180418248</param1>
+                         <rate-function>183.009180418248</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="k28">
+               <name>
+                    <text>k28</text>
+               </name>
+               <graphics>
+                    <position x="1542" y="1060" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>136.984615323893</param1>
+                         <rate-function>136.984615323893</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="k14">
+               <name>
+                    <text>k14</text>
+               </name>
+               <graphics>
+                    <position x="1219" y="1132" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>102.445330164618</param1>
+                         <rate-function>102.445330164618</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="k13">
+               <name>
+                    <text>k13</text>
+               </name>
+               <graphics>
+                    <position x="1150" y="1060" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>95.4598198136356</param1>
+                         <rate-function>95.4598198136356</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="k27">
+               <name>
+                    <text>k27</text>
+               </name>
+               <graphics>
+                    <position x="1687" y="1132" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>148.211541822137</param1>
+                         <rate-function>148.211541822137</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="k22">
+               <name>
+                    <text>k22</text>
+               </name>
+               <graphics>
+                    <position x="1366" y="1191" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>102.512318183258</param1>
+                         <rate-function>102.512318183258</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="k19">
+               <name>
+                    <text>k19</text>
+               </name>
+               <graphics>
+                    <position x="1356" y="1060" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>124.291013209421</param1>
+                         <rate-function>124.291013209421</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="k4">
+               <name>
+                    <text>k4</text>
+               </name>
+               <graphics>
+                    <position x="672" y="1279" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>17.271319473819</param1>
+                         <rate-function>17.271319473819</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="k29">
+               <name>
+                    <text>k29</text>
+               </name>
+               <graphics>
+                    <position x="1491" y="1132" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>143.325643251994</param1>
+                         <rate-function>143.325643251994</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="k17">
+               <name>
+                    <text>k17</text>
+               </name>
+               <graphics>
+                    <position x="1049" y="1132" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>77.1279066303009</param1>
+                         <rate-function>77.1279066303009</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="k30">
+               <name>
+                    <text>k30</text>
+               </name>
+               <graphics>
+                    <position x="1585" y="1132" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>220.44530270825</param1>
+                         <rate-function>220.44530270825</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="k16">
+               <name>
+                    <text>k16</text>
+               </name>
+               <graphics>
+                    <position x="1049" y="1060" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>205.829859886301</param1>
+                         <rate-function>205.829859886301</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="k5">
+               <name>
+                    <text>k5</text>
+               </name>
+               <graphics>
+                    <position x="672" y="1355" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>66.0532770737499</param1>
+                         <rate-function>66.0532770737499</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <arc id="cId-778352613425604551285" source="k5" target="RafP">
+               <graphics>
+                    <position x="815" y="1355" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-774386652417072455184" source="Phase1" target="k4">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-774386652417072455187" source="RafP_Phase1" target="k5">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-774386652417072455186" source="k5" target="Phase1">
+               <graphics>
+                    <position x="640" y="1243" />
+                    <position x="640" y="1355" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-774386652417072455193" source="RafP" target="k4">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-774386652417072455192" source="k4" target="RafP_Phase1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-774386652417072455195" source="Phase3" target="k25">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-774386652417072455194" source="k26" target="ERKPP">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-774386652417072455189" source="MEKPP" target="k13">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-774386652417072455188" source="k13" target="MEKPP_Phase2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-773890907022570487191" source="k14" target="MEKPP">
+               <graphics>
+                    <position x="1261" y="1132" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-773890907022570487190" source="Phase2" target="k13">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7738909070225704871102" source="k11" target="MEKP">
+               <graphics>
+                    <position x="875" y="1223" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7738909070225704871103" source="MEK_RafP" target="k8">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7738909070225704871100" source="ERKPP" target="k25">
+               <graphics>
+                    <position x="1879" y="1060" />
+                    <position x="1879" y="1214" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7738909070225704871101" source="k25" target="ERKPP_Phase3">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-773890907022570487198" source="MEKP_RafP" target="k11">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-773890907022570487199" source="k11" target="RafP">
+               <graphics>
+                    <position x="815" y="1395" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-773890907022570487196" source="ERKPP_Phase3" target="k26">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-773890907022570487197" source="k26" target="Phase3">
+               <graphics>
+                    <position x="1854" y="1014" />
+                    <position x="1854" y="1132" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7738909070225704871110" source="k8" target="MEK">
+               <graphics>
+                    <position x="759" y="1094" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7740561553442388999111" source="k8" target="RafP">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7740561553442388999108" source="k20" target="ERK">
+               <graphics>
+                    <position x="1318" y="1014" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7740561553442388999109" source="k20" target="MEKPP">
+               <graphics>
+                    <position x="1261" y="1132" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7740561553442388999106" source="ERK_MEKPP" target="k20">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7740561553442388999107" source="k23" target="ERKP">
+               <graphics>
+                    <position x="1465" y="1297" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7740561553442388999104" source="MEK" target="k7">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7740561553442388999105" source="RafP" target="k7">
+               <graphics>
+                    <position x="731" y="1132" />
+                    <position x="731" y="1279" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7740561553442388999119" source="k3" target="RasGTP">
+               <graphics>
+                    <position x="384" y="1235" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7740561553442388999118" source="RafP_Phase1" target="k6">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7740561553442388999117" source="k6" target="Raf">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7748823973820776935116" source="k6" target="Phase1">
+               <graphics>
+                    <position x="608" y="1243" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7748823973820776935115" source="ERK_MEKPP" target="k21">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7748823973820776935114" source="k21" target="ERKP">
+               <graphics>
+                    <position x="1465" y="1132" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7748823973820776935113" source="ERKP_MEKPP" target="k23">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7748823973820776935112" source="k23" target="MEKPP">
+               <graphics>
+                    <position x="1261" y="1297" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7748823973820776935127" source="MEK_RafP" target="k9">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7748823973820776935126" source="k9" target="MEKP">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7748823973820776935125" source="MEKPP_Phase2" target="k15">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7748823973820776935124" source="k15" target="Phase2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7748823973820776935123" source="k21" target="MEKPP">
+               <graphics>
+                    <position x="1398" y="1162" />
+                    <position x="1261" y="1162" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7748823973820776935122" source="MEKP_Phase2" target="k18">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7748823973820776935121" source="Raf_RasGTP" target="k3">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7748823973820776935120" source="k3" target="RafP">
+               <graphics>
+                    <position x="815" y="1392" />
+                    <position x="388" y="1392" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7750476457037461063137" source="k10" target="MEKP_RafP">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7750476457037461063136" source="MEKP" target="k10">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7750476457037461063139" source="ERK" target="k19">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7750476457037461063138" source="MEKPP" target="k19">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7750476457037461063141" source="MEKPP" target="k22">
+               <graphics>
+                    <position x="1300" y="1141" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7750476457037461063140" source="k19" target="ERK_MEKPP">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7750476457037461063143" source="k22" target="ERKP_MEKPP">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7750476457037461063142" source="ERKP" target="k22">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7750476457037461063129" source="k18" target="MEK">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7750476457037461063128" source="k18" target="Phase2">
+               <graphics>
+                    <position x="935" y="1014" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7750476457037461063131" source="k12" target="MEKPP">
+               <graphics>
+                    <position x="1261" y="1395" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7750476457037461063130" source="k12" target="RafP">
+               <graphics>
+                    <position x="815" y="1422" />
+                    <position x="948" y="1422" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7750476457037461063133" source="k9" target="RafP">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7750476457037461063132" source="MEKP_RafP" target="k12">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7745519007387408679135" source="RafP" target="k10">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7745519007387408679134" source="k7" target="MEK_RafP">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7745519007387408679152" source="k2" target="RasGTP">
+               <graphics>
+                    <position x="583" y="1235" />
+                    <position x="583" y="1372" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7745519007387408679153" source="k2" target="Raf">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7745519007387408679154" source="k27" target="Phase3">
+               <graphics>
+                    <position x="1674" y="1132" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7745519007387408679155" source="ERKPP_Phase3" target="k27">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7745519007387408679156" source="ERKP_Phase3" target="k30">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7745519007387408679157" source="k27" target="ERKP">
+               <graphics>
+                    <position x="1465" y="1171" />
+                    <position x="1694" y="1171" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7745519007387408679158" source="k30" target="Phase3">
+               <graphics>
+                    <position x="1674" y="1132" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7745519007387408679159" source="k30" target="ERK">
+               <graphics>
+                    <position x="1642" y="986" />
+                    <position x="1363" y="986" />
+                    <position x="1642" y="1132" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7745519007387408679144" source="k1" target="Raf_RasGTP">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7745519007387408679145" source="Raf_RasGTP" target="k2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7745519007387408679146" source="Raf" target="k1">
+               <graphics>
+                    <position x="561" y="1281" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7747171490604092807147" source="RasGTP" target="k1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7747171490604092807148" source="k24" target="ERKPP">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7747171490604092807149" source="k24" target="MEKPP">
+               <graphics>
+                    <position x="1261" y="1214" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7747171490604092807150" source="k15" target="MEKP">
+               <graphics>
+                    <position x="1104" y="1223" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7747171490604092807151" source="ERKP_MEKPP" target="k24">
+               <graphics>
+                    <position x="1442" y="1249" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7747171490604092807171" source="k29" target="Phase3">
+               <graphics>
+                    <position x="1498" y="1150" />
+                    <position x="1674" y="1150" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7747171490604092807170" source="ERKP_Phase3" target="k29">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7747171490604092807169" source="k17" target="MEKP">
+               <graphics>
+                    <position x="1056" y="1223" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7747171490604092807168" source="k17" target="Phase2">
+               <graphics>
+                    <position x="966" y="1014" />
+                    <position x="966" y="1132" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7747171490604092807173" source="k14" target="Phase2">
+               <graphics>
+                    <position x="1229" y="1014" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7747171490604092807172" source="MEKPP_Phase2" target="k14">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7747171490604092807163" source="k16" target="MEKP_Phase2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7755433910982480743162" source="MEKP_Phase2" target="k17">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7755433910982480743161" source="Phase2" target="k16">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7755433910982480743160" source="MEKP" target="k16">
+               <graphics>
+                    <position x="914" y="1060" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7755433910982480743167" source="k28" target="ERKP_Phase3">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7755433910982480743166" source="ERKP" target="k28">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7755433910982480743165" source="Phase3" target="k28">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="cId-7755433910982480743164" source="k29" target="ERKP">
+               <graphics>
+                    <position x="1465" y="1132" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+     </net>
+</pnml>

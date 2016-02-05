@@ -1,0 +1,3969 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<pnml>
+     <net id="SimpleLoadBal-PT-02" type="http://www.pnml.org/version-2009/grammar/ptnet">
+          <name>
+               <text>SimpleLoadBal-PT-02</text>
+          </name>
+          <declaration>
+               <structure>
+                    <declarations />
+               </structure>
+          </declaration>
+          <place id="P-client_idle_1">
+               <name>
+                    <text>client_idle_1</text>
+               </name>
+               <initialMarking>
+                    <text>1</text>
+               </initialMarking>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="P-client_idle_2">
+               <name>
+                    <text>client_idle_2</text>
+               </name>
+               <initialMarking>
+                    <text>1</text>
+               </initialMarking>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="P-client_waiting_1">
+               <name>
+                    <text>client_waiting_1</text>
+               </name>
+               <initialMarking>
+                    <text>0</text>
+               </initialMarking>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="P-client_waiting_2">
+               <name>
+                    <text>client_waiting_2</text>
+               </name>
+               <initialMarking>
+                    <text>0</text>
+               </initialMarking>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="P-client_request_1">
+               <name>
+                    <text>client_request_1</text>
+               </name>
+               <initialMarking>
+                    <text>0</text>
+               </initialMarking>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="P-client_request_2">
+               <name>
+                    <text>client_request_2</text>
+               </name>
+               <initialMarking>
+                    <text>0</text>
+               </initialMarking>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="P-client_ack_1">
+               <name>
+                    <text>client_ack_1</text>
+               </name>
+               <initialMarking>
+                    <text>0</text>
+               </initialMarking>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="P-client_ack_2">
+               <name>
+                    <text>client_ack_2</text>
+               </name>
+               <initialMarking>
+                    <text>0</text>
+               </initialMarking>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="P-server_idle_1">
+               <name>
+                    <text>server_idle_1</text>
+               </name>
+               <initialMarking>
+                    <text>1</text>
+               </initialMarking>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="P-server_idle_2">
+               <name>
+                    <text>server_idle_2</text>
+               </name>
+               <initialMarking>
+                    <text>1</text>
+               </initialMarking>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="P-server_waiting_1">
+               <name>
+                    <text>server_waiting_1</text>
+               </name>
+               <initialMarking>
+                    <text>0</text>
+               </initialMarking>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="P-server_waiting_2">
+               <name>
+                    <text>server_waiting_2</text>
+               </name>
+               <initialMarking>
+                    <text>0</text>
+               </initialMarking>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="P-server_processed_1">
+               <name>
+                    <text>server_processed_1</text>
+               </name>
+               <initialMarking>
+                    <text>0</text>
+               </initialMarking>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="P-server_processed_2">
+               <name>
+                    <text>server_processed_2</text>
+               </name>
+               <initialMarking>
+                    <text>0</text>
+               </initialMarking>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="P-server_notification_1">
+               <name>
+                    <text>server_notification_1</text>
+               </name>
+               <initialMarking>
+                    <text>0</text>
+               </initialMarking>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="P-server_notification_2">
+               <name>
+                    <text>server_notification_2</text>
+               </name>
+               <initialMarking>
+                    <text>0</text>
+               </initialMarking>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="P-server_notification_ack_1">
+               <name>
+                    <text>server_notification_ack_1</text>
+               </name>
+               <initialMarking>
+                    <text>0</text>
+               </initialMarking>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="P-server_notification_ack_2">
+               <name>
+                    <text>server_notification_ack_2</text>
+               </name>
+               <initialMarking>
+                    <text>0</text>
+               </initialMarking>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="P-server_request_1_1">
+               <name>
+                    <text>server_request_1_1</text>
+               </name>
+               <initialMarking>
+                    <text>0</text>
+               </initialMarking>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="P-server_request_1_2">
+               <name>
+                    <text>server_request_1_2</text>
+               </name>
+               <initialMarking>
+                    <text>0</text>
+               </initialMarking>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="P-server_request_2_1">
+               <name>
+                    <text>server_request_2_1</text>
+               </name>
+               <initialMarking>
+                    <text>0</text>
+               </initialMarking>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="P-server_request_2_2">
+               <name>
+                    <text>server_request_2_2</text>
+               </name>
+               <initialMarking>
+                    <text>0</text>
+               </initialMarking>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="P-lb_idle_1">
+               <name>
+                    <text>lb_idle_1</text>
+               </name>
+               <initialMarking>
+                    <text>1</text>
+               </initialMarking>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="P-lb_routing_1_1">
+               <name>
+                    <text>lb_routing_1_1</text>
+               </name>
+               <initialMarking>
+                    <text>0</text>
+               </initialMarking>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="P-lb_routing_1_2">
+               <name>
+                    <text>lb_routing_1_2</text>
+               </name>
+               <initialMarking>
+                    <text>0</text>
+               </initialMarking>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="P-lb_balancing_1">
+               <name>
+                    <text>lb_balancing_1</text>
+               </name>
+               <initialMarking>
+                    <text>0</text>
+               </initialMarking>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="P-lb_load_1_0">
+               <name>
+                    <text>lb_load_1_0</text>
+               </name>
+               <initialMarking>
+                    <text>1</text>
+               </initialMarking>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="P-lb_load_1_1">
+               <name>
+                    <text>lb_load_1_1</text>
+               </name>
+               <initialMarking>
+                    <text>0</text>
+               </initialMarking>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="P-lb_load_1_2">
+               <name>
+                    <text>lb_load_1_2</text>
+               </name>
+               <initialMarking>
+                    <text>0</text>
+               </initialMarking>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="P-lb_load_2_0">
+               <name>
+                    <text>lb_load_2_0</text>
+               </name>
+               <initialMarking>
+                    <text>1</text>
+               </initialMarking>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="P-lb_load_2_1">
+               <name>
+                    <text>lb_load_2_1</text>
+               </name>
+               <initialMarking>
+                    <text>0</text>
+               </initialMarking>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <place id="P-lb_load_2_2">
+               <name>
+                    <text>lb_load_2_2</text>
+               </name>
+               <initialMarking>
+                    <text>0</text>
+               </initialMarking>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <capacity>Unlimited</capacity>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <interface>False</interface>
+               </toolspecific>
+          </place>
+          <transition id="T-client_send_1">
+               <name>
+                    <text>client_send_1</text>
+               </name>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>0.42530730046579</param1>
+                         <rate-function>0.42530730046579</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="T-client_send_2">
+               <name>
+                    <text>client_send_2</text>
+               </name>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>1.94810349729289</param1>
+                         <rate-function>1.94810349729289</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="T-client_receive_1">
+               <name>
+                    <text>client_receive_1</text>
+               </name>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>0.483020648911139</param1>
+                         <rate-function>0.483020648911139</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="T-client_receive_2">
+               <name>
+                    <text>client_receive_2</text>
+               </name>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>2.05451736950992</param1>
+                         <rate-function>2.05451736950992</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="T-server_process_1">
+               <name>
+                    <text>server_process_1</text>
+               </name>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>0.396783955533422</param1>
+                         <rate-function>0.396783955533422</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="T-server_process_2">
+               <name>
+                    <text>server_process_2</text>
+               </name>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>0.154640863488727</param1>
+                         <rate-function>0.154640863488727</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="T-server_process_3">
+               <name>
+                    <text>server_process_3</text>
+               </name>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>0.573862554353598</param1>
+                         <rate-function>0.573862554353598</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="T-server_process_4">
+               <name>
+                    <text>server_process_4</text>
+               </name>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>0.91012284420902</param1>
+                         <rate-function>0.91012284420902</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="T-server_notify_1">
+               <name>
+                    <text>server_notify_1</text>
+               </name>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>0.623999188711866</param1>
+                         <rate-function>0.623999188711866</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="T-server_notify_2">
+               <name>
+                    <text>server_notify_2</text>
+               </name>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>1.97406618309862</param1>
+                         <rate-function>1.97406618309862</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="T-server_endloop_1">
+               <name>
+                    <text>server_endloop_1</text>
+               </name>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>0.831990689007561</param1>
+                         <rate-function>0.831990689007561</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="T-server_endloop_2">
+               <name>
+                    <text>server_endloop_2</text>
+               </name>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>1.55602634169908</param1>
+                         <rate-function>1.55602634169908</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="T-lb_receive_client_1">
+               <name>
+                    <text>lb_receive_client_1</text>
+               </name>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>1.6361090574116</param1>
+                         <rate-function>1.6361090574116</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="T-lb_receive_client_2">
+               <name>
+                    <text>lb_receive_client_2</text>
+               </name>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>0.974255519022353</param1>
+                         <rate-function>0.974255519022353</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="T-lb_route_to_1_1">
+               <name>
+                    <text>lb_route_to_1_1</text>
+               </name>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>1.31250727866427</param1>
+                         <rate-function>1.31250727866427</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="T-lb_route_to_1_2">
+               <name>
+                    <text>lb_route_to_1_2</text>
+               </name>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>2.18607529387161</param1>
+                         <rate-function>2.18607529387161</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="T-lb_route_to_1_5">
+               <name>
+                    <text>lb_route_to_1_5</text>
+               </name>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>2.44472474378754</param1>
+                         <rate-function>2.44472474378754</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="T-lb_route_to_1_6">
+               <name>
+                    <text>lb_route_to_1_6</text>
+               </name>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>1.90674782181473</param1>
+                         <rate-function>1.90674782181473</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="T-lb_route_to_1_10">
+               <name>
+                    <text>lb_route_to_1_10</text>
+               </name>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>2.49978259243061</param1>
+                         <rate-function>2.49978259243061</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="T-lb_route_to_1_11">
+               <name>
+                    <text>lb_route_to_1_11</text>
+               </name>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>1.97154673052558</param1>
+                         <rate-function>1.97154673052558</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="T-lb_route_to_1_14">
+               <name>
+                    <text>lb_route_to_1_14</text>
+               </name>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>2.11476331111731</param1>
+                         <rate-function>2.11476331111731</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="T-lb_route_to_1_15">
+               <name>
+                    <text>lb_route_to_1_15</text>
+               </name>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>2.27553691890814</param1>
+                         <rate-function>2.27553691890814</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="T-lb_route_to_2_4">
+               <name>
+                    <text>lb_route_to_2_4</text>
+               </name>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>2.18469243854503</param1>
+                         <rate-function>2.18469243854503</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="T-lb_route_to_2_8">
+               <name>
+                    <text>lb_route_to_2_8</text>
+               </name>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>1.47127990823764</param1>
+                         <rate-function>1.47127990823764</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="T-lb_route_to_2_13">
+               <name>
+                    <text>lb_route_to_2_13</text>
+               </name>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>1.56951155432943</param1>
+                         <rate-function>1.56951155432943</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="T-lb_route_to_2_17">
+               <name>
+                    <text>lb_route_to_2_17</text>
+               </name>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>0.32621702115341</param1>
+                         <rate-function>0.32621702115341</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="T-lb_idle_receive_notification_2">
+               <name>
+                    <text>lb_idle_receive_notification_2</text>
+               </name>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>2.1878697788752</param1>
+                         <rate-function>2.1878697788752</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="T-lb_idle_receive_notification_3">
+               <name>
+                    <text>lb_idle_receive_notification_3</text>
+               </name>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>1.82863906106383</param1>
+                         <rate-function>1.82863906106383</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="T-lb_idle_receive_notification_5">
+               <name>
+                    <text>lb_idle_receive_notification_5</text>
+               </name>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>1.09732329854617</param1>
+                         <rate-function>1.09732329854617</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="T-lb_idle_receive_notification_6">
+               <name>
+                    <text>lb_idle_receive_notification_6</text>
+               </name>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>0.539095555450346</param1>
+                         <rate-function>0.539095555450346</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="T-lb_no_balance_1">
+               <name>
+                    <text>lb_no_balance_1</text>
+               </name>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>1.76302393603279</param1>
+                         <rate-function>1.76302393603279</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="T-lb_no_balance_2">
+               <name>
+                    <text>lb_no_balance_2</text>
+               </name>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>1.76031488369234</param1>
+                         <rate-function>1.76031488369234</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="T-lb_no_balance_4">
+               <name>
+                    <text>lb_no_balance_4</text>
+               </name>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>1.04484714760671</param1>
+                         <rate-function>1.04484714760671</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="T-lb_no_balance_5">
+               <name>
+                    <text>lb_no_balance_5</text>
+               </name>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>0.24794118225013</param1>
+                         <rate-function>0.24794118225013</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="T-lb_no_balance_6">
+               <name>
+                    <text>lb_no_balance_6</text>
+               </name>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>0.896773107720899</param1>
+                         <rate-function>0.896773107720899</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="T-lb_no_balance_8">
+               <name>
+                    <text>lb_no_balance_8</text>
+               </name>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>1.69366798437837</param1>
+                         <rate-function>1.69366798437837</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="T-lb_no_balance_9">
+               <name>
+                    <text>lb_no_balance_9</text>
+               </name>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>1.38877406143061</param1>
+                         <rate-function>1.38877406143061</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="T-lb_balance_to_1_5">
+               <name>
+                    <text>lb_balance_to_1_5</text>
+               </name>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>0.875032516184744</param1>
+                         <rate-function>0.875032516184744</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="T-lb_balance_to_1_6">
+               <name>
+                    <text>lb_balance_to_1_6</text>
+               </name>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>1.23417731390064</param1>
+                         <rate-function>1.23417731390064</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="T-lb_balance_to_2_13">
+               <name>
+                    <text>lb_balance_to_2_13</text>
+               </name>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>0.392562850328424</param1>
+                         <rate-function>0.392562850328424</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="T-lb_balance_to_2_14">
+               <name>
+                    <text>lb_balance_to_2_14</text>
+               </name>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>2.17197615600749</param1>
+                         <rate-function>2.17197615600749</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="T-lb_balancing_receive_notification_2">
+               <name>
+                    <text>lb_balancing_receive_notification_2</text>
+               </name>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>1.48600339283515</param1>
+                         <rate-function>1.48600339283515</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="T-lb_balancing_receive_notification_3">
+               <name>
+                    <text>lb_balancing_receive_notification_3</text>
+               </name>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>1.14819990966851</param1>
+                         <rate-function>1.14819990966851</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="T-lb_balancing_receive_notification_5">
+               <name>
+                    <text>lb_balancing_receive_notification_5</text>
+               </name>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>1.26658264452898</param1>
+                         <rate-function>1.26658264452898</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <transition id="T-lb_balancing_receive_notification_6">
+               <name>
+                    <text>lb_balancing_receive_notification_6</text>
+               </name>
+               <graphics>
+                    <position x="0" y="0" />
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <orientation>Vertical</orientation>
+                    <priority>-1</priority>
+                    <textalign>Bottom</textalign>
+                    <textvisible visible="true" />
+                    <important>False</important>
+                    <abnormal>False</abnormal>
+                    <distribution type="Exponential">
+                         <param1>2.24192498426043</param1>
+                         <rate-function>2.24192498426043</rate-function>
+                    </distribution>
+                    <condition />
+                    <command />
+               </toolspecific>
+          </transition>
+          <arc id="P-client_idle_1-to-T-client_send_1" source="P-client_idle_1" target="T-client_send_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-client_send_1-to-P-client_waiting_1" source="T-client_send_1" target="P-client_waiting_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-client_send_1-to-P-client_request_1" source="T-client_send_1" target="P-client_request_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-client_idle_2-to-T-client_send_2" source="P-client_idle_2" target="T-client_send_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-client_send_2-to-P-client_waiting_2" source="T-client_send_2" target="P-client_waiting_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-client_send_2-to-P-client_request_2" source="T-client_send_2" target="P-client_request_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-client_receive_1-to-P-client_idle_1" source="T-client_receive_1" target="P-client_idle_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-client_waiting_1-to-T-client_receive_1" source="P-client_waiting_1" target="T-client_receive_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-client_ack_1-to-T-client_receive_1" source="P-client_ack_1" target="T-client_receive_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-client_receive_2-to-P-client_idle_2" source="T-client_receive_2" target="P-client_idle_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-client_waiting_2-to-T-client_receive_2" source="P-client_waiting_2" target="T-client_receive_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-client_ack_2-to-T-client_receive_2" source="P-client_ack_2" target="T-client_receive_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-server_process_1-to-P-client_ack_1" source="T-server_process_1" target="P-client_ack_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-server_idle_1-to-T-server_process_1" source="P-server_idle_1" target="T-server_process_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-server_process_1-to-P-server_processed_1" source="T-server_process_1" target="P-server_processed_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-server_request_1_1-to-T-server_process_1" source="P-server_request_1_1" target="T-server_process_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-server_process_2-to-P-client_ack_2" source="T-server_process_2" target="P-client_ack_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-server_idle_1-to-T-server_process_2" source="P-server_idle_1" target="T-server_process_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-server_process_2-to-P-server_processed_1" source="T-server_process_2" target="P-server_processed_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-server_request_2_1-to-T-server_process_2" source="P-server_request_2_1" target="T-server_process_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-server_process_3-to-P-client_ack_1" source="T-server_process_3" target="P-client_ack_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-server_idle_2-to-T-server_process_3" source="P-server_idle_2" target="T-server_process_3">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-server_process_3-to-P-server_processed_2" source="T-server_process_3" target="P-server_processed_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-server_request_1_2-to-T-server_process_3" source="P-server_request_1_2" target="T-server_process_3">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-server_process_4-to-P-client_ack_2" source="T-server_process_4" target="P-client_ack_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-server_idle_2-to-T-server_process_4" source="P-server_idle_2" target="T-server_process_4">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-server_process_4-to-P-server_processed_2" source="T-server_process_4" target="P-server_processed_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-server_request_2_2-to-T-server_process_4" source="P-server_request_2_2" target="T-server_process_4">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-server_notify_1-to-P-server_waiting_1" source="T-server_notify_1" target="P-server_waiting_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-server_processed_1-to-T-server_notify_1" source="P-server_processed_1" target="T-server_notify_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-server_notify_1-to-P-server_notification_1" source="T-server_notify_1" target="P-server_notification_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-server_notify_2-to-P-server_waiting_2" source="T-server_notify_2" target="P-server_waiting_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-server_processed_2-to-T-server_notify_2" source="P-server_processed_2" target="T-server_notify_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-server_notify_2-to-P-server_notification_2" source="T-server_notify_2" target="P-server_notification_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-server_endloop_1-to-P-server_idle_1" source="T-server_endloop_1" target="P-server_idle_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-server_waiting_1-to-T-server_endloop_1" source="P-server_waiting_1" target="T-server_endloop_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-server_notification_ack_1-to-T-server_endloop_1" source="P-server_notification_ack_1" target="T-server_endloop_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-server_endloop_2-to-P-server_idle_2" source="T-server_endloop_2" target="P-server_idle_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-server_waiting_2-to-T-server_endloop_2" source="P-server_waiting_2" target="T-server_endloop_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-server_notification_ack_2-to-T-server_endloop_2" source="P-server_notification_ack_2" target="T-server_endloop_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-client_request_1-to-T-lb_receive_client_1" source="P-client_request_1" target="T-lb_receive_client_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_idle_1-to-T-lb_receive_client_1" source="P-lb_idle_1" target="T-lb_receive_client_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_receive_client_1-to-P-lb_routing_1_1" source="T-lb_receive_client_1" target="P-lb_routing_1_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-client_request_2-to-T-lb_receive_client_2" source="P-client_request_2" target="T-lb_receive_client_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_idle_1-to-T-lb_receive_client_2" source="P-lb_idle_1" target="T-lb_receive_client_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_receive_client_2-to-P-lb_routing_1_2" source="T-lb_receive_client_2" target="P-lb_routing_1_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_route_to_1_1-to-P-server_request_1_1" source="T-lb_route_to_1_1" target="P-server_request_1_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_route_to_1_1-to-P-lb_idle_1" source="T-lb_route_to_1_1" target="P-lb_idle_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_routing_1_1-to-T-lb_route_to_1_1" source="P-lb_routing_1_1" target="T-lb_route_to_1_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_1_0-to-T-lb_route_to_1_1" source="P-lb_load_1_0" target="T-lb_route_to_1_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_route_to_1_1-to-P-lb_load_1_1" source="T-lb_route_to_1_1" target="P-lb_load_1_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_2_0-to-T-lb_route_to_1_1" source="P-lb_load_2_0" target="T-lb_route_to_1_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_route_to_1_1-to-P-lb_load_2_0" source="T-lb_route_to_1_1" target="P-lb_load_2_0">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_route_to_1_2-to-P-server_request_1_1" source="T-lb_route_to_1_2" target="P-server_request_1_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_route_to_1_2-to-P-lb_idle_1" source="T-lb_route_to_1_2" target="P-lb_idle_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_routing_1_1-to-T-lb_route_to_1_2" source="P-lb_routing_1_1" target="T-lb_route_to_1_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_1_0-to-T-lb_route_to_1_2" source="P-lb_load_1_0" target="T-lb_route_to_1_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_route_to_1_2-to-P-lb_load_1_1" source="T-lb_route_to_1_2" target="P-lb_load_1_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_2_1-to-T-lb_route_to_1_2" source="P-lb_load_2_1" target="T-lb_route_to_1_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_route_to_1_2-to-P-lb_load_2_1" source="T-lb_route_to_1_2" target="P-lb_load_2_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_route_to_1_5-to-P-server_request_1_1" source="T-lb_route_to_1_5" target="P-server_request_1_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_route_to_1_5-to-P-lb_idle_1" source="T-lb_route_to_1_5" target="P-lb_idle_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_routing_1_1-to-T-lb_route_to_1_5" source="P-lb_routing_1_1" target="T-lb_route_to_1_5">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_1_1-to-T-lb_route_to_1_5" source="P-lb_load_1_1" target="T-lb_route_to_1_5">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_route_to_1_5-to-P-lb_load_1_2" source="T-lb_route_to_1_5" target="P-lb_load_1_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_2_1-to-T-lb_route_to_1_5" source="P-lb_load_2_1" target="T-lb_route_to_1_5">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_route_to_1_5-to-P-lb_load_2_1" source="T-lb_route_to_1_5" target="P-lb_load_2_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_route_to_1_6-to-P-server_request_1_1" source="T-lb_route_to_1_6" target="P-server_request_1_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_route_to_1_6-to-P-lb_idle_1" source="T-lb_route_to_1_6" target="P-lb_idle_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_routing_1_1-to-T-lb_route_to_1_6" source="P-lb_routing_1_1" target="T-lb_route_to_1_6">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_1_1-to-T-lb_route_to_1_6" source="P-lb_load_1_1" target="T-lb_route_to_1_6">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_route_to_1_6-to-P-lb_load_1_2" source="T-lb_route_to_1_6" target="P-lb_load_1_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_2_2-to-T-lb_route_to_1_6" source="P-lb_load_2_2" target="T-lb_route_to_1_6">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_route_to_1_6-to-P-lb_load_2_2" source="T-lb_route_to_1_6" target="P-lb_load_2_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_route_to_1_10-to-P-server_request_2_1" source="T-lb_route_to_1_10" target="P-server_request_2_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_route_to_1_10-to-P-lb_idle_1" source="T-lb_route_to_1_10" target="P-lb_idle_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_routing_1_2-to-T-lb_route_to_1_10" source="P-lb_routing_1_2" target="T-lb_route_to_1_10">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_1_0-to-T-lb_route_to_1_10" source="P-lb_load_1_0" target="T-lb_route_to_1_10">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_route_to_1_10-to-P-lb_load_1_1" source="T-lb_route_to_1_10" target="P-lb_load_1_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_2_0-to-T-lb_route_to_1_10" source="P-lb_load_2_0" target="T-lb_route_to_1_10">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_route_to_1_10-to-P-lb_load_2_0" source="T-lb_route_to_1_10" target="P-lb_load_2_0">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_route_to_1_11-to-P-server_request_2_1" source="T-lb_route_to_1_11" target="P-server_request_2_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_route_to_1_11-to-P-lb_idle_1" source="T-lb_route_to_1_11" target="P-lb_idle_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_routing_1_2-to-T-lb_route_to_1_11" source="P-lb_routing_1_2" target="T-lb_route_to_1_11">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_1_0-to-T-lb_route_to_1_11" source="P-lb_load_1_0" target="T-lb_route_to_1_11">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_route_to_1_11-to-P-lb_load_1_1" source="T-lb_route_to_1_11" target="P-lb_load_1_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_2_1-to-T-lb_route_to_1_11" source="P-lb_load_2_1" target="T-lb_route_to_1_11">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_route_to_1_11-to-P-lb_load_2_1" source="T-lb_route_to_1_11" target="P-lb_load_2_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_route_to_1_14-to-P-server_request_2_1" source="T-lb_route_to_1_14" target="P-server_request_2_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_route_to_1_14-to-P-lb_idle_1" source="T-lb_route_to_1_14" target="P-lb_idle_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_routing_1_2-to-T-lb_route_to_1_14" source="P-lb_routing_1_2" target="T-lb_route_to_1_14">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_1_1-to-T-lb_route_to_1_14" source="P-lb_load_1_1" target="T-lb_route_to_1_14">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_route_to_1_14-to-P-lb_load_1_2" source="T-lb_route_to_1_14" target="P-lb_load_1_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_2_1-to-T-lb_route_to_1_14" source="P-lb_load_2_1" target="T-lb_route_to_1_14">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_route_to_1_14-to-P-lb_load_2_1" source="T-lb_route_to_1_14" target="P-lb_load_2_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_route_to_1_15-to-P-server_request_2_1" source="T-lb_route_to_1_15" target="P-server_request_2_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_route_to_1_15-to-P-lb_idle_1" source="T-lb_route_to_1_15" target="P-lb_idle_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_routing_1_2-to-T-lb_route_to_1_15" source="P-lb_routing_1_2" target="T-lb_route_to_1_15">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_1_1-to-T-lb_route_to_1_15" source="P-lb_load_1_1" target="T-lb_route_to_1_15">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_route_to_1_15-to-P-lb_load_1_2" source="T-lb_route_to_1_15" target="P-lb_load_1_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_2_2-to-T-lb_route_to_1_15" source="P-lb_load_2_2" target="T-lb_route_to_1_15">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_route_to_1_15-to-P-lb_load_2_2" source="T-lb_route_to_1_15" target="P-lb_load_2_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_route_to_2_4-to-P-server_request_1_2" source="T-lb_route_to_2_4" target="P-server_request_1_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_route_to_2_4-to-P-lb_idle_1" source="T-lb_route_to_2_4" target="P-lb_idle_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_routing_1_1-to-T-lb_route_to_2_4" source="P-lb_routing_1_1" target="T-lb_route_to_2_4">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_1_1-to-T-lb_route_to_2_4" source="P-lb_load_1_1" target="T-lb_route_to_2_4">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_route_to_2_4-to-P-lb_load_1_1" source="T-lb_route_to_2_4" target="P-lb_load_1_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_2_0-to-T-lb_route_to_2_4" source="P-lb_load_2_0" target="T-lb_route_to_2_4">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_route_to_2_4-to-P-lb_load_2_1" source="T-lb_route_to_2_4" target="P-lb_load_2_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_route_to_2_8-to-P-server_request_1_2" source="T-lb_route_to_2_8" target="P-server_request_1_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_route_to_2_8-to-P-lb_idle_1" source="T-lb_route_to_2_8" target="P-lb_idle_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_routing_1_1-to-T-lb_route_to_2_8" source="P-lb_routing_1_1" target="T-lb_route_to_2_8">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_1_2-to-T-lb_route_to_2_8" source="P-lb_load_1_2" target="T-lb_route_to_2_8">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_route_to_2_8-to-P-lb_load_1_2" source="T-lb_route_to_2_8" target="P-lb_load_1_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_2_1-to-T-lb_route_to_2_8" source="P-lb_load_2_1" target="T-lb_route_to_2_8">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_route_to_2_8-to-P-lb_load_2_2" source="T-lb_route_to_2_8" target="P-lb_load_2_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_route_to_2_13-to-P-server_request_2_2" source="T-lb_route_to_2_13" target="P-server_request_2_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_route_to_2_13-to-P-lb_idle_1" source="T-lb_route_to_2_13" target="P-lb_idle_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_routing_1_2-to-T-lb_route_to_2_13" source="P-lb_routing_1_2" target="T-lb_route_to_2_13">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_1_1-to-T-lb_route_to_2_13" source="P-lb_load_1_1" target="T-lb_route_to_2_13">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_route_to_2_13-to-P-lb_load_1_1" source="T-lb_route_to_2_13" target="P-lb_load_1_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_2_0-to-T-lb_route_to_2_13" source="P-lb_load_2_0" target="T-lb_route_to_2_13">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_route_to_2_13-to-P-lb_load_2_1" source="T-lb_route_to_2_13" target="P-lb_load_2_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_route_to_2_17-to-P-server_request_2_2" source="T-lb_route_to_2_17" target="P-server_request_2_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_route_to_2_17-to-P-lb_idle_1" source="T-lb_route_to_2_17" target="P-lb_idle_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_routing_1_2-to-T-lb_route_to_2_17" source="P-lb_routing_1_2" target="T-lb_route_to_2_17">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_1_2-to-T-lb_route_to_2_17" source="P-lb_load_1_2" target="T-lb_route_to_2_17">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_route_to_2_17-to-P-lb_load_1_2" source="T-lb_route_to_2_17" target="P-lb_load_1_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_2_1-to-T-lb_route_to_2_17" source="P-lb_load_2_1" target="T-lb_route_to_2_17">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_route_to_2_17-to-P-lb_load_2_2" source="T-lb_route_to_2_17" target="P-lb_load_2_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-server_notification_1-to-T-lb_idle_receive_notification_2" source="P-server_notification_1" target="T-lb_idle_receive_notification_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_idle_receive_notification_2-to-P-server_notification_ack_1" source="T-lb_idle_receive_notification_2" target="P-server_notification_ack_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_idle_1-to-T-lb_idle_receive_notification_2" source="P-lb_idle_1" target="T-lb_idle_receive_notification_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_idle_receive_notification_2-to-P-lb_balancing_1" source="T-lb_idle_receive_notification_2" target="P-lb_balancing_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_idle_receive_notification_2-to-P-lb_load_1_0" source="T-lb_idle_receive_notification_2" target="P-lb_load_1_0">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_1_1-to-T-lb_idle_receive_notification_2" source="P-lb_load_1_1" target="T-lb_idle_receive_notification_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-server_notification_1-to-T-lb_idle_receive_notification_3" source="P-server_notification_1" target="T-lb_idle_receive_notification_3">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_idle_receive_notification_3-to-P-server_notification_ack_1" source="T-lb_idle_receive_notification_3" target="P-server_notification_ack_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_idle_1-to-T-lb_idle_receive_notification_3" source="P-lb_idle_1" target="T-lb_idle_receive_notification_3">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_idle_receive_notification_3-to-P-lb_balancing_1" source="T-lb_idle_receive_notification_3" target="P-lb_balancing_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_idle_receive_notification_3-to-P-lb_load_1_1" source="T-lb_idle_receive_notification_3" target="P-lb_load_1_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_1_2-to-T-lb_idle_receive_notification_3" source="P-lb_load_1_2" target="T-lb_idle_receive_notification_3">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-server_notification_2-to-T-lb_idle_receive_notification_5" source="P-server_notification_2" target="T-lb_idle_receive_notification_5">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_idle_receive_notification_5-to-P-server_notification_ack_2" source="T-lb_idle_receive_notification_5" target="P-server_notification_ack_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_idle_1-to-T-lb_idle_receive_notification_5" source="P-lb_idle_1" target="T-lb_idle_receive_notification_5">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_idle_receive_notification_5-to-P-lb_balancing_1" source="T-lb_idle_receive_notification_5" target="P-lb_balancing_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_idle_receive_notification_5-to-P-lb_load_2_0" source="T-lb_idle_receive_notification_5" target="P-lb_load_2_0">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_2_1-to-T-lb_idle_receive_notification_5" source="P-lb_load_2_1" target="T-lb_idle_receive_notification_5">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-server_notification_2-to-T-lb_idle_receive_notification_6" source="P-server_notification_2" target="T-lb_idle_receive_notification_6">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_idle_receive_notification_6-to-P-server_notification_ack_2" source="T-lb_idle_receive_notification_6" target="P-server_notification_ack_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_idle_1-to-T-lb_idle_receive_notification_6" source="P-lb_idle_1" target="T-lb_idle_receive_notification_6">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_idle_receive_notification_6-to-P-lb_balancing_1" source="T-lb_idle_receive_notification_6" target="P-lb_balancing_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_idle_receive_notification_6-to-P-lb_load_2_1" source="T-lb_idle_receive_notification_6" target="P-lb_load_2_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_2_2-to-T-lb_idle_receive_notification_6" source="P-lb_load_2_2" target="T-lb_idle_receive_notification_6">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_no_balance_1-to-P-lb_idle_1" source="T-lb_no_balance_1" target="P-lb_idle_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_balancing_1-to-T-lb_no_balance_1" source="P-lb_balancing_1" target="T-lb_no_balance_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_1_0-to-T-lb_no_balance_1" source="P-lb_load_1_0" target="T-lb_no_balance_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_no_balance_1-to-P-lb_load_1_0" source="T-lb_no_balance_1" target="P-lb_load_1_0">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_2_0-to-T-lb_no_balance_1" source="P-lb_load_2_0" target="T-lb_no_balance_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_no_balance_1-to-P-lb_load_2_0" source="T-lb_no_balance_1" target="P-lb_load_2_0">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_no_balance_2-to-P-lb_idle_1" source="T-lb_no_balance_2" target="P-lb_idle_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_balancing_1-to-T-lb_no_balance_2" source="P-lb_balancing_1" target="T-lb_no_balance_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_1_0-to-T-lb_no_balance_2" source="P-lb_load_1_0" target="T-lb_no_balance_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_no_balance_2-to-P-lb_load_1_0" source="T-lb_no_balance_2" target="P-lb_load_1_0">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_2_1-to-T-lb_no_balance_2" source="P-lb_load_2_1" target="T-lb_no_balance_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_no_balance_2-to-P-lb_load_2_1" source="T-lb_no_balance_2" target="P-lb_load_2_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_no_balance_4-to-P-lb_idle_1" source="T-lb_no_balance_4" target="P-lb_idle_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_balancing_1-to-T-lb_no_balance_4" source="P-lb_balancing_1" target="T-lb_no_balance_4">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_1_1-to-T-lb_no_balance_4" source="P-lb_load_1_1" target="T-lb_no_balance_4">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_no_balance_4-to-P-lb_load_1_1" source="T-lb_no_balance_4" target="P-lb_load_1_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_2_0-to-T-lb_no_balance_4" source="P-lb_load_2_0" target="T-lb_no_balance_4">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_no_balance_4-to-P-lb_load_2_0" source="T-lb_no_balance_4" target="P-lb_load_2_0">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_no_balance_5-to-P-lb_idle_1" source="T-lb_no_balance_5" target="P-lb_idle_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_balancing_1-to-T-lb_no_balance_5" source="P-lb_balancing_1" target="T-lb_no_balance_5">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_1_1-to-T-lb_no_balance_5" source="P-lb_load_1_1" target="T-lb_no_balance_5">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_no_balance_5-to-P-lb_load_1_1" source="T-lb_no_balance_5" target="P-lb_load_1_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_2_1-to-T-lb_no_balance_5" source="P-lb_load_2_1" target="T-lb_no_balance_5">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_no_balance_5-to-P-lb_load_2_1" source="T-lb_no_balance_5" target="P-lb_load_2_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_no_balance_6-to-P-lb_idle_1" source="T-lb_no_balance_6" target="P-lb_idle_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_balancing_1-to-T-lb_no_balance_6" source="P-lb_balancing_1" target="T-lb_no_balance_6">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_1_1-to-T-lb_no_balance_6" source="P-lb_load_1_1" target="T-lb_no_balance_6">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_no_balance_6-to-P-lb_load_1_1" source="T-lb_no_balance_6" target="P-lb_load_1_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_2_2-to-T-lb_no_balance_6" source="P-lb_load_2_2" target="T-lb_no_balance_6">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_no_balance_6-to-P-lb_load_2_2" source="T-lb_no_balance_6" target="P-lb_load_2_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_no_balance_8-to-P-lb_idle_1" source="T-lb_no_balance_8" target="P-lb_idle_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_balancing_1-to-T-lb_no_balance_8" source="P-lb_balancing_1" target="T-lb_no_balance_8">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_1_2-to-T-lb_no_balance_8" source="P-lb_load_1_2" target="T-lb_no_balance_8">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_no_balance_8-to-P-lb_load_1_2" source="T-lb_no_balance_8" target="P-lb_load_1_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_2_1-to-T-lb_no_balance_8" source="P-lb_load_2_1" target="T-lb_no_balance_8">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_no_balance_8-to-P-lb_load_2_1" source="T-lb_no_balance_8" target="P-lb_load_2_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_no_balance_9-to-P-lb_idle_1" source="T-lb_no_balance_9" target="P-lb_idle_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_balancing_1-to-T-lb_no_balance_9" source="P-lb_balancing_1" target="T-lb_no_balance_9">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_1_2-to-T-lb_no_balance_9" source="P-lb_load_1_2" target="T-lb_no_balance_9">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_no_balance_9-to-P-lb_load_1_2" source="T-lb_no_balance_9" target="P-lb_load_1_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_2_2-to-T-lb_no_balance_9" source="P-lb_load_2_2" target="T-lb_no_balance_9">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_no_balance_9-to-P-lb_load_2_2" source="T-lb_no_balance_9" target="P-lb_load_2_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_balance_to_1_5-to-P-server_request_1_1" source="T-lb_balance_to_1_5" target="P-server_request_1_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-server_request_1_2-to-T-lb_balance_to_1_5" source="P-server_request_1_2" target="T-lb_balance_to_1_5">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_balance_to_1_5-to-P-lb_idle_1" source="T-lb_balance_to_1_5" target="P-lb_idle_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_balancing_1-to-T-lb_balance_to_1_5" source="P-lb_balancing_1" target="T-lb_balance_to_1_5">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_1_0-to-T-lb_balance_to_1_5" source="P-lb_load_1_0" target="T-lb_balance_to_1_5">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_balance_to_1_5-to-P-lb_load_1_1" source="T-lb_balance_to_1_5" target="P-lb_load_1_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_balance_to_1_5-to-P-lb_load_2_1" source="T-lb_balance_to_1_5" target="P-lb_load_2_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_2_2-to-T-lb_balance_to_1_5" source="P-lb_load_2_2" target="T-lb_balance_to_1_5">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_balance_to_1_6-to-P-server_request_2_1" source="T-lb_balance_to_1_6" target="P-server_request_2_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-server_request_2_2-to-T-lb_balance_to_1_6" source="P-server_request_2_2" target="T-lb_balance_to_1_6">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_balance_to_1_6-to-P-lb_idle_1" source="T-lb_balance_to_1_6" target="P-lb_idle_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_balancing_1-to-T-lb_balance_to_1_6" source="P-lb_balancing_1" target="T-lb_balance_to_1_6">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_1_0-to-T-lb_balance_to_1_6" source="P-lb_load_1_0" target="T-lb_balance_to_1_6">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_balance_to_1_6-to-P-lb_load_1_1" source="T-lb_balance_to_1_6" target="P-lb_load_1_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_balance_to_1_6-to-P-lb_load_2_1" source="T-lb_balance_to_1_6" target="P-lb_load_2_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_2_2-to-T-lb_balance_to_1_6" source="P-lb_load_2_2" target="T-lb_balance_to_1_6">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-server_request_1_1-to-T-lb_balance_to_2_13" source="P-server_request_1_1" target="T-lb_balance_to_2_13">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_balance_to_2_13-to-P-server_request_1_2" source="T-lb_balance_to_2_13" target="P-server_request_1_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_balance_to_2_13-to-P-lb_idle_1" source="T-lb_balance_to_2_13" target="P-lb_idle_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_balancing_1-to-T-lb_balance_to_2_13" source="P-lb_balancing_1" target="T-lb_balance_to_2_13">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_balance_to_2_13-to-P-lb_load_1_1" source="T-lb_balance_to_2_13" target="P-lb_load_1_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_1_2-to-T-lb_balance_to_2_13" source="P-lb_load_1_2" target="T-lb_balance_to_2_13">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_2_0-to-T-lb_balance_to_2_13" source="P-lb_load_2_0" target="T-lb_balance_to_2_13">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_balance_to_2_13-to-P-lb_load_2_1" source="T-lb_balance_to_2_13" target="P-lb_load_2_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-server_request_2_1-to-T-lb_balance_to_2_14" source="P-server_request_2_1" target="T-lb_balance_to_2_14">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_balance_to_2_14-to-P-server_request_2_2" source="T-lb_balance_to_2_14" target="P-server_request_2_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_balance_to_2_14-to-P-lb_idle_1" source="T-lb_balance_to_2_14" target="P-lb_idle_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_balancing_1-to-T-lb_balance_to_2_14" source="P-lb_balancing_1" target="T-lb_balance_to_2_14">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_balance_to_2_14-to-P-lb_load_1_1" source="T-lb_balance_to_2_14" target="P-lb_load_1_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_1_2-to-T-lb_balance_to_2_14" source="P-lb_load_1_2" target="T-lb_balance_to_2_14">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_2_0-to-T-lb_balance_to_2_14" source="P-lb_load_2_0" target="T-lb_balance_to_2_14">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_balance_to_2_14-to-P-lb_load_2_1" source="T-lb_balance_to_2_14" target="P-lb_load_2_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-server_notification_1-to-T-lb_balancing_receive_notification_2" source="P-server_notification_1" target="T-lb_balancing_receive_notification_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_balancing_receive_notification_2-to-P-server_notification_ack_1" source="T-lb_balancing_receive_notification_2" target="P-server_notification_ack_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_balancing_1-to-T-lb_balancing_receive_notification_2" source="P-lb_balancing_1" target="T-lb_balancing_receive_notification_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_balancing_receive_notification_2-to-P-lb_balancing_1" source="T-lb_balancing_receive_notification_2" target="P-lb_balancing_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_balancing_receive_notification_2-to-P-lb_load_1_0" source="T-lb_balancing_receive_notification_2" target="P-lb_load_1_0">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_1_1-to-T-lb_balancing_receive_notification_2" source="P-lb_load_1_1" target="T-lb_balancing_receive_notification_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-server_notification_1-to-T-lb_balancing_receive_notification_3" source="P-server_notification_1" target="T-lb_balancing_receive_notification_3">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_balancing_receive_notification_3-to-P-server_notification_ack_1" source="T-lb_balancing_receive_notification_3" target="P-server_notification_ack_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_balancing_1-to-T-lb_balancing_receive_notification_3" source="P-lb_balancing_1" target="T-lb_balancing_receive_notification_3">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_balancing_receive_notification_3-to-P-lb_balancing_1" source="T-lb_balancing_receive_notification_3" target="P-lb_balancing_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_balancing_receive_notification_3-to-P-lb_load_1_1" source="T-lb_balancing_receive_notification_3" target="P-lb_load_1_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_1_2-to-T-lb_balancing_receive_notification_3" source="P-lb_load_1_2" target="T-lb_balancing_receive_notification_3">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-server_notification_2-to-T-lb_balancing_receive_notification_5" source="P-server_notification_2" target="T-lb_balancing_receive_notification_5">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_balancing_receive_notification_5-to-P-server_notification_ack_2" source="T-lb_balancing_receive_notification_5" target="P-server_notification_ack_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_balancing_1-to-T-lb_balancing_receive_notification_5" source="P-lb_balancing_1" target="T-lb_balancing_receive_notification_5">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_balancing_receive_notification_5-to-P-lb_balancing_1" source="T-lb_balancing_receive_notification_5" target="P-lb_balancing_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_balancing_receive_notification_5-to-P-lb_load_2_0" source="T-lb_balancing_receive_notification_5" target="P-lb_load_2_0">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_2_1-to-T-lb_balancing_receive_notification_5" source="P-lb_load_2_1" target="T-lb_balancing_receive_notification_5">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-server_notification_2-to-T-lb_balancing_receive_notification_6" source="P-server_notification_2" target="T-lb_balancing_receive_notification_6">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_balancing_receive_notification_6-to-P-server_notification_ack_2" source="T-lb_balancing_receive_notification_6" target="P-server_notification_ack_2">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_balancing_1-to-T-lb_balancing_receive_notification_6" source="P-lb_balancing_1" target="T-lb_balancing_receive_notification_6">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_balancing_receive_notification_6-to-P-lb_balancing_1" source="T-lb_balancing_receive_notification_6" target="P-lb_balancing_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="T-lb_balancing_receive_notification_6-to-P-lb_load_2_1" source="T-lb_balancing_receive_notification_6" target="P-lb_load_2_1">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+          <arc id="P-lb_load_2_2-to-T-lb_balancing_receive_notification_6" source="P-lb_load_2_2" target="T-lb_balancing_receive_notification_6">
+               <graphics>
+                    <fill color="White" />
+                    <line color="Black" />
+               </graphics>
+               <toolspecific tool="Petri.NET" version="1.5.5877.21820">
+                    <weight>1</weight>
+               </toolspecific>
+          </arc>
+     </net>
+</pnml>
