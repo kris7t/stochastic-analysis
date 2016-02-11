@@ -1,0 +1,153 @@
+<!-- Workflows are named for logging and UI purposed.
+     It is encouraged to name the .xaml files accordingly. -->
+<AnalysisWorkflow
+    xmlns="http://petridotnet.inf.mit.bme.hu/pdn/2016/xaml/analysis"
+    xmlns:obs="http://petridotnet.inf.mit.bme.hu/pdn/2016/xaml/analysis/observer"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Name="PAR_BK_TRBDF2_GJ_IDR82">
+  <AnalysisWorkflow.Inputs>
+    <!-- Input property bag with names, types and optional DomainTypes, which
+	 are {x:Type} references to DomainTypeAttribute descendants.
+	 UIs can bind widgets to Inputs and Outputs according to CLR and domain types. -->
+    <Input Name="PetriNet" Type="{x:Type IPetriNet}" />
+    <Input Name="VariableConfiguration" Type="{x:Type IVariableConfiguration}" />
+    <Input Name="IntervalStudyConfiguration" Type="{x:Type IIntervalStudyConfiguration}" />
+    <Input Name="Partitions" Type="{x:Type Partitions}"/>
+    <Input Name="StateBasedRewards" Type="{x:Type StateBasedRewardConfigurationCollection}" />
+    <Input Name="EventBasedRewards" Type="{x:Type EventBasedRewardConfigurationCollection}" />
+    <Input Name="Tolerance" Type="{x:Type x:Double}" DefaultValue="1e-10" />
+    <Input Name="Time" Type="{x:Type x:Double}" />
+  </AnalysisWorkflow.Inputs>
+  <AnalysisWorkflow.Outputs>
+    <!-- Output type is inferred from the references property. -->
+    <Output Name="TransientIntervalResults"
+	    Value="{Wire TransientIntervalResults, From={x:Reference pointsLoop}}"/>
+    <Output Name="SteadystateIntervalResults"
+	    Value="{Wire SteadystateIntervalResults, From={x:Reference pointsLoop}}"/>
+  </AnalysisWorkflow.Outputs>
+  <AnalysisWorkflow.Resources>
+    <!-- Create a new math factory along with an OperationContext,
+	 which is auto-injected into algorithms that declare a [Dependency] IMathFactory. -->
+    <DisposingMathFactory />
+  </AnalysisWorkflow.Resources>
+  <AnalysisWorkflow.Observer>
+    <!-- The observer provides logging and benchmarking capability.
+	 It may be specified inline or in code before executing the workflow.
+	 If no observer is given, a null implementation will be instantiated. -->
+    <!-- Ordinary objects can be auto-wired, too, for example,
+	 [InAttribute] double Time; gets wired by name and CLR type. -->
+    <obs:AnalysisObserver />
+  </AnalysisWorkflow.Observer>
+
+  <!-- IAlgorithms are wrapped into a metainformation handler class when they are added to the workflow. -->
+  <!-- Most [Input]s, for example, PetriNet or Partitions are auto-wired by
+       CLR type, name and (optionally specified) domain type. -->
+  <SymbolicStateSpaceExploration />
+  <!-- "Mini-algorithms" to relay information to the observer,
+       which is passed to them as a [Dependency]. -->
+  <obs:ObservePointOfInterest Name="StateSpace" />
+
+  <!-- Composite algorithm that executes MacroStateSpaceDiscovery and EddConverter
+       to omtain a MacroMicroSymbolicStateSpace. -->
+  <SymbolicMacroMicroStateSpace />
+  <obs:ObservePointOfInterest Name="Macro" />
+
+  <!-- The canonical form of a reward is a list of (SymbolicIteratorGuide, RateExpression) pairs. -->
+  <StateRewardsCanonicalForm x:Name="stateRewards">
+    <!-- Specify a child of a composite algorithm explicitly to override the default. -->
+    <StateRewardsCanonicalForm.CtlEvaluator>
+      <CustomCtlEvaluator />
+    </StateRewardsCanonicalForm.CtlEvaluator>
+  </StateRewardsCanonicalForm>
+  <!-- The workflow engine tries to satisy [Dependency] properties by assigning resources
+       visible in the scope. Composite algorithms can opt-out by specifying
+       [DefaultImplementation(typeof(CtlEvaluator))], where the given type will be instantiated
+       instead of looking for a resource. The default may be overridden inline,
+       or by specifying {Resource} to opt back in to dependency injection. -->
+  <EventRewardsCanonicalForm x:Name="eventRewards" />
+  <!-- Merge two collections. Merging multiple collections needs multiple algorithms. -->
+  <!-- If auto-wiring is not satisfactory, {Wire} may be used to specify a source object.
+       Alternatively, {Wire Path, From={x:Reference sourceName}} may be used,
+       where path is a single property name or a dot-separated property path. -->
+  <MergeCollections First="{Wire {x:Reference stateRewards}}"
+		    Second="{Wire {x:Reference eventRewards}}" />
+
+  <!-- IScopes contain algorithms or other scopes and modify their behavior.
+       Moreover, they are responsible for [Input] and [Dependeny] resolution and executor code generation.
+       Unline IAlgorithms, they are not wrapped. -->
+  <!-- By default, the operation context is not configured and throws OperationNotSupportedException
+       for any operation call. This scope configures it and restores the original state after scope exit. -->
+  <OperationConfigurationScope Configuration="Parallel">
+
+    <!-- ForEach iterates the child algorithms over the collection.
+	 It must be named to access the loop variable. -->
+    <!-- To access workflow inputs by name (an opt out of auto-wiring), use {ThisWorkflow} as the wire source. -->
+    <ForEach Collection="{Wire IntervalStudyConfiguration.Points, From={ThisWorkflow}}" x:Name="pointsLoop">
+      <ForEach.Collectors>
+	<!-- Collectors are used to gather calculation result from every loop iteration.
+	     They generate code for collector variable initialization and adding (loop variable, result) pairs
+	     to the collector. They are the [Output]s of ForEach.
+	     Ordinary collectors gather into a List of a List of KeyValuePairs.-->
+	<!-- This collector creates a "table" of interval study result. -->
+	<CollectIntervalStudyResults Name="TransientIntervalResults"
+				     Value="{Wire TransientRewards, From={x:Reference rewardsLoop}}" />
+	<CollectIntervalStudyResults Name="SteadystateIntervalResults"
+				     Value="{Wire ResultsSteadystateRewards, From={x:Reference rewardsLoop}}" />
+      </ForEach.Collectors>
+      
+      <MathFactoryScope>
+	<!-- Any scope can have resources. -->
+	<MathFactoryScope.Resources>
+	  <!-- A child algorithm algorithm given as a resource for re-use. -->
+	  <!-- In ordinary use, them framework knows which properties should not be auto-wired
+	       by inspecting [ProvidedInputsAttribute]. If there is no containing property,
+	       {Provided} must be used instead to opt out of auto-wiring. -->
+	  <GroupJacobiIteration Matrix="{Provided}" InitialGuess="{Provided}" RightVector="{Provided}">
+	    <!-- Children are auto-wired be default, except for [ProvidedInputs] -->
+	    <!-- LogLevel is an attached property used to customise IAlgorithmObserver behavior. -->
+	    <BicgstabIteration AnalysisWorkflow.LogLevel="Error" />
+	  </GroupJacobiIteration>
+	</MathFactoryScope.Resources>
+
+	<!-- Refer to the loop variable with {CurrentOf} -->
+	<MergeVariableConfigurations Original="{Wire VariableConfiguration, From={ThisWorkflow}}"
+				     Override="{CurrentOf {x:Reference pointsLoop}}"
+				     x:Name="overriddenVariables" />
+	<TransitionRateProvider VariableConfiguration="{Wire {x:Reference overriddenVariables}}" />
+	<SymbolicBlockKroneckerGeneratorMatrixComposer />
+
+	<!-- Create a new vector and set it to the initial distribution. -->
+	<InitialDistribution x:Name="transientInit" />
+	
+	<!-- Wrapper around a transient integrator. -->
+	<TransientSolver InitialDistribution="{Wire {x:Reference transientInit}}" x:Name="transient">
+	  <!-- [ContentPropertyAttribute] allows assigning a solver to use. -->
+	  <TrBdf2 />
+	</TransientSolver>
+
+	<UniformDistribution x:Name="steadystateInit" />
+	
+	<!-- Wrapper around ILinearEquationSolvers to handle pre/post normalization.
+	     Normalization is inferred from
+	     [SteadyStateSolverAttribute(Normalize=SteadyStateNormalization.{None|Before|After})]
+	     (None if the attribute is missing) or may be specified inline. -->
+	<!-- The ILinearEquationSolver gets injected from MathFactoryScope.Resources -->
+	<SteadyStateSolver InitialGuess="{Wire {x:Reference steadystateInit}}" x:Name="steadystate" />
+
+	<!-- Should just batch processing be used instead of an addition ForEach loop? -->
+	<ForEach Collection="{Wire RewardsToCalculate, From={ThisWorkflow}}" x:Name="rewardsLoop">
+	  <ForEach.Collectors>
+	    <!-- This collector saves reward values for reward configurations. -->
+	    <CollectRewards Name="TransientRewards" Value="{Wire Value, From={x:Reference transientReward}}" />
+	    <CollectRewards Name="SteadystateRewards" Value="{Wire Value, From={x:Reference steadystateReward}}" />
+	  </ForEach.Collectors>
+	  <RewardCalculator ProbabilityDistribution="{Wire {x:Reference transient}}"
+			    Reward="{CurrentOf {x:Reference rewardsLoop}}" x:Name="transientReward" />
+	  <RewardCalculator ProbabilityDistribution="{Wire {x:Reference steadystate}}"
+			    Reward="{CurrentOf {x:Reference rewardsLoop}}" x:Name="steadystateReward" />
+	</ForEach>
+	
+      </MathFactoryScope>
+    </ForEach>
+  </OperationConfigurationScope>
+</AnalysisWorkflow>
